@@ -1,0 +1,441 @@
+/* 
+  Global Search - Dark Right-Aligned (Compact)
+  Aligns with the new request: "Dark style but not end to end - align toward right"
+*/
+
+.modern-search-wrapper {
+    position: relative;
+    /* Fixed width - not end to end */
+    width: 320px;
+    transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 105;
+}
+
+/* Optional: Expand slightly on focus */
+.modern-search-wrapper:focus-within {
+    width: 420px;
+}
+
+/* --- Search Bar --- */
+.modern-search-bar {
+    display: flex;
+    align-items: center;
+    background: #1A1A1A;
+    /* Deep Charcoal */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* Subtle Definition */
+    border-radius: 99px;
+    padding: 0 14px;
+    height: 40px;
+    /* Compact height for "utility" feel */
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Focus State */
+.modern-search-bar.active,
+.modern-search-bar:focus-within {
+    background: #2C2C2C;
+    /* Slightly lighter on focus */
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.search-icon {
+    color: #999;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    /* Slightly smaller for compact ui */
+    color: #FFFFFF !important;
+    /* Force White */
+    font-weight: 400;
+    outline: none;
+    min-width: 0;
+}
+
+.search-input::placeholder {
+    color: #888;
+    font-weight: 400;
+}
+
+/* Clear Button */
+.clear-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    border: none;
+    color: #CCC;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    transition: all 0.15s ease;
+}
+
+.clear-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #FFF;
+}
+
+
+/* --- Results Panel --- */
+.search-results-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    /* Anchor Left */
+    /* Anchor Left */
+    right: auto;
+    width: 420px;
+    background: #262626;
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0;
+    overflow-y: auto;
+    max-height: 420px;
+    animation: slideScale 0.15s ease-out;
+
+    scrollbar-width: thin;
+    scrollbar-color: #444 transparent;
+}
+
+.search-results-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 3px;
+}
+
+
+/* --- Sections & Rows --- */
+
+.result-group {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+}
+
+.result-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.group-header {
+    padding: 10px 16px 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #777;
+    font-weight: 600;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    height: 56px;
+    /* Compact rows */
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.search-result-item:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Icons / Avatars */
+.result-icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    margin-right: 12px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Type Specific Tints */
+.result-icon-box.type-event {
+    color: #90caf9;
+    background: rgba(144, 202, 249, 0.1);
+}
+
+.result-icon-box.type-rider {
+    color: #f48fb1;
+    background: rgba(244, 143, 177, 0.1);
+}
+
+.result-icon-box.type-horse {
+    color: #ffcc80;
+    background: rgba(255, 204, 128, 0.1);
+}
+
+/* Text Hierarchy */
+.result-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    flex: 1;
+}
+
+.result-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #EEE;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.result-subtitle {
+    font-size: 0.75rem;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+.result-arrow {
+    color: #666;
+    margin-left: 8px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
+}
+
+.search-result-item:hover .result-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* Animations */
+@keyframes slideScale {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Empty State */
+.search-results-dropdown.empty {
+    padding: 24px 16px;
+    text-align: center;
+}
+
+
+/* Collapsible Morphing Animation */
+.modern-search-wrapper.is-collapsible {
+    width: 44px;
+    height: 44px;
+    z-index: 1100;
+}
+
+/* Base Bar in Collapsible Mode */
+.modern-search-wrapper.is-collapsible .modern-search-bar {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #1A1A1A;
+    /* Dark Grey / Almost Black */
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: transparent;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s ease, border-radius 0.3s ease;
+}
+
+/* Icon in Collapsible Mode */
+.modern-search-wrapper.is-collapsible .search-icon {
+    margin: 0 !important;
+    /* Force no margin for perfect centering */
+    color: #FFF;
+    flex-shrink: 0;
+}
+
+/* Hide elements completely when collapsed to preserve centering */
+.modern-search-wrapper.is-collapsible:not(.expanded) .search-input,
+.modern-search-wrapper.is-collapsible:not(.expanded) .clear-btn {
+    display: none;
+}
+
+/* Expanded State */
+.modern-search-wrapper.is-collapsible.expanded .modern-search-bar {
+    width: 320px;
+    border-radius: 99px;
+    background: #1A1A1A;
+    padding: 0 16px !important;
+    justify-content: flex-start;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.modern-search-wrapper.is-collapsible.expanded .search-icon {
+    margin-right: 12px !important;
+}
+
+/* Input Visibility */
+.modern-search-wrapper.is-collapsible .search-input {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    transition: opacity 0.2s ease 0.1s;
+}
+
+.modern-search-wrapper.is-collapsible.expanded .search-input {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    width: 100%;
+}
+
+/* Clear Button Visibility */
+.modern-search-wrapper.is-collapsible .clear-btn {
+    display: none;
+}
+
+.modern-search-wrapper.is-collapsible.expanded .clear-btn {
+    display: flex;
+}
+
+/* Hover state for trigger */
+.modern-search-wrapper.is-collapsible:not(.expanded) .modern-search-bar:hover {
+    background: #333;
+    /* Slightly lighter charcoal */
+    transform: translateY(-50%) scale(1.05);
+    /* Match other header icons */
+}
+
+/* Fix Dropdown Alignment for Header */
+.modern-search-wrapper.is-collapsible.expanded .search-results-dropdown {
+    right: 0;
+    left: auto;
+    width: 320px;
+}
+
+/* ==========================================================================
+   Light Theme Overrides (For Hero Section)
+   ========================================================================== */
+
+.modern-search-wrapper.light-theme .modern-search-bar {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.modern-search-wrapper.light-theme .modern-search-bar.active,
+.modern-search-wrapper.light-theme .modern-search-bar:focus-within {
+    background: #FFFFFF;
+    border-color: var(--brand-border-focus);
+    box-shadow: 0 0 0 4px var(--brand-ring-focus);
+}
+
+.modern-search-wrapper.light-theme .search-input {
+    color: #111111 !important;
+    caret-color: var(--brand-border-focus);
+}
+
+.modern-search-wrapper.light-theme .search-input::placeholder {
+    color: #888888;
+}
+
+.modern-search-wrapper.light-theme .search-icon {
+    color: #666666;
+}
+
+.modern-search-wrapper.light-theme .clear-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666666;
+}
+
+.modern-search-wrapper.light-theme .clear-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #111111;
+}
+
+/* Results Dropdown - Light */
+.modern-search-wrapper.light-theme .search-results-dropdown {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.modern-search-wrapper.light-theme .group-header {
+    color: #555555;
+    border-bottom-color: rgba(0, 0, 0, 0.04);
+}
+
+.modern-search-wrapper.light-theme .result-title {
+    color: #111111;
+}
+
+.modern-search-wrapper.light-theme .result-subtitle {
+    color: #666666;
+}
+
+.modern-search-wrapper.light-theme .search-result-item:hover {
+    background-color: var(--brand-tint-hover);
+}
+
+.modern-search-wrapper.light-theme .result-icon-box {
+    background: #F0F0F0;
+    color: #555555;
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Type Specific Tints - Light */
+.modern-search-wrapper.light-theme .result-icon-box.type-event {
+    color: #1976D2;
+    background: rgba(25, 118, 210, 0.08);
+}
+
+.modern-search-wrapper.light-theme .result-icon-box.type-rider {
+    color: #C2185B;
+    background: rgba(194, 24, 91, 0.08);
+}
+
+.modern-search-wrapper.light-theme .result-icon-box.type-horse {
+    color: #E65100;
+    background: rgba(230, 81, 0, 0.08);
+}
+
+.modern-search-wrapper.light-theme .no-result-text {
+    color: #666666;
+}

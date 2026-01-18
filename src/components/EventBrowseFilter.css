@@ -1,0 +1,70 @@
+.event-browse-filter {
+    /* If used inline, we might need to reset some padding/width */
+    /* By default it was full width. We'll modify it to be auto width if inside a flex container */
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    z-index: 90;
+}
+
+/* Sticky State (Frosted Glass) - Only used when standalone */
+.event-browse-filter.sticky-glass {
+    width: 100%;
+    padding-bottom: 12px;
+    padding-top: 12px;
+    background-color: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.filter-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Modern Select Styling */
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 99px;
+    padding: 10px 36px 10px 16px;
+    /* Space for arrow */
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.filter-select:hover {
+    border-color: var(--brand-border-hover);
+    background-color: var(--brand-tint-hover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--brand-border-focus);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #888;
+}

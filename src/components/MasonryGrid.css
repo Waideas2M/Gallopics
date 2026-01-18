@@ -1,0 +1,36 @@
+.masonry-grid {
+    column-gap: var(--grid-gap);
+    padding-bottom: var(--spacing-xl);
+    width: 100%;
+    will-change: column-count;
+}
+
+/* Mobile: 2 Columns (≤ 480px) */
+@media (max-width: 480px) {
+    .masonry-grid {
+        column-count: 2;
+        column-gap: 12px;
+        /* Tighter gap for mobile */
+    }
+}
+
+/* Large Mobile / Small Tablet: 3 Columns (481–768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .masonry-grid {
+        column-count: 3;
+    }
+}
+
+/* Tablet / Small Desktop: 4 Columns (769–1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .masonry-grid {
+        column-count: 4;
+    }
+}
+
+/* Desktop (1025px and up): Cap at 5 Columns */
+@media (min-width: 1025px) {
+    .masonry-grid {
+        column-count: 5;
+    }
+}

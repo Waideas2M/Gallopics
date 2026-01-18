@@ -1,0 +1,572 @@
+.title-header {
+    background-color: var(--color-surface);
+    padding-top: 24px;
+    padding-bottom: 32px;
+}
+
+.title-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+}
+
+.title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    /* More premium gutter */
+}
+
+.title-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.title-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Unified gap for all sub-elements */
+}
+
+.title-header-top-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.title-header-title {
+    font-family: 'Urbanist', sans-serif;
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    color: var(--color-text-primary);
+}
+
+.title-header-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+    line-height: 1.4;
+    /* Unified */
+}
+
+.title-header-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    flex-wrap: wrap;
+    margin-top: 0;
+    /* Handled by container gap */
+}
+
+.title-header-description {
+    max-width: 600px;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+    margin-top: 0;
+    /* Handled by container gap */
+}
+
+.title-header-right {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .title-header-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .title-header-title {
+        font-size: 2rem;
+    }
+}
+
+/* Assigned Photographer Styling */
+.assigned-photographer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px 8px 8px;
+    background-color: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    transition: transform 0.3s var(--ease-hover), box-shadow 0.3s var(--ease-hover), border-color 0.3s var(--ease-hover), background-color 0.3s var(--ease-hover);
+    cursor: pointer;
+    user-select: none;
+}
+
+.assigned-photographer:hover {
+    border-color: #ccc;
+    background-color: #fafafa;
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.assigned-photographer:hover .photographer-name-small {
+    text-decoration: underline;
+    color: #000;
+}
+
+.photographer-avatar-small {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.photographer-avatar-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photographer-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.photographer-name-small {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    transition: color 0.2s ease;
+}
+
+/* Shared Title Header Content Styles */
+.event-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    border-bottom: none !important;
+    text-decoration: none !important;
+}
+
+.meta-bullet {
+    color: #ccc;
+    font-size: 0.8em;
+    margin: 0 4px;
+}
+
+.event-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0;
+    /* Handled by container gap */
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.photographer-availability {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+    font-weight: 400;
+}
+
+.event-filters-block {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Primary Small CTA e.g. "Hire me" */
+.btn-primary-small {
+    background-color: #111;
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    /* Pill */
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary-small:hover {
+    background-color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary-small:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary-small:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Modern Hero Redesign (Ehome) --- */
+
+.hero-wrapper {
+    padding: 40px 0 24px;
+    background-color: transparent;
+}
+
+.hero-grid {
+    display: grid;
+    /* Desktop proportions: 6 (Large) : 4 (Medium) : 2 (Small) */
+    /* Using minmax to prevent cards from collapsing below readable widths */
+    grid-template-columns: minmax(420px, 6fr) minmax(320px, 4fr) minmax(240px, 2fr);
+    grid-template-areas: "card-l card-m card-s";
+    gap: 24px;
+    width: 100%;
+    align-items: stretch;
+    /* Keep heights consistent */
+}
+
+/* Card Base */
+.hero-card {
+    border-radius: 32px;
+    /* iOS-like large radius */
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    overflow: visible;
+    /* Required for search dropdown */
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.hero-card:hover {
+    transform: translate3d(0, -4px, 0);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Card 1: Image Background with Overlay */
+.hero-card-large {
+    grid-area: card-l;
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.1) 60%, transparent 100%),
+        url('/images/card1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    color: #FFFFFF;
+    /* Ensure all text is default white for contrast on image */
+}
+
+/* Typography Overrides for Card 1 (Image Background) */
+.hero-card-large .hero-title {
+    color: #FFFFFF;
+}
+
+.hero-card-large .hero-body {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-card-large {
+        animation: none;
+    }
+}
+
+/* Card Content */
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 480px;
+    z-index: 2;
+}
+
+.hero-title {
+    font-family: 'Urbanist', sans-serif;
+    font-size: 3rem;
+    /* Larger for impact */
+    font-weight: 800;
+    line-height: 1.05;
+    color: #0F172A;
+    /* Deeper, more premium charcoal */
+    letter-spacing: -0.03em;
+    /* Tighter for "display" feel */
+    margin: 0;
+    text-wrap: balance;
+    /* Modern browser support for better heading wraps */
+}
+
+.hero-title-small {
+    font-family: 'Urbanist', sans-serif;
+    font-size: 1.875rem;
+    /* Slightly larger */
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1E293B;
+    line-height: 1.1;
+    margin: 0;
+    text-wrap: balance;
+}
+
+/* Utility for section titles that match card 3 style */
+.section-title {
+    font-family: 'Urbanist', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0F172A;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.hero-body {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    /* Better readability */
+    color: #475569;
+    /* Refined slate grey */
+    font-weight: 450;
+    margin: 0;
+}
+
+.hero-card-small .hero-body {
+    font-size: 0.9375rem;
+    /* Consistent smaller size for small cards */
+    line-height: 1.5;
+}
+
+/* CTAs */
+.hero-actions {
+    margin-top: 32px;
+}
+
+.hero-actions.full-width-search {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Override ModernSearchBar inside Hero to be fluid */
+.hero-actions .modern-search-wrapper {
+    width: 100%;
+}
+
+.hero-actions .modern-search-bar {
+    height: 56px;
+    /* Taller search bar for hero */
+    border-radius: 99px;
+    padding: 0 16px;
+}
+
+.btn-hero-primary {
+    background-color: #111;
+    /* Fallback dark */
+    color: #fff;
+    height: 56px;
+    /* Match Search Height */
+    padding: 0 40px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Brand Color Usage (#1B3AEC) */
+/* Context-aware button coloring */
+.hero-card-large .btn-hero-primary {
+    background-color: #1B3AEC;
+    /* Brand Blue */
+}
+
+.hero-card-large .btn-hero-primary:hover {
+    background-color: #152db5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(27, 58, 236, 0.3);
+}
+
+/* Small Cards (2 & 3) Styling */
+.hero-card-small {
+    background-color: #f4f4f5;
+    /* Neutral light grey base */
+}
+
+/* Card 2: Image Background with Overlay */
+.hero-card-small.photographer {
+    grid-area: card-m;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3)),
+        url('/images/card2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+}
+
+.hero-card-small.photographer .hero-title-small {
+    color: #FFFFFF;
+}
+
+.hero-card-small.photographer .hero-body {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+    /* Match Card 1 */
+}
+
+.hero-card-small.organizer {
+    background-color: #fff9e6;
+    /* Very subtle yellow tint */
+    grid-area: card-s;
+}
+
+.hero-card-small.organizer .hero-title-small {
+    font-size: 1.5rem;
+    /* Scaled down for the smallest card */
+}
+
+.hero-card-small.organizer .hero-body {
+    font-size: 0.875rem;
+    /* Two sizes smaller than Card 1/2 for narrowest card */
+    line-height: 1.5;
+}
+
+.btn-hero-secondary {
+    background-color: #fff;
+    color: #111;
+    height: 56px;
+    /* Match Search Height */
+    padding: 0 32px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-hero-secondary:hover {
+    background-color: #fff;
+    border-color: #ccc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Specific button colors for small cards */
+.hero-card-small.photographer .btn-hero-secondary {
+    background-color: #1B3AEC;
+    color: #fff;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-card-small.photographer .btn-hero-secondary:hover {
+    background-color: #152db5;
+}
+
+.hero-card-small.organizer .btn-hero-secondary {
+    background-color: #111;
+    color: #fff;
+    border: none;
+}
+
+.hero-card-small.organizer .btn-hero-secondary:hover {
+    background-color: #000;
+}
+
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .hero-grid {
+        grid-template-columns: 1fr 1fr;
+        /* Tablet: 2 cols */
+        grid-template-areas:
+            "card-l card-l"
+            "card-m card-s";
+    }
+
+    .hero-card-large {
+        grid-area: card-l;
+        min-height: 320px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        /* Mobile: Stack */
+        grid-template-areas:
+            "card-l"
+            "card-m"
+            "card-s";
+        gap: 16px;
+    }
+
+    .hero-card {
+        padding: 24px;
+        min-height: auto;
+        border-radius: 24px;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-card-large {
+        min-height: 360px;
+        /* Tall for impact on mobile */
+    }
+}

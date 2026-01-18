@@ -1,0 +1,127 @@
+.site-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.4s ease, transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    overflow: visible;
+    /* Required for search dropdown */
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.site-header.is-scrolled {
+    background-color: rgba(255, 255, 255, 0.98);
+    /* Optimized: removed backdrop-filter to eliminate scroll jitter */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* --- Top Row (Nav) --- */
+.header-top {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+/* 1. Logo */
+.logo-section {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    /* margin-right: auto; REMOVED: Stop pushing everything right */
+}
+
+.logo-img {
+    height: 28px;
+    width: auto;
+    display: block;
+    /* Color: #1B3AEC */
+    filter: brightness(0) saturate(100%) invert(18%) sepia(85%) saturate(4649%) hue-rotate(238deg) brightness(89%) contrast(104%);
+}
+
+/* 2. Actions (Icons) */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    /* Push icons to the far right */
+    position: relative;
+    /* Anchor for expanding search */
+}
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    /* Larger touch target */
+    height: 44px;
+    border-radius: 50%;
+    color: var(--color-text-primary);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: transparent;
+    /* Clean start */
+}
+
+/* Hover Effect - Prominent */
+.icon-btn:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+    /* Subtle pop */
+}
+
+
+/* --- Desktop Breakpoint --- */
+@media (min-width: 768px) {
+    .header-top {
+        flex-wrap: nowrap;
+        /* Single row */
+        height: 72px;
+        /* Fixed height desktop */
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Mobile Responsive: Adjust actions on small screens */
+@media (max-width: 768px) {
+    .header-actions {
+        gap: 8px;
+    }
+}
+
+.cart-btn {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: var(--brand);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #fff;
+}

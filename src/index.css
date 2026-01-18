@@ -1,0 +1,310 @@
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Colors */
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-text-primary: #111111;
+  --color-text-secondary: #666666;
+  --color-border: #e5e5e5;
+  /* Lighter border */
+  --color-accent: #000000;
+  --color-brand-primary: #1B3AEC;
+  --color-brand-primary-hover: #152dbb;
+  --color-brand-tint: rgba(27, 58, 236, 0.08);
+  --color-brand-tint-strong: rgba(27, 58, 236, 0.12);
+  /* Slightly darker */
+
+  /* Typography */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.25rem;
+  --fs-2xl: 1.5rem;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* Spacing - Rebalance */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  /* Increased for vertical rhythm */
+  --spacing-2xl: 48px;
+
+  /* Grid - Pinterest style is tighter/consistent */
+  --grid-gap: 16px;
+
+  /* Radius - Soft but not exaggerated */
+  --radius-sm: 6px;
+  --radius-md: 16px;
+  /* Reduced from 24px */
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows - Lightened for performance */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.04);
+  --shadow-overlay: 0 12px 32px rgba(0, 0, 0, 0.08);
+
+  /* Transitions */
+  --ease-hover: cubic-bezier(0.2, 0.0, 0.2, 1);
+
+  --container-padding: 40px;
+  /* Aligned with Hero Card padding for premium look */
+}
+
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 16px;
+    /* Mobile spec: 16px padding */
+    --container-padding: 24px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Home Page Background Gradient - Continuous Surface (Slightly darker for depth) */
+.ehome-page {
+  background: linear-gradient(180deg, #E2E5EB 0%, var(--color-bg) 40%, var(--color-bg) 100%);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Layout Containers */
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+/* Grid Section (Grey background) */
+.grid-section {
+  background: linear-gradient(180deg, #E9EBF0 0%, var(--color-bg) 40%, var(--color-bg) 100%);
+  padding-top: 24px;
+  padding-bottom: 24px;
+  /* Reduced to match rhythm */
+  min-height: 400px;
+}
+
+.ehome-page .grid-section {
+  background: transparent;
+  /* Remove seam for continuous gradient */
+}
+
+/* Collapsible Intro Section - Ultra-smooth Grid Hack */
+.ehome-intro-collapsible {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s ease;
+}
+
+.ehome-intro-collapsible.collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ehome-intro-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ehome-intro-collapsible {
+    transition: none;
+  }
+}
+
+/* Intro Toggle Controls */
+.ehome-intro-toggle-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Center the action */
+  margin-top: 12px;
+  /* Positive margin to avoid clipping */
+  margin-bottom: 0;
+  /* Let grid-section padding-top handle the 24px gap */
+  z-index: 10;
+}
+
+.ehome-divider {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.05) 85%, transparent);
+}
+
+.ehome-intro-toggle {
+  position: relative;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 99px;
+  width: 40px;
+  /* Circle */
+  height: 40px;
+  /* Circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1E293B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.ehome-intro-toggle:hover {
+  color: #1B3AEC;
+  border-color: rgba(27, 58, 236, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.ehome-intro-toggle span {
+  white-space: nowrap;
+}
+
+.filters-wrapper {
+  margin-bottom: 24px;
+}
+
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-results-count {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Specific Grid for Event Folders (Home Page) - Fixed 4 Columns */
+.events-folders-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .events-folders-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .events-folders-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .events-folders-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Filter Reset Button */
+.filter-reset-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.filter-reset-btn:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  color: #111;
+  border-color: #ccc;
+  transform: rotate(-30deg);
+}
+
+.filter-reset-btn:active:not(:disabled) {
+  transform: rotate(-180deg);
+}
+
+.filter-reset-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background-color: #fff;
+  border-color: #e0e0e0;
+  color: #ccc;
+}

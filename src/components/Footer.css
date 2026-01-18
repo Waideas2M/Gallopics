@@ -1,0 +1,224 @@
+/* Full Footer (Dark Grey) */
+.footer-full {
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 48px 0 0;
+    /* Reduced top padding */
+    margin-top: 24px;
+    /* Reduced to match vertical set-of-boxes rhythm */
+}
+
+.footer-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Vertical center alignment */
+    flex-wrap: wrap;
+    gap: 40px;
+    padding-bottom: 48px;
+    /* Reduced bottom padding */
+}
+
+/* Left: Brand */
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 320px;
+    justify-content: center;
+    /* Enhance centering */
+}
+
+.footer-logo-img {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.4;
+    margin-bottom: 0;
+    /* Remove bottom margin for pure centering */
+    align-self: flex-start;
+}
+
+.tagline-text-block {
+    display: none;
+    /* Hide tagline text as per previous removal request, ensuring cleanup */
+}
+
+.tagline-title {
+    display: none;
+}
+
+/* Right: Actions Module */
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.btn-footer-cta {
+    background: #fff;
+    border: 1px solid #fff;
+    color: #000;
+    padding: 10px 24px;
+    border-radius: 99px;
+    /* Fully rounded to match hero style */
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.btn-footer-cta:hover {
+    background: #e5e5e5;
+    border-color: #e5e5e5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.15);
+}
+
+/* Compact Nav Row */
+.footer-nav-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #666;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-link {
+    color: #999;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+    color: #fff;
+}
+
+.nav-dot {
+    font-size: 0.5rem;
+    color: #444;
+}
+
+.nav-separator {
+    color: #333;
+    font-weight: 300;
+    margin: 0 4px;
+}
+
+.footer-socials-inline {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.footer-socials-inline a {
+    color: #888;
+    transition: all 0.2s ease;
+    display: flex;
+}
+
+.footer-socials-inline a:hover {
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Copyright Bar */
+.copyright-bar {
+    background-color: transparent;
+    padding: 24px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.footer-full+.copyright-bar {
+    background-color: #111;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    /* Subtle separator */
+    color: #666;
+}
+
+.footer-full+.copyright-bar .copyright-content {
+    font-size: 0.8125rem;
+    /* Increased for better legibility */
+}
+
+/* Ensure copyright bar text matches background */
+.footer-full+.copyright-bar .copyright-text {
+    color: #888;
+}
+
+.footer-full+.copyright-bar .copyright-link {
+    color: #aaa;
+    /* Brighter than text to look like a link */
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.footer-full+.copyright-bar .copyright-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.copyright-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 0.8125rem;
+    /* Standardized size */
+}
+
+.copyright-text {
+    color: var(--color-text-secondary);
+}
+
+.copyright-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.copyright-link:hover {
+    color: #1B3AEC;
+    /* Brand blue on light theme */
+    text-decoration: underline;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .footer-grid {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+    }
+
+    .footer-right,
+    .footer-nav-row,
+    .nav-links {
+        align-items: flex-start;
+        width: 100%;
+        flex-wrap: wrap;
+        /* Allow wrapping on small screens */
+    }
+
+    .footer-nav-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nav-separator {
+        display: none;
+        /* Hide separator on mobile stack */
+    }
+}

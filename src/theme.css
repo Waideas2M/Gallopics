@@ -1,0 +1,24 @@
+:root {
+    /* Brand Core */
+    --brand: #1B3AEC;
+    --brand-hover: #152dbb;
+
+    /* Brand Tints */
+    --brand-tint-hover: rgba(27, 58, 236, 0.08);
+    /* 0.06 - 0.10 */
+    --brand-tint-active: rgba(27, 58, 236, 0.12);
+    /* 0.10 - 0.16 */
+
+    /* Brand Borders */
+    --brand-border-hover: rgba(27, 58, 236, 0.30);
+    /* 0.25 - 0.35 */
+    --brand-border-focus: #1B3AEC;
+    /* Solid brand color */
+    --brand-ring-focus: rgba(27, 58, 236, 0.12);
+    /* Focus ring */
+
+    /* Badges */
+    --brand-badge-bg: rgba(27, 58, 236, 0.12);
+    /* 0.10 - 0.14 */
+    --brand-badge-text: #1B3AEC;
+}

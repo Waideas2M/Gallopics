@@ -1,0 +1,181 @@
+/* Folder Card Container */
+.folder-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    /* To allow tab to stick out */
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 16px;
+    /* Space for the tab */
+}
+
+/* The "Inner" body - Single Source of Rounding */
+.folder-inner {
+    background-color: #fff;
+    border-radius: 0 16px 16px 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 12px;
+    transform: translate3d(0, 0, 0);
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: -webkit-radial-gradient(white, black);
+}
+
+/* The "Tab" visual */
+.folder-card::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    /* Height of tab */
+    left: 0;
+    width: 120px;
+    /* Tab width */
+    height: 12.5px;
+    /* Tiny overlap to prevent gap */
+    background-color: var(--brand-badge-bg);
+    /* Brand tint accent */
+    border-radius: 12px 12px 0 0;
+    /* Rounded top */
+    border: 1px solid rgba(27, 58, 236, 0.15);
+    border-bottom: none;
+    z-index: 0;
+}
+
+/* Hover Lift */
+.folder-card:hover {
+    transform: translate3d(0, -4px, 0);
+}
+
+.folder-card:hover .folder-inner {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Cover Image Wrapper: No rounding, inherited clipping */
+.folder-cover {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+    /* Nested radius adjustment for optical balance */
+}
+
+.folder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.folder-card:hover .folder-img {
+    transform: scale3d(1.05, 1.05, 1);
+    /* Subtle zoom */
+}
+
+/* Info Panel (Title, Date, Logo) */
+.folder-info {
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Header Block (Avatar + Text) */
+.folder-header-block {
+    display: flex;
+    align-items: center;
+    /* Center Vertically if user wants, or flex-start */
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.folder-event-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f9f9f9;
+    flex-shrink: 0;
+    border: 1px solid #eee;
+}
+
+.folder-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.folder-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111;
+    line-height: 1.25;
+}
+
+/* Metadata */
+.folder-period {
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0;
+    display: block;
+}
+
+/* Bottom Row: Flag, City, Photo Count, Photographer */
+.folder-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+    margin-top: 8px;
+    /* Reduced to simple spacing */
+}
+
+.folder-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Right side stats cluster */
+.folder-stats-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.folder-photo-count {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.folder-photographer-avatar {
+    width: 28px;
+    /* Slightly bigger (was 24px) */
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Desktop Hover Only */
+@media (min-width: 768px) {
+    /* Hover effects applied via .folder-card:hover above */
+}
+
+@media (max-width: 768px) {
+    .folder-card:hover {
+        transform: none;
+        /* No lift on mobile */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+}

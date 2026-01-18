@@ -1,0 +1,52 @@
+.filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* FilterBar is currently empty - removed text. Collapsing padding to avoid random gap. */
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 0;
+    /* Effectively hide it visually but keep component structure if needed later */
+    overflow: hidden;
+}
+
+.filter-status {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.filter-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+    transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+    border-color: var(--color-text-secondary);
+}
+
+.icon-btn-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--color-text-secondary);
+}
+
+.icon-btn-small:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
