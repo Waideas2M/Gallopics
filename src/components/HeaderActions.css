@@ -1,0 +1,96 @@
+/* Header Actions & Share Button */
+
+.header-action-cluster {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-action-separator {
+    width: 1px;
+    height: 24px;
+    background-color: var(--color-border, #e5e5e5);
+    margin: 0 4px;
+}
+
+.header-action-share-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 
+   Share Icon Button 
+   Matches .pg-btn .pg-btn-secondary + circular overrides 
+*/
+.share-icon-btn {
+    /* Base Button Styles */
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    /* Variant: Secondary */
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    color: #333333;
+
+    /* Shape: Circular Icon */
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-icon-btn:hover {
+    background: #f9f9f9;
+    border-color: #dcdcdc;
+    transform: translateY(-1px);
+    /* Match commonly used hover effect if present, or remove if strictly matching pg-btn which doesn't seem to have transform in CSS I saw, but global btn does? */
+    /* pg-btn in EventsList.css didn't have transform. Global .btn-primary does. 
+       The user said "hover/focus ring" in prompt? No, in scope: "hover/focus ring".
+       "hover/focus ring" usually implies outline or shadow.
+       I'll stick to pg-btn-secondary hover styles: bg #f9f9f9, border #dcdcdc.
+       I will add valid focus state.
+    */
+    color: #111;
+}
+
+.share-icon-btn:active {
+    transform: scale(0.96);
+}
+
+.share-icon-btn:focus-visible {
+    outline: 2px solid var(--color-brand-primary, #1B3AEC);
+    outline-offset: 2px;
+}
+
+/* Start Toast Styles */
+.header-action-toast {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background-color: #111;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-action-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(12px);
+}

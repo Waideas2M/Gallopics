@@ -2,7 +2,7 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Colors */
-  --color-bg: #fafafa;
+  --color-bg: #F9FAFB;
   --color-surface: #ffffff;
   --color-text-primary: #111111;
   --color-text-secondary: #666666;
@@ -128,7 +128,7 @@ a {
 
 /* Grid Section (Grey background) */
 .grid-section {
-  background: linear-gradient(180deg, #E9EBF0 0%, var(--color-bg) 40%, var(--color-bg) 100%);
+  background: transparent;
   padding-top: 24px;
   padding-bottom: 24px;
   /* Reduced to match rhythm */
@@ -307,4 +307,55 @@ a {
   background-color: #fff;
   border-color: #e0e0e0;
   color: #ccc;
+}
+
+/* Global Button Classes */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-primary);
+  color: #fff;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-hover);
+  white-space: nowrap;
+  gap: 12px;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-brand-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-hover);
+  white-space: nowrap;
+  gap: 12px;
+}
+
+.btn-outline:hover {
+  background-color: rgba(0, 0, 0, 0.04);
 }

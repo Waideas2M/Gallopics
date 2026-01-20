@@ -25,52 +25,52 @@ const EVENT_ASSETS: Record<string, { cover: string; logo: string; count: number 
     c1: {
         cover: '/images/Abdel_Said_Arpege_du_RU5978.jpg',
         logo: '/images/Sweden International Horse Show.jpg',
-        count: 145
+        count: 820
     },
     c2: {
         cover: '/images/Alice_Nilsson_Eunomia8286.jpg',
         logo: '/images/Gothenburg Indoor Masters.jpg',
-        count: 192
+        count: 745
     },
     c3: {
         cover: '/images/Falsterbo7800.jpg',
         logo: '/images/Falsterbo Summer Classic.jpg',
-        count: 168
+        count: 920
     },
     c4: {
         cover: '/images/Peder_Fredricson_Alcapone_des_Carmille8136.jpg',
         logo: '/images/Strömsholm Spring Dressage.jpg',
-        count: 156
+        count: 550
     },
     c5: {
         cover: '/images/Anna_Svanberg_Vidar9116.jpg',
         logo: '/images/Uppsala Arena Cup.jpg',
-        count: 130
+        count: 480
     },
     c6: {
         cover: '/images/Fredrik_Spetz_Galactee_de_Tivoli8292.jpg',
         logo: '/images/Malmö City Jumping.jpg',
-        count: 120
+        count: 620
     },
     c7: {
         cover: '/images/Alma_Nilsson_Sall_Kilimanjaro_WV7865.jpg',
         logo: '/images/Linköping Eventing Weekend.jpg',
-        count: 175
+        count: 410
     },
     c8: {
         cover: '/images/Felicia_Hultberg_Bollerup_Chiquelle8407.jpg',
         logo: '/images/Örebro Autumn Cup.jpg',
-        count: 90
+        count: 380
     },
     c9: {
         cover: '/images/Amanda_Landeblad_Joelina6763.jpg',
         logo: '/images/Umeå Northern Lights Dressage.jpg',
-        count: 180
+        count: 590
     },
     c10: {
         cover: '/images/Carl-Walter_Fox_Eka_First_Navy_Jack8998.jpg',
         logo: '/images/Jönköping Lake District Classic.jpg',
-        count: 110
+        count: 420
     },
 };
 

@@ -1,0 +1,129 @@
+/* ScopedSearchBar.css */
+/* Reuses and overrides styles from ModernSearchBar.css to handle scoped styling */
+/* IMPORTANT: Relies on ModernSearchBar.css being loaded globally or handled via CSS modules patterns, 
+   but here we duplicate/adapt essential structural styles since we need a standalone look-alike component without the global search logic. */
+
+.scoped-search-wrapper {
+    position: relative;
+    flex: 1;
+    /* Allow it to grow in the flex container */
+    min-width: 200px;
+    /* Ensure readability */
+    height: 40px;
+    /* Match standard dropdown/input height to 40px */
+    z-index: 10;
+}
+
+.scoped-search-bar {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #e0e0e0;
+    /* Match ModernDropdown border */
+    border-radius: 20px;
+    /* Match ModernDropdown radius */
+    padding: 0 16px;
+    /* Match ModernDropdown padding */
+    height: 40px;
+    /* Match ModernDropdown height */
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* Match ModernDropdown shadow */
+}
+
+.scoped-search-bar:focus-within {
+    background: #FFFFFF;
+    border-color: #1B3AEC;
+    /* Brand focus color */
+    box-shadow: 0 0 0 4px rgba(27, 58, 236, 0.12);
+    /* Brand focus ring */
+}
+
+.scoped-search-icon {
+    color: #666666;
+    /* Light theme icon color */
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.scoped-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    color: #111111;
+    font-weight: 400;
+    outline: none;
+    min-width: 0;
+    height: 100%;
+}
+
+.scoped-search-input::placeholder {
+    color: #888888;
+}
+
+.scoped-clear-btn {
+    background: rgba(0, 0, 0, 0.05);
+    /* Light theme clear btn */
+    border-radius: 50%;
+    border: none;
+    color: #666666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.scoped-clear-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #111111;
+}
+
+/* Dropdown */
+.scoped-results-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 8px 0;
+    /* Vertical padding */
+    z-index: 100;
+    max-height: 240px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.scoped-search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.scoped-search-result-item:hover {
+    background-color: rgba(27, 58, 236, 0.04);
+    /* Subtle brand tint on hover */
+}
+
+.scoped-result-text {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.scoped-no-results {
+    padding: 16px;
+    text-align: center;
+    color: #888;
+    font-size: 0.9rem;
+}

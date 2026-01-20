@@ -35,7 +35,7 @@ export const eventDetails: EventDetail[] = COMPETITIONS.map((comp) => {
         period: { startDate: comp.date, endDate: comp.endDate },
         disciplines: [discipline],
         timezone: "Europe/Stockholm",
-        photoCount: randomInt(40, 200), // Max 200 photos for smoother mockup performance
+        photoCount: randomInt(350, 850), // Reflect larger photo pool
         coverImage: coverImage,
         logo: enriched?.logo || '',
         photographer: enriched?.photographer

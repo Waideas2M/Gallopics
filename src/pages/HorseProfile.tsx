@@ -12,7 +12,9 @@ import { PhotoCard } from '../components/PhotoCard';
 import { ModernDropdown } from '../components/ModernDropdown';
 import { InfoChip } from '../components/InfoChip';
 import { photos as mockPhotos, HORSES, RIDERS, COMPETITIONS } from '../data/mockData';
+import { RiderIcon } from '../components/icons/RiderIcon';
 
+import { ShareIconButton, ActionSeparator, ActionCluster } from '../components/HeaderActions';
 import { useCart } from '../context/CartContext';
 import './ImageProfile.css'; // Toast styles
 
@@ -41,10 +43,6 @@ export function HorseProfile() {
         return HORSES.find(h => h.id === horseId) || HORSES[0];
     }, [horseId]);
 
-    // Horse avatar - placeholder or if we have horse images
-    // For now use a generic or name based path
-    const horseAvatar = `/images/${activeHorse.name}.jpg`; // Will likely fallback to placeholder if not found
-
     // Breadcrumb path construction
     const breadcrumbs = useMemo<BreadcrumbItem[]>(() => {
         const items: BreadcrumbItem[] = [];
@@ -59,9 +57,8 @@ export function HorseProfile() {
         return items;
     }, [navigate, activeHorse, from, photoId]);
 
-    // Filter states - Order: Events, Discipline, Class, Riders, Photographer
-    const [selectedEventId, setSelectedEventId] = useState<string>('all');
-    const [discipline, setDiscipline] = useState('All');
+    // Filter states - Order: Events, Class, Riders, Photographer
+    const [selectedEventId, setSelectedEventId] = useState<string>('');
     const [eventClass, setEventClass] = useState('All');
     const [rider, setRider] = useState('All');
     const [photographer, setPhotographer] = useState('All');
@@ -77,20 +74,31 @@ export function HorseProfile() {
         return () => clearTimeout(timer);
     }, [activeHorse]);
 
-    const isResetDisabled = selectedEventId === 'all' && discipline === 'All' && eventClass === 'All' && rider === 'All' && photographer === 'All';
+    // Compute latest event once photos are loaded
+    useEffect(() => {
+        if (photos.length > 0 && !selectedEventId) {
+            const uniqueIds = Array.from(new Set(photos.map(p => p.eventId)));
+            const relevantEvents = COMPETITIONS.filter(c => uniqueIds.includes(c.id));
+            if (relevantEvents.length > 0) {
+                relevantEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                setSelectedEventId(relevantEvents[0].id);
+            }
+        }
+    }, [photos, selectedEventId]);
+
+    const isResetDisabled = !selectedEventId && eventClass === 'All' && rider === 'All' && photographer === 'All';
 
     // Filters Inter-dependency
     const filteredPhotos = useMemo(() => {
         return photos.filter(photo => {
-            const matchEvent = selectedEventId === 'all' || photo.eventId === selectedEventId;
-            const matchDiscipline = discipline === 'All' || photo.discipline === discipline;
+            const matchEvent = !selectedEventId || photo.eventId === selectedEventId;
             const matchRider = rider === 'All' || photo.rider === rider;
             const matchClass = eventClass === 'All' || ((photo as any).class || '1.30m') === eventClass;
             const matchPhotographer = photographer === 'All' || ((photo as any).photographer || 'Unknown') === photographer;
 
-            return matchEvent && matchDiscipline && matchRider && matchClass && matchPhotographer;
+            return matchEvent && matchRider && matchClass && matchPhotographer;
         });
-    }, [photos, selectedEventId, discipline, rider, eventClass, photographer]);
+    }, [photos, selectedEventId, rider, eventClass, photographer]);
 
     // Helpers for dynamic options
     const getAvailable = (scopingFilter: (p: Photo) => boolean) => photos.filter(scopingFilter);
@@ -98,25 +106,15 @@ export function HorseProfile() {
     // 1. Events
     const eventOptions = useMemo(() => {
         const available = getAvailable(p =>
-            (discipline === 'All' || p.discipline === discipline) &&
             (rider === 'All' || p.rider === rider) &&
             (eventClass === 'All' || ((p as any).class || '1.30m') === eventClass) &&
             (photographer === 'All' || ((p as any).photographer || 'Unknown') === photographer)
         );
         const uniqueIds = Array.from(new Set(available.map(p => p.eventId)));
         const relevantEvents = COMPETITIONS.filter(c => uniqueIds.includes(c.id));
-        return [{ label: 'All Events', value: 'all' }, ...relevantEvents.map(e => ({ label: e.name, value: e.id }))];
-    }, [photos, discipline, rider, eventClass, photographer]);
-
-    // 2. Discipline
-    const disciplineOptions = useMemo(() => {
-        const available = getAvailable(p =>
-            (selectedEventId === 'all' || p.eventId === selectedEventId) &&
-            (rider === 'All' || p.rider === rider)
-        );
-        const unique = Array.from(new Set(available.map(p => p.discipline).filter(Boolean))).sort();
-        return [{ label: 'All Disciplines', value: 'All' }, ...unique.map(d => ({ label: d as string, value: d as string }))];
-    }, [photos, selectedEventId, rider]);
+        // Remove All Events option
+        return relevantEvents.map(e => ({ label: e.name, value: e.id }));
+    }, [photos, rider, eventClass, photographer]);
 
     // 3. Class
     const classOptions = [
@@ -128,17 +126,16 @@ export function HorseProfile() {
     // 4. Riders
     const riderOptions = useMemo(() => {
         const available = getAvailable(p =>
-            (selectedEventId === 'all' || p.eventId === selectedEventId) &&
-            (discipline === 'All' || p.discipline === discipline)
+            (!selectedEventId || p.eventId === selectedEventId)
         );
         const unique = Array.from(new Set(available.map(p => p.rider))).sort();
         return [{ label: 'All Riders', value: 'All' }, ...unique.map(r => ({ label: r, value: r }))];
-    }, [photos, selectedEventId, discipline]);
+    }, [photos, selectedEventId]);
 
     // 5. Photographer
     const photographerOptions = useMemo(() => {
         const available = getAvailable(p =>
-            (selectedEventId === 'all' || p.eventId === selectedEventId)
+            (!selectedEventId || p.eventId === selectedEventId)
         );
         const unique = Array.from(new Set(available.map(p => p.photographer).filter(Boolean))).sort();
         return [{ label: 'All Photographers', value: 'All' }, ...unique.map(ph => ({ label: ph as string, value: ph as string }))];
@@ -156,7 +153,7 @@ export function HorseProfile() {
 
             <TitleHeader
                 title={activeHorse.name}
-                avatar={horseAvatar}
+                avatarVariant="horse"
                 subtitle="Horse"
                 stats={
                     <div className="event-stats-row">
@@ -166,28 +163,34 @@ export function HorseProfile() {
                     </div>
                 }
                 rightContent={
-                    (() => {
-                        // Find primary rider
-                        if (photos.length === 0) return null;
-                        const riderCounts: { [key: string]: number } = {};
-                        photos.forEach(p => {
-                            riderCounts[p.rider] = (riderCounts[p.rider] || 0) + 1;
-                        });
-                        const topRiderName = Object.keys(riderCounts).reduce((a, b) => riderCounts[a] > riderCounts[b] ? a : b);
-                        const topRider = RIDERS.find(r => `${r.firstName} ${r.lastName}` === topRiderName);
+                    <ActionCluster>
+                        {(() => {
+                            // Find primary rider
+                            if (photos.length === 0) return null;
+                            const riderCounts: { [key: string]: number } = {};
+                            photos.forEach(p => {
+                                riderCounts[p.rider] = (riderCounts[p.rider] || 0) + 1;
+                            });
+                            const topRiderName = Object.keys(riderCounts).reduce((a, b) => riderCounts[a] > riderCounts[b] ? a : b);
+                            const topRider = RIDERS.find(r => `${r.firstName} ${r.lastName}` === topRiderName);
 
-                        if (!topRider) return null;
+                            if (!topRider) return null;
 
-                        return (
-                            <InfoChip
-                                label="Primary Rider"
-                                name={`${topRider.firstName} ${topRider.lastName}`}
-                                avatarUrl={`/images/${topRider.firstName} ${topRider.lastName}.jpg`}
-                                fallbackIcon="user"
-                                onClick={() => navigate(`/rider/${topRider.id}?from=horse&horseId=${horseId}`)}
-                            />
-                        );
-                    })()
+                            return (
+                                <>
+                                    <InfoChip
+                                        label="Rider"
+                                        name={`${topRider.firstName} ${topRider.lastName}`}
+                                        variant="rider"
+                                        icon={<RiderIcon size={20} />}
+                                        onClick={() => navigate(`/rider/${topRider.id}?from=horse&horseId=${horseId}`)}
+                                    />
+                                    <ActionSeparator />
+                                </>
+                            );
+                        })()}
+                        <ShareIconButton />
+                    </ActionCluster>
                 }
             />
 
@@ -203,13 +206,7 @@ export function HorseProfile() {
                                     label="Events"
                                     placeholder="Events"
                                     showSearch={true}
-                                />
-                                <ModernDropdown
-                                    value={discipline}
-                                    options={disciplineOptions}
-                                    onChange={setDiscipline}
-                                    label="Discipline"
-                                    placeholder="Discipline"
+                                    variant="pill"
                                 />
                                 <ModernDropdown
                                     value={eventClass}
@@ -217,6 +214,7 @@ export function HorseProfile() {
                                     onChange={setEventClass}
                                     label="Class"
                                     placeholder="Class"
+                                    variant="pill"
                                 />
                                 <ModernDropdown
                                     value={rider}
@@ -225,6 +223,7 @@ export function HorseProfile() {
                                     label="Riders"
                                     placeholder="Riders"
                                     showSearch={true}
+                                    variant="pill"
                                 />
                                 <ModernDropdown
                                     value={photographer}
@@ -232,12 +231,18 @@ export function HorseProfile() {
                                     onChange={setPhotographer}
                                     label="Photographer"
                                     placeholder="Photographer"
+                                    variant="pill"
                                 />
                                 <button
                                     className="filter-reset-btn"
                                     onClick={() => {
-                                        setSelectedEventId('all');
-                                        setDiscipline('All');
+                                        // Auto-reset to latest
+                                        const uniqueIds = Array.from(new Set(photos.map(p => p.eventId)));
+                                        const relevantEvents = COMPETITIONS.filter(c => uniqueIds.includes(c.id));
+                                        if (relevantEvents.length > 0) {
+                                            relevantEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                                            setSelectedEventId(relevantEvents[0].id);
+                                        }
                                         setEventClass('All');
                                         setRider('All');
                                         setPhotographer('All');
@@ -279,7 +284,7 @@ export function HorseProfile() {
                                         setToast({ message: 'Already in cart' });
                                         return;
                                     }
-                                    addToCart(p, 'high', 'High Resolution', 999);
+                                    addToCart(p, 'high', 'High Quality', 999);
                                     setToast({ message: 'Added to cart' });
                                 }}
                             />

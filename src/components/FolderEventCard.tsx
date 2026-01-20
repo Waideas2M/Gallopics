@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import type { EventData } from '../data/mockEvents';
+
 import './FolderEventCard.css';
 
 interface FolderEventCardProps {
@@ -14,7 +15,12 @@ export const FolderEventCard: React.FC<FolderEventCardProps> = ({ event, onClick
             <div className="folder-inner">
                 {/* Cover Area inside padding */}
                 <div className="folder-cover">
-                    <img src={event.coverImage} alt={event.name} className="folder-img" loading="lazy" />
+                    <img
+                        src={event.coverImage}
+                        alt={event.name}
+                        className="folder-img"
+                        loading="lazy"
+                    />
                 </div>
 
                 {/* Info Panel */}

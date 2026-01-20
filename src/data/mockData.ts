@@ -16,16 +16,16 @@ export const RIDERS = [
 ];
 
 export const PHOTOGRAPHERS = [
-    { "id": "p1", "firstName": "Hanna", "lastName": "Björk", "gender": "F", "countryCode": "SE", "primaryEventId": "c1" },
-    { "id": "p2", "firstName": "Klara", "lastName": "Fors", "gender": "F", "countryCode": "SE", "primaryEventId": "c2" },
-    { "id": "p3", "firstName": "Ida", "lastName": "Holmgren", "gender": "F", "countryCode": "SE", "primaryEventId": "c3" },
-    { "id": "p4", "firstName": "Tove", "lastName": "Lund", "gender": "F", "countryCode": "SE", "primaryEventId": "c4" },
-    { "id": "p5", "firstName": "Sara", "lastName": "Engström", "gender": "F", "countryCode": "SE", "primaryEventId": "c5" },
-    { "id": "p6", "firstName": "Johan", "lastName": "Lindahl", "gender": "M", "countryCode": "SE", "primaryEventId": "c6" },
-    { "id": "p7", "firstName": "Erik", "lastName": "Nyberg", "gender": "M", "countryCode": "SE", "primaryEventId": "c7" },
-    { "id": "p8", "firstName": "Mattias", "lastName": "Berg", "gender": "M", "countryCode": "SE", "primaryEventId": "c8" },
-    { "id": "p9", "firstName": "Daniel", "lastName": "Söder", "gender": "M", "countryCode": "SE", "primaryEventId": "c9" },
-    { "id": "p10", "firstName": "Per", "lastName": "Hedman", "gender": "M", "countryCode": "SE", "primaryEventId": "c10" }
+    { "id": "hanna-bjork", "firstName": "Hanna", "lastName": "Björk", "gender": "F", "countryCode": "SE", "primaryEventId": "c1", highlights: [] as string[], city: "Stockholm", isAvailableToHire: true },
+    { "id": "klara-fors", "firstName": "Klara", "lastName": "Fors", "gender": "F", "countryCode": "SE", "primaryEventId": "c2", highlights: [] as string[], city: "Göteborg", isAvailableToHire: false },
+    { "id": "ida-holmgren", "firstName": "Ida", "lastName": "Holmgren", "gender": "F", "countryCode": "SE", "primaryEventId": "c3", highlights: [] as string[], city: "Malmö", isAvailableToHire: true },
+    { "id": "tove-lund", "firstName": "Tove", "lastName": "Lund", "gender": "F", "countryCode": "SE", "primaryEventId": "c4", highlights: [] as string[], city: "Uppsala", isAvailableToHire: true },
+    { "id": "sara-engstrom", "firstName": "Sara", "lastName": "Engström", "gender": "F", "countryCode": "SE", "primaryEventId": "c5", highlights: [] as string[], city: "Västerås", isAvailableToHire: false },
+    { "id": "johan-lindahl", "firstName": "Johan", "lastName": "Lindahl", "gender": "M", "countryCode": "SE", "primaryEventId": "c6", highlights: [] as string[], city: "Örebro", isAvailableToHire: true },
+    { "id": "erik-nyberg", "firstName": "Erik", "lastName": "Nyberg", "gender": "M", "countryCode": "SE", "primaryEventId": "c7", highlights: [] as string[], city: "Linköping", isAvailableToHire: true },
+    { "id": "mattias-berg", "firstName": "Mattias", "lastName": "Berg", "gender": "M", "countryCode": "SE", "primaryEventId": "c8", highlights: [] as string[], city: "Helsingborg", isAvailableToHire: false },
+    { "id": "daniel-soder", "firstName": "Daniel", "lastName": "Söder", "gender": "M", "countryCode": "SE", "primaryEventId": "c9", highlights: [] as string[], city: "Jönköping", isAvailableToHire: true },
+    { "id": "per-hedman", "firstName": "Per", "lastName": "Hedman", "gender": "M", "countryCode": "SE", "primaryEventId": "c10", highlights: [] as string[], city: "Norrköping", isAvailableToHire: true }
 ];
 
 export const HORSES = [
@@ -83,8 +83,8 @@ export const HORSE_PRIMARY_RIDER = [
 
 // Mapping Rule derived from PrimaryEventId in Photographer
 const PHOTOGRAPHER_EVENT_MAP: Record<string, string> = {
-    "p1": "c1", "p2": "c2", "p3": "c3", "p4": "c4", "p5": "c5",
-    "p6": "c6", "p7": "c7", "p8": "c8", "p9": "c9", "p10": "c10"
+    "hanna-bjork": "c1", "klara-fors": "c2", "ida-holmgren": "c3", "tove-lund": "c4", "sara-engstrom": "c5",
+    "johan-lindahl": "c6", "erik-nyberg": "c7", "mattias-berg": "c8", "daniel-soder": "c9", "per-hedman": "c10"
 };
 
 const DUMMY_EVENTS = [
@@ -94,7 +94,7 @@ const DUMMY_EVENTS = [
 ];
 
 // Helper
-export const getActivePhotographerProfile = (photographerId: string = "p1") => {
+export const getActivePhotographerProfile = (photographerId: string = "hanna-bjork") => {
     const photographer = PHOTOGRAPHERS.find(p => p.id === photographerId) || PHOTOGRAPHERS[0];
     const compId = PHOTOGRAPHER_EVENT_MAP[photographer.id] || photographer.primaryEventId;
     const realCompetition = COMPETITIONS.find(c => c.id === compId) || COMPETITIONS[0];
@@ -154,38 +154,50 @@ const filenames = [
 const generateId = () => Math.random().toString(36).substr(2, 9);
 const pickRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
-// Generate Photos combining Real Assets + Random Mock Data
-export const photos: Photo[] = filenames.map((filename) => {
-    const rider = pickRandom(RIDERS);
+// Generate 1000 Photos to ensure density across all profiles/events
+export const photos: Photo[] = Array.from({ length: 1000 }).map((_, i) => {
+    const filename = filenames[i % filenames.length];
+
+    // Use modulo to ensure even distribution but mix it up slightly for variation
+    const riderIdx = i % RIDERS.length;
+    const compIdx = (i + Math.floor(i / RIDERS.length)) % COMPETITIONS.length;
+    const pgIdx = (i + Math.floor(i / COMPETITIONS.length)) % PHOTOGRAPHERS.length;
+
+    const rider = RIDERS[riderIdx];
     const horseMapping = RIDER_PRIMARY_HORSE.find(m => m.riderId === rider.id);
     const horse = HORSES.find(h => h.id === horseMapping?.primaryHorseId) || HORSES[0];
-    const comp = pickRandom(COMPETITIONS);
-    const pg = pickRandom(PHOTOGRAPHERS);
+    const comp = COMPETITIONS[compIdx];
+    const pg = PHOTOGRAPHERS[pgIdx];
 
-    // Assign a fixed aspect ratio for staggered grid simulation or random sizes
-    // Just a placeholder, assume standard or random
-    const width = pickRandom([600, 800, 400]);
+    const width = pickRandom([600, 800, 700]);
     const height = pickRandom([600, 800, 500, 900]);
 
     return {
-        id: generateId(),
-        src: `/images/${filename}`, // Corrected from 'image'
-        rider: rider.firstName + ' ' + rider.lastName, // Corrected from 'title'
-        horse: horse.name, // Corrected from 'subtitle'
+        id: `m-${i}-${generateId()}`,
+        src: `/images/${filename}`,
+        rider: rider.firstName + ' ' + rider.lastName,
+        horse: horse.name,
         event: comp.name,
         eventId: comp.id,
         date: comp.date,
-        width: width,   // Required by Photo interface
-        height: height, // Required by Photo interface
-
-        // Metadata required by Photo interface
+        width: width,
+        height: height,
         className: 'photo-grid-item',
-        time: '14:00', // Mock time
+        time: `${10 + (i % 8)}:00`, // Mix times
         city: comp.city,
         arena: `${comp.city} Arena`,
-        countryCode: 'se',
+        countryCode: comp.countryCode.toLowerCase(),
         discipline: comp.discipline,
         photographer: pg.firstName + ' ' + pg.lastName,
         photographerId: pg.id
     };
+});
+
+// --- POPULATE MOCK HIGHLIGHTS ---
+// Give highlights to all photographers
+PHOTOGRAPHERS.forEach((p) => {
+    // Pick 10-18 random photos for highlights
+    const count = 10 + Math.floor(Math.random() * 9);
+    const shuffled = [...photos].filter(photo => photo.photographerId === p.id).sort(() => 0.5 - Math.random());
+    p.highlights = shuffled.slice(0, count).map(ph => ph.id);
 });

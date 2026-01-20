@@ -14,16 +14,18 @@
 /* The "Inner" body - Single Source of Rounding */
 .folder-inner {
     background-color: #fff;
-    border-radius: 0 16px 16px 16px;
+    border-radius: 0 24px 24px 24px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    box-shadow:
+        0 8px 20px -4px rgba(0, 0, 0, 0.1),
+        0 4px 8px -2px rgba(0, 0, 0, 0.06);
+    /* Heavy, modern shadow */
     padding: 12px;
     transform: translate3d(0, 0, 0);
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
-    mask-image: -webkit-radial-gradient(white, black);
+    transition: border-color 0.6s ease-out;
 }
 
 /* The "Tab" visual */
@@ -39,11 +41,18 @@
     /* Tiny overlap to prevent gap */
     background-color: var(--brand-badge-bg);
     /* Brand tint accent */
-    border-radius: 12px 12px 0 0;
-    /* Rounded top */
+    border-radius: 24px 56px 0 0;
+    /* Asymmetric: Sharp Left, Sloped Right */
     border: 1px solid rgba(27, 58, 236, 0.15);
     border-bottom: none;
     z-index: 0;
+    transition: background-color 0.6s ease-out, border-color 0.6s ease-out;
+}
+
+.folder-card:hover::before {
+    background-color: #1B3AEC;
+    /* Brand Color */
+    border-color: #1B3AEC;
 }
 
 /* Hover Lift */
@@ -52,7 +61,8 @@
 }
 
 .folder-card:hover .folder-inner {
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.18);
+    border-color: rgba(27, 58, 236, 0.5);
 }
 
 /* Cover Image Wrapper: No rounding, inherited clipping */

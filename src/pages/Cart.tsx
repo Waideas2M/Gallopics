@@ -34,7 +34,7 @@ export function Cart() {
         if (exists) {
             setToast({ message: 'Already in cart' });
         } else {
-            addToCart(photo, quality, 'High Resolution (2000 × 1333px)', 999);
+            addToCart(photo, quality, 'High Quality', 999);
             setToast({ message: 'Added to cart' });
         }
     };

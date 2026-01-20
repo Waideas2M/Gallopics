@@ -6,14 +6,14 @@
 .modern-search-wrapper {
     position: relative;
     /* Fixed width - not end to end */
-    width: 320px;
+    width: 420px;
     transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     z-index: 105;
 }
 
 /* Optional: Expand slightly on focus */
 .modern-search-wrapper:focus-within {
-    width: 420px;
+    width: 500px;
 }
 
 /* --- Search Bar --- */
@@ -58,10 +58,16 @@
     font-weight: 400;
     outline: none;
     min-width: 0;
+    transition: font-size 0.2s ease, font-weight 0.2s ease;
+}
+
+.search-input:not(:placeholder-shown) {
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .search-input::placeholder {
-    color: #888;
+    color: #AAA;
     font-weight: 400;
 }
 
@@ -75,8 +81,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     margin-left: 8px;
     transition: all 0.15s ease;
 }
@@ -85,6 +91,40 @@
     background: rgba(255, 255, 255, 0.3);
     color: #FFF;
 }
+
+/* Go Button */
+.search-go-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #1B3AEC;
+    /* Brand Blue */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    margin-left: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.search-go-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.search-go-btn:hover {
+    background-color: #152dbb;
+    transform: scale(1.05);
+}
+
+/* Hide Go Button in Collapsed State */
+.modern-search-wrapper.is-collapsible:not(.expanded) .search-go-btn {
+    display: none;
+}
+
 
 
 /* --- Results Panel --- */
@@ -182,8 +222,9 @@
 }
 
 .result-icon-box.type-rider {
-    color: #f48fb1;
-    background: rgba(244, 143, 177, 0.1);
+    color: #a78bfa;
+    /* Violet 400 */
+    background: rgba(167, 139, 250, 0.1);
 }
 
 .result-icon-box.type-horse {
@@ -299,7 +340,7 @@
 
 /* Expanded State */
 .modern-search-wrapper.is-collapsible.expanded .modern-search-bar {
-    width: 320px;
+    width: 480px;
     border-radius: 99px;
     background: #1A1A1A;
     padding: 0 16px !important;
@@ -427,8 +468,9 @@
 }
 
 .modern-search-wrapper.light-theme .result-icon-box.type-rider {
-    color: #C2185B;
-    background: rgba(194, 24, 91, 0.08);
+    color: #7c3aed;
+    /* Violet 600 */
+    background: rgba(124, 58, 237, 0.08);
 }
 
 .modern-search-wrapper.light-theme .result-icon-box.type-horse {

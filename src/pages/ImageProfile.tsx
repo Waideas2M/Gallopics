@@ -5,11 +5,13 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import type { BreadcrumbItem } from '../components/Breadcrumbs';
 import { Footer } from '../components/Footer';
 import { ModernDropdown } from '../components/ModernDropdown';
+import { InfoChip } from '../components/InfoChip';
 import { photos as mockPhotos, COMPETITIONS, PHOTOGRAPHERS, RIDERS, HORSES } from '../data/mockData';
-import { Share2, Camera, User, ChevronLeft, ChevronRight, ShoppingBag, Check, Zap } from 'lucide-react';
+import { Share2, ChevronLeft, ChevronRight, ShoppingBag, Check, Zap } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { CheckoutPanel } from '../components/CheckoutPanel';
 import './ImageProfile.css';
+import { WatermarkedPhotoPreview } from '../components/WatermarkedPhotoPreview';
 
 const getPrice = (quality: string) => {
     switch (quality) {
@@ -25,20 +27,21 @@ export function ImageProfile() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [selectedQuality, setSelectedQuality] = useState('high');
-    const { cart, addToCart } = useCart();
+    const { cart, addToCart, removeFromCartByPhotoId } = useCart();
     const [showCheckout, setShowCheckout] = useState(false);
-    const [isAdded, setIsAdded] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [toast, setToast] = useState<{ message: string; action?: { label: string; onClick: () => void } } | null>(null);
-
-    // Avatar error states
-    const [riderImgError, setRiderImgError] = useState(false);
-    const [horseImgError, setHorseImgError] = useState(false);
 
     const from = searchParams.get('from');
     const eventIdParam = searchParams.get('eventId');
 
-    const photo = useMemo(() => mockPhotos.find(p => p.id === id) || mockPhotos[0], [id]);
+    const photo = useMemo(() => mockPhotos.find(p => p.id === id) || mockPhotos[0], [id, mockPhotos]);
+    const [detectedPortrait, setDetectedPortrait] = useState<boolean>(photo.height > photo.width);
+
+    // Sync orientation when photo changes
+    useEffect(() => {
+        setDetectedPortrait(photo.height > photo.width);
+    }, [photo.id, photo.height, photo.width]);
 
     // Check if current selection is in cart
     const isInCart = useMemo(() => {
@@ -52,14 +55,8 @@ export function ImageProfile() {
         let recent: string[] = saved ? JSON.parse(saved) : [];
 
         // Move current to front, limit to 8
-        recent = [photo.id, ...recent.filter(id => id !== photo.id)].slice(0, 8);
+        recent = [photo.id, ...recent.filter(i => i !== photo.id)].slice(0, 8);
         localStorage.setItem('gallopics_recent', JSON.stringify(recent));
-    }, [photo.id]);
-
-    // Reset error states when photo changes
-    useEffect(() => {
-        setRiderImgError(false);
-        setHorseImgError(false);
     }, [photo.id]);
 
     // Auto-hide toast
@@ -99,49 +96,29 @@ export function ImageProfile() {
         return items;
     }, [from, eventIdParam, photo, navigate, showCheckout, isSuccess]);
 
-    // Quality Selector Options - Standardized 24MP DSLR Values
+    // Quality Selector Options
     const qualityOptions = useMemo(() => {
-        const isPortrait = photo.height > photo.width;
-
-        if (isPortrait) {
-            return [
-                {
-                    label: 'Web Quality (720 × 1080px)',
-                    value: 'web',
-                    subtext: 'Best for social media and screens'
-                },
-                {
-                    label: 'High Resolution (1333 × 2000px)',
-                    value: 'high',
-                    subtext: 'Best for printing and large formats'
-                },
-                {
-                    label: 'Original Quality (4000 × 6000px)',
-                    value: 'original',
-                    subtext: 'Full-size original download (best quality)'
-                }
-            ];
-        }
-
-        // Horizontal (Landscape)
         return [
             {
-                label: 'Web Quality (1080 × 720px)',
+                label: 'Web Quality',
                 value: 'web',
-                subtext: 'Best for social media and screens'
+                subtext: detectedPortrait ? 'Portrait: 720×1080' : 'Landscape: 1080×720',
+                description: 'Suitable for social media posts.'
             },
             {
-                label: 'High Resolution (2000 × 1333px)',
+                label: 'High Quality',
                 value: 'high',
-                subtext: 'Best for printing and large formats'
+                subtext: detectedPortrait ? 'Portrait: 4000×6000' : 'Landscape: 6000×4000',
+                description: 'Suitable for printing photo frames.'
             },
             {
-                label: 'Original Quality (6000 × 4000px)',
+                label: 'Original Quality',
                 value: 'original',
-                subtext: 'Full-size original download (best quality)'
+                subtext: 'Uncompressed Original Files',
+                description: 'Maximum resolution for professional use.'
             }
         ];
-    }, [photo]);
+    }, [detectedPortrait]);
 
     return (
         <div className="page-wrapper image-profile-page">
@@ -157,68 +134,35 @@ export function ImageProfile() {
                             <div className="photo-card-large">
                                 <div className="photo-info-strip">
                                     <div className="chip-group">
-                                        <div
-                                            className="info-chip clickable"
+                                        <InfoChip
+                                            label="Rider"
+                                            name={photo.rider}
+                                            variant="rider"
                                             onClick={() => {
                                                 const riderData = RIDERS.find(r => `${r.firstName} ${r.lastName}` === photo.rider);
-                                                const rId = riderData ? riderData.id : 'r1'; // Fallback
+                                                const rId = riderData ? riderData.id : 'r1';
                                                 navigate(`/rider/${rId}?from=photo&photoId=${photo.id}`);
                                             }}
-                                        >
-                                            <div className="chip-avatar">
-                                                {!riderImgError ? (
-                                                    <img
-                                                        src={`/images/${photo.rider}.jpg`}
-                                                        alt={photo.rider}
-                                                        onError={() => setRiderImgError(true)}
-                                                    />
-                                                ) : (
-                                                    <User size={16} />
-                                                )}
-                                            </div>
-                                            <div className="chip-content">
-                                                <span className="chip-label">Rider</span>
-                                                <span className="chip-name">{photo.rider}</span>
-                                            </div>
-                                        </div>
+                                        />
 
-                                        <div
-                                            className="info-chip clickable"
+                                        <InfoChip
+                                            label="Horse"
+                                            name={photo.horse}
+                                            variant="horse"
                                             onClick={() => {
                                                 const horseData = HORSES.find(h => h.name === photo.horse);
-                                                const hId = horseData ? horseData.id : 'h1'; // Fallback
+                                                const hId = horseData ? horseData.id : 'h1';
                                                 navigate(`/horse/${hId}?from=photo&photoId=${photo.id}`);
                                             }}
-                                        >
-                                            <div className="chip-avatar">
-                                                {!horseImgError ? (
-                                                    <img
-                                                        src={`/images/${photo.horse}.jpg`}
-                                                        alt={photo.horse}
-                                                        onError={() => setHorseImgError(true)}
-                                                    />
-                                                ) : (
-                                                    <Camera size={16} />
-                                                )}
-                                            </div>
-                                            <div className="chip-content">
-                                                <span className="chip-label">Horse</span>
-                                                <span className="chip-name">{photo.horse}</span>
-                                            </div>
-                                        </div>
+                                        />
 
-                                        <div
-                                            className="info-chip clickable"
+                                        <InfoChip
+                                            label="Photographer"
+                                            name={`${photographer.firstName} ${photographer.lastName}`}
+                                            variant="photographer"
+                                            avatarUrl={`/images/${photographer.firstName} ${photographer.lastName}.jpg`}
                                             onClick={() => navigate(`/photographer/${photographer.id}?from=ipro&eventId=${photo.eventId}`)}
-                                        >
-                                            <div className="chip-avatar">
-                                                <img src={`/images/${photographer.firstName} ${photographer.lastName}.jpg`} alt={photographer.firstName} />
-                                            </div>
-                                            <div className="chip-content">
-                                                <span className="chip-label">Photographer</span>
-                                                <span className="chip-name">{photographer.firstName} {photographer.lastName}</span>
-                                            </div>
-                                        </div>
+                                        />
                                     </div>
 
                                     <div className="top-bar-actions">
@@ -238,7 +182,15 @@ export function ImageProfile() {
                                 </div>
 
                                 <div className="photo-viewer">
-                                    <img src={photo.src} alt={photo.rider} />
+                                    <WatermarkedPhotoPreview
+                                        src={photo.src}
+                                        alt={photo.rider}
+                                        onLoad={(e) => {
+                                            const img = e.currentTarget;
+                                            setDetectedPortrait(img.naturalHeight > img.naturalWidth);
+                                        }}
+                                        photographer={`${photographer.firstName} ${photographer.lastName}`}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -266,34 +218,31 @@ export function ImageProfile() {
 
                                             <div className="ipro-actions">
                                                 <button
-                                                    className="btn-buy-now"
+                                                    className="btn-primary"
+                                                    style={{ width: '100%' }}
                                                     onClick={() => setShowCheckout(true)}
                                                 >
                                                     Buy now
                                                 </button>
                                                 <button
-                                                    className={`btn-add-cart ${isAdded || isInCart ? 'added' : ''}`}
+                                                    className={`btn-outline ${isInCart ? 'added' : ''}`}
+                                                    style={{ width: '100%' }}
                                                     onClick={() => {
                                                         if (isInCart) {
-                                                            setToast({
-                                                                message: 'Already in cart',
-                                                                action: { label: 'View cart', onClick: () => navigate('/cart') }
-                                                            });
+                                                            removeFromCartByPhotoId(photo.id);
                                                             return;
                                                         }
 
                                                         const selected = qualityOptions.find(o => o.value === selectedQuality);
                                                         if (selected) {
                                                             addToCart(photo, selectedQuality, selected.label, getPrice(selectedQuality));
-                                                            setIsAdded(true);
-                                                            setTimeout(() => setIsAdded(false), 2000);
                                                         }
                                                     }}
                                                 >
-                                                    {isInCart || isAdded ? (
+                                                    {isInCart ? (
                                                         <>
                                                             <Check size={18} />
-                                                            {isAdded ? 'Added!' : 'In Cart'}
+                                                            Added
                                                         </>
                                                     ) : (
                                                         <>
@@ -365,6 +314,10 @@ export function ImageProfile() {
                                     <div className="detail-item">
                                         <span className="detail-label">Club</span>
                                         <span className="detail-value">Stockholms Ryttarförening</span>
+                                    </div>
+                                    <div className="detail-item">
+                                        <span className="detail-label">Orientation</span>
+                                        <span className="detail-value">{detectedPortrait ? 'Portrait' : 'Landscape'}</span>
                                     </div>
                                     <div className="detail-item">
                                         <span className="detail-label">Discipline</span>

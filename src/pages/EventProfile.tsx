@@ -10,7 +10,9 @@ import { PhotoCard } from '../components/PhotoCard';
 import { ModernDropdown } from '../components/ModernDropdown';
 import { InfoChip } from '../components/InfoChip';
 import { eventDetails } from '../data/mockEventDetails';
-import { photos as basePhotos, RIDERS, HORSES, RIDER_PRIMARY_HORSE, HORSE_PRIMARY_RIDER, PHOTOGRAPHERS } from '../data/mockData';
+import { photos as basePhotos, RIDERS, HORSES, RIDER_PRIMARY_HORSE, PHOTOGRAPHERS } from '../data/mockData';
+import { ShareIconButton, ActionSeparator, ActionCluster } from '../components/HeaderActions';
+import { ScopedSearchBar } from '../components/ScopedSearchBar';
 import type { Photo, ClassSection } from '../types';
 import './EventProfile.css';
 
@@ -23,6 +25,9 @@ const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max 
 
 const generateEventPhotos = (eventId: string, count: number, discipline?: string): Photo[] => {
     const srcPool = Array.from(new Set(basePhotos.map(p => p.src)));
+    const comp = eventDetails.find(e => e.meetingId === eventId)?.meeting;
+    const eventName = comp?.name || 'Gallopics Event';
+    const eventDate = comp?.period.startDate || '2026-01-01';
 
     return Array.from({ length: count }).map((_, i) => {
         const src = pick(srcPool);
@@ -51,17 +56,19 @@ const generateEventPhotos = (eventId: string, count: number, discipline?: string
             src,
             rider: `${rider.firstName} ${rider.lastName}`,
             horse: horse.name,
-            event: 'Mock Event',
+            event: eventName,
             eventId: eventId,
-            date: '2026-01-01',
+            date: eventDate,
             width,
             height,
             className: 'photo-grid-item',
-            time: '12:00',
-            city: 'Stockholm',
+            time: `${9 + (i % 8)}:00`,
+            city: comp?.city || 'Sweden',
             arena: 'Main Arena',
-            countryCode: 'SE',
-            discipline: discipline || 'Show Jumping'
+            countryCode: comp?.country.code.toLowerCase() || 'se',
+            discipline: discipline || 'Show Jumping',
+            photographer: comp?.photographer?.name || 'Gallopics',
+            photographerId: comp?.photographer?.id
         };
     });
 };
@@ -76,9 +83,7 @@ export function EventProfile() {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const [discipline, setDiscipline] = useState('All');
-    const [rider, setRider] = useState('All');
-    const [horse, setHorse] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
     const [eventClass, setEventClass] = useState('All');
 
     useEffect(() => {
@@ -92,33 +97,7 @@ export function EventProfile() {
         }
     }, [eventDetail]);
 
-    const isResetDisabled = discipline === 'All' && eventClass === 'All' && rider === 'All' && horse === 'All';
-
-    // Handle Rider Selection -> Auto-select Horse
-    const handleRiderChange = (newRider: string) => {
-        setRider(newRider);
-        if (newRider !== 'All') {
-            const rData = RIDERS.find(r => `${r.firstName} ${r.lastName}` === newRider);
-            if (rData) {
-                const mapping = RIDER_PRIMARY_HORSE.find(m => m.riderId === rData.id);
-                const hData = HORSES.find(h => h.id === mapping?.primaryHorseId);
-                if (hData) setHorse(hData.name);
-            }
-        }
-    };
-
-    // Handle Horse Selection -> Auto-select Rider
-    const handleHorseChange = (newHorse: string) => {
-        setHorse(newHorse);
-        if (newHorse !== 'All') {
-            const hData = HORSES.find(h => h.name === newHorse);
-            if (hData) {
-                const mapping = HORSE_PRIMARY_RIDER.find(m => m.horseId === hData.id);
-                const rData = RIDERS.find(r => r.id === mapping?.primaryRiderId);
-                if (rData) setRider(`${rData.firstName} ${rData.lastName}`);
-            }
-        }
-    };
+    const isResetDisabled = eventClass === 'All' && searchQuery === '';
 
     // 1. Get List of all available Competitions for the event
     const allEventClasses = useMemo(() => {
@@ -132,47 +111,20 @@ export function EventProfile() {
         return classes;
     }, [eventDetail]);
 
-    // 2. Derive options based on current selection (Dependent logic)
-    const disciplineOptions = useMemo(() => {
-        const unique = Array.from(new Set(allEventClasses.map(c => c.discipline))).sort();
-        return [{ label: 'All Disciplines', value: 'All' }, ...unique.map(d => ({ label: d, value: d }))];
+    const classOptions = useMemo(() => {
+        const unique = Array.from(new Set(allEventClasses.map(c => c.name))).sort();
+        return [{ label: 'All Classes', value: 'All' }, ...unique.map(c => ({ label: c, value: c }))];
     }, [allEventClasses]);
 
-    const classOptions = useMemo(() => {
-        const filteredByDiscipline = allEventClasses.filter(c => discipline === 'All' || c.discipline === discipline);
-        const unique = Array.from(new Set(filteredByDiscipline.map(c => c.name))).sort();
-        return [{ label: 'All Classes', value: 'All' }, ...unique.map(c => ({ label: c, value: c }))];
-    }, [allEventClasses, discipline]);
+    const combinedOptions = useMemo(() => {
+        const uniqueRiders = Array.from(new Set(photos.map(p => p.rider))).sort();
+        const uniqueHorses = Array.from(new Set(photos.map(p => p.horse))).sort();
 
-    const riderOptions = useMemo(() => {
-        // If Horse is selected, strictly limit to that horse's rider
-        if (horse !== 'All') {
-            const hData = HORSES.find(h => h.name === horse);
-            const mapping = HORSE_PRIMARY_RIDER.find(m => m.horseId === hData?.id);
-            const rData = RIDERS.find(r => r.id === mapping?.primaryRiderId);
-            if (rData) return [{ label: `${rData.firstName} ${rData.lastName}`, value: `${rData.firstName} ${rData.lastName}` }];
-        }
-        const available = photos.filter(p =>
-            (discipline === 'All' || p.discipline === discipline)
-        );
-        const unique = Array.from(new Set(available.map(p => p.rider))).sort();
-        return [{ label: 'All Riders', value: 'All' }, ...unique.map(r => ({ label: r, value: r }))];
-    }, [photos, horse, discipline]);
-
-    const horseOptions = useMemo(() => {
-        // If Rider is selected, strictly limit to that rider's horse
-        if (rider !== 'All') {
-            const rData = RIDERS.find(r => `${r.firstName} ${r.lastName}` === rider);
-            const mapping = RIDER_PRIMARY_HORSE.find(m => m.riderId === rData?.id);
-            const hData = HORSES.find(h => h.id === mapping?.primaryHorseId);
-            if (hData) return [{ label: hData.name, value: hData.name }];
-        }
-        const available = photos.filter(p =>
-            (discipline === 'All' || p.discipline === discipline)
-        );
-        const unique = Array.from(new Set(available.map(p => p.horse))).sort();
-        return [{ label: 'All Horses', value: 'All' }, ...unique.map(h => ({ label: h, value: h }))];
-    }, [photos, rider, discipline]);
+        return [
+            ...uniqueRiders.map(r => ({ label: r, value: r })),
+            ...uniqueHorses.map(h => ({ label: h, value: h }))
+        ];
+    }, [photos]);
 
     // 3. Absolute Totals for Header (Stable)
     const totalRiders = useMemo(() => new Set(photos.map(p => p.rider)).size, [photos]);
@@ -182,13 +134,18 @@ export function EventProfile() {
     const activePhotos = useMemo(() => {
         if (!photos.length) return [];
         return photos.filter(p => {
-            const matchDiscipline = discipline === 'All' || p.discipline === discipline;
             const matchClass = eventClass === 'All' || p.arena.includes(eventClass); // Arena is used as mock for Class location
-            const matchRider = rider === 'All' || p.rider === rider;
-            const matchHorse = horse === 'All' || p.horse === horse;
-            return matchDiscipline && matchClass && matchRider && matchHorse;
+
+            // Search Query Logic: Matches either Rider OR Horse
+            let matchSearch = true;
+            if (searchQuery && searchQuery.trim().length > 0) {
+                const q = searchQuery.toLowerCase();
+                matchSearch = p.rider.toLowerCase().includes(q) || p.horse.toLowerCase().includes(q);
+            }
+
+            return matchClass && matchSearch;
         });
-    }, [photos, rider, horse, discipline, eventClass]);
+    }, [photos, searchQuery, eventClass]);
 
     if (!eventDetail) return <div className="container" style={{ paddingTop: '120px' }}>Event not found</div>;
 
@@ -208,6 +165,7 @@ export function EventProfile() {
             <TitleHeader
                 title={meeting.name}
                 avatar={meeting.logo}
+                avatarShape="square"
                 topSubtitle={
                     <span className="meta-item">
                         {new Date(meeting.period.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
@@ -234,15 +192,21 @@ export function EventProfile() {
                     </div>
                 }
                 rightContent={
-                    eventPhotographer ? (
-                        <InfoChip
-                            label="Photographer"
-                            name={`${eventPhotographer.firstName} ${eventPhotographer.lastName}`}
-                            avatarUrl={`/images/${eventPhotographer.firstName} ${eventPhotographer.lastName}.jpg`}
-                            fallbackIcon="camera"
-                            onClick={() => navigate(`/photographer/${eventPhotographer.id}?from=event&eventId=${eventId}`)}
-                        />
-                    ) : null
+                    <ActionCluster>
+                        {eventPhotographer && (
+                            <>
+                                <InfoChip
+                                    label="Photographer"
+                                    name={`${eventPhotographer.firstName} ${eventPhotographer.lastName}`}
+                                    variant="photographer"
+                                    avatarUrl={`/images/${eventPhotographer.firstName} ${eventPhotographer.lastName}.jpg`}
+                                    onClick={() => navigate(`/photographer/${eventPhotographer.id}?from=event&eventId=${eventId}`)}
+                                />
+                                <ActionSeparator />
+                            </>
+                        )}
+                        <ShareIconButton />
+                    </ActionCluster>
                 }
             />
 
@@ -252,44 +216,27 @@ export function EventProfile() {
                         <div className="filter-row">
                             <div className="filter-group">
                                 <ModernDropdown
-                                    value={discipline}
-                                    options={disciplineOptions}
-                                    onChange={(val) => { setDiscipline(val); setEventClass('All'); }}
-                                    label="Discipline"
-                                    placeholder="Discipline"
-                                />
-                                <ModernDropdown
                                     value={eventClass}
                                     options={classOptions}
                                     onChange={setEventClass}
                                     label="Class"
                                     placeholder="Class"
+                                    variant="pill"
                                 />
-                                <ModernDropdown
-                                    value={rider}
-                                    options={riderOptions}
-                                    onChange={handleRiderChange}
-                                    label="Rider"
-                                    placeholder="Rider"
-                                    showSearch={true}
-                                    searchPlaceholder="Search riders..."
-                                />
-                                <ModernDropdown
-                                    value={horse}
-                                    options={horseOptions}
-                                    onChange={handleHorseChange}
-                                    label="Horse"
-                                    placeholder="Horse"
-                                    showSearch={true}
-                                    searchPlaceholder="Search horses..."
-                                />
+                                <div style={{ flex: 2, minWidth: '300px' }}>
+                                    <ScopedSearchBar
+                                        placeholder="Search by riders or horses..."
+                                        options={combinedOptions}
+                                        currentValue={searchQuery}
+                                        onSelect={(val) => setSearchQuery(val)}
+                                        onSearchChange={(val) => setSearchQuery(val)}
+                                    />
+                                </div>
                                 <button
                                     className="filter-reset-btn"
                                     onClick={() => {
-                                        setDiscipline('All');
                                         setEventClass('All');
-                                        setRider('All');
-                                        setHorse('All');
+                                        setSearchQuery('');
                                     }}
                                     title="Reset filters"
                                     disabled={isResetDisabled}
@@ -329,7 +276,7 @@ export function EventProfile() {
                         <div style={{ textAlign: 'center', padding: '60px 0', color: '#666' }}>
                             <h3>No photos found</h3>
                             <button
-                                onClick={() => { setRider('All'); setHorse('All'); setDiscipline('All'); setEventClass('All'); }}
+                                onClick={() => { setSearchQuery(''); setEventClass('All'); }}
                                 style={{
                                     marginTop: '16px', background: '#eee', padding: '8px 24px', borderRadius: '20px', fontSize: '0.9rem'
                                 }}

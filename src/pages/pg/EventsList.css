@@ -1,0 +1,243 @@
+.pg-events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding-bottom: 60px;
+}
+
+.pg-events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.pg-events-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+}
+
+.pg-events-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pg-events-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pg-filter-select {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.pg-filter-select:hover {
+    border-color: #dcdcdc;
+    background: #fdfdfd;
+}
+
+.pg-native-select {
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding-right: 4px;
+}
+
+
+/* Segmented Control */
+.pg-segmented-control {
+    display: inline-flex;
+    background: #f1f2f4;
+    padding: 4px;
+    border-radius: 10px;
+    align-self: flex-start;
+}
+
+.pg-segment-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #666;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pg-segment-btn:hover {
+    color: #333;
+}
+
+.pg-segment-btn.active {
+    background: #fff;
+    color: #111;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Event List Row */
+.pg-event-row {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.pg-event-row:hover {
+    border-color: #dcdcdc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.pg-event-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+    flex-shrink: 0;
+}
+
+.pg-event-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Contain logos, cover for covers */
+    padding: 8px;
+    /* Padding for logo */
+    background: #fff;
+}
+
+.pg-event-row.my-event .pg-event-thumb img {
+    object-fit: cover;
+    padding: 0;
+}
+
+.pg-event-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pg-event-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+}
+
+.pg-event-meta {
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-event-meta span {
+    display: flex;
+    align-items: center;
+}
+
+.pg-event-meta-line1 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pg-event-meta-line3 {
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-bullet {
+    color: #ccc;
+    font-size: 0.8rem;
+}
+
+/* My Events specific stats */
+.pg-event-stats {
+    margin-top: 2px;
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    gap: 12px;
+}
+
+.pg-event-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Shared Button Styles (if simple ones needed locally) */
+/* Ideally reusing global .btn if available, but defining local for safety as per instructions to be "consistent" */
+.pg-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    /* Pill/round */
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.pg-btn-primary {
+    background: var(--brand, #1B3AEC);
+    color: #fff;
+}
+
+.pg-btn-primary:hover {
+    background: var(--brand-hover, #152dbb);
+}
+
+.pg-btn-secondary {
+    background: white;
+    border: 1px solid #eaeaea;
+    color: #333;
+}
+
+.pg-btn-secondary:hover {
+    background: #f9f9f9;
+    border-color: #dcdcdc;
+}
+
+.pg-btn-ghost {
+    background: transparent;
+    color: #666;
+}
+
+.pg-btn-ghost:hover {
+    background: rgba(0, 0, 0, 0.05);
+}

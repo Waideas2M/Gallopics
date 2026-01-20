@@ -1,5 +1,6 @@
 import React from 'react';
 import { ModernSearchBar } from './ModernSearchBar';
+import { ProfileAvatar } from './ProfileAvatar';
 import './TitleHeader.css';
 
 interface TitleHeaderProps {
@@ -8,10 +9,13 @@ interface TitleHeaderProps {
     subtitle?: React.ReactNode;
     stats?: React.ReactNode;
     rightContent?: React.ReactNode;
-    avatar?: string;
+    avatar?: string | React.ReactNode;
+    avatarVariant?: 'rider' | 'horse' | 'photographer' | 'default'; // New: Add variant support for avatar coloring
     description?: React.ReactNode;
     compact?: boolean;
-    variant?: 'default' | 'ehome'; // New variant prop
+    variant?: 'default' | 'ehome';
+    avatarShape?: 'circle' | 'square';
+    className?: string; // Support valid HTML class attribute
 }
 
 export const TitleHeader: React.FC<TitleHeaderProps> = ({
@@ -21,9 +25,12 @@ export const TitleHeader: React.FC<TitleHeaderProps> = ({
     stats,
     rightContent,
     avatar,
+    avatarVariant,
     description,
     compact = false,
-    variant = 'default'
+    variant = 'default',
+    avatarShape = 'circle',
+    className = ''
 }) => {
     // Ehome Hero Variant
     if (variant === 'ehome') {
@@ -50,7 +57,7 @@ export const TitleHeader: React.FC<TitleHeaderProps> = ({
                             </div>
                             <div className="hero-actions">
                                 <a href="/register" className="btn-hero-secondary">
-                                    Register with us
+                                    Register
                                 </a>
                             </div>
                         </div>
@@ -75,14 +82,25 @@ export const TitleHeader: React.FC<TitleHeaderProps> = ({
 
     // Default Layout (Profile/Event Headers)
     return (
-        <section className={`title-header ${compact ? 'compact' : ''}`}>
+        <section className={`title-header ${compact ? 'compact' : ''} ${className}`}>
             <div className="container">
                 <div className="title-header-main">
                     <div className="title-block">
                         <div className="title-row">
-                            {avatar && (
-                                <div className="title-avatar">
-                                    <img src={avatar} alt="" />
+                            {(avatar || avatarVariant) && (
+                                <div className={`title-avatar-wrapper ${avatarShape === 'square' ? 'is-square' : ''}`}>
+                                    {typeof avatar === 'string' || avatarVariant ? (
+                                        <ProfileAvatar
+                                            variant={avatarVariant}
+                                            url={typeof avatar === 'string' ? avatar : undefined}
+                                            name={typeof title === 'string' ? title : ''}
+                                            size={avatarShape === 'square' ? 100 : 80}
+                                        />
+                                    ) : (
+                                        <div className="title-avatar-fallback">
+                                            {avatar}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             <div className="title-text-group">

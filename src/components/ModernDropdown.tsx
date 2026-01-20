@@ -5,6 +5,7 @@ import './ModernDropdown.css';
 interface Option {
     label: string;
     subtext?: string;
+    description?: string; // New: Detailed purpose / description
     value: string;
     icon?: React.ReactNode;
 }
@@ -16,8 +17,9 @@ interface ModernDropdownProps {
     onChange: (value: string) => void;
     icon?: React.ReactNode;
     placeholder?: string;
-    showSearch?: boolean;
     searchPlaceholder?: string;
+    showSearch?: boolean;
+    variant?: 'default' | 'pill'; // New prop
 }
 
 export const ModernDropdown: React.FC<ModernDropdownProps> = ({
@@ -28,7 +30,8 @@ export const ModernDropdown: React.FC<ModernDropdownProps> = ({
     icon,
     placeholder = 'Select',
     showSearch = false,
-    searchPlaceholder = 'Search...'
+    searchPlaceholder = 'Search...',
+    variant = 'default'
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -117,7 +120,7 @@ export const ModernDropdown: React.FC<ModernDropdownProps> = ({
 
     return (
         <div
-            className={`modern-dropdown ${isOpen ? 'open' : ''}`}
+            className={`modern-dropdown ${isOpen ? 'open' : ''} variant-${variant}`}
             ref={dropdownRef}
             onKeyDown={handleKeyDown}
         >
@@ -129,9 +132,14 @@ export const ModernDropdown: React.FC<ModernDropdownProps> = ({
                 aria-expanded={isOpen}
             >
                 {icon && <span className="trigger-icon">{icon}</span>}
-                <span className="trigger-label">
-                    {value === 'all' && label ? `All ${label}s` : displayLabel}
-                </span>
+                <div className="trigger-content">
+                    <span className="trigger-label">
+                        {value === 'all' && label ? `All ${label}s` : displayLabel}
+                    </span>
+                    {selectedOption?.subtext && (
+                        <span className="trigger-subtext">{selectedOption.subtext}</span>
+                    )}
+                </div>
                 <ChevronDown className={`chevron-icon ${isOpen ? 'rotate' : ''}`} size={16} />
             </button>
 
@@ -173,6 +181,7 @@ export const ModernDropdown: React.FC<ModernDropdownProps> = ({
                                     <div className="item-content">
                                         <div className="item-label-main">{option.label}</div>
                                         {option.subtext && <div className="item-subtext">{option.subtext}</div>}
+                                        {option.description && <div className="item-description">{option.description}</div>}
                                     </div>
 
                                     {/* 3. Check Column */}

@@ -1,15 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Calendar, User, Trophy, ChevronRight } from 'lucide-react';
-import { RIDERS, HORSES, COMPETITIONS, RIDER_PRIMARY_HORSE, HORSE_PRIMARY_RIDER } from '../data/mockData';
+import { Search, X, Calendar, ChevronRight, Camera, Image, ArrowRight } from 'lucide-react';
+import { RIDERS, HORSES, COMPETITIONS, RIDER_PRIMARY_HORSE, HORSE_PRIMARY_RIDER, PHOTOGRAPHERS, photos } from '../data/mockData';
 import './ModernSearchBar.css';
+
+import { HorseIcon } from './icons/HorseIcon';
+import { RiderIcon } from './icons/RiderIcon';
 
 interface SearchResult {
     id: string;
-    type: 'event' | 'rider' | 'horse';
+    type: 'event' | 'rider' | 'horse' | 'photographer' | 'photo';
     title: string;
     subtitle: string;
     meta?: string;
+    photoSrc?: string; // For thumbnail
 }
 
 type GroupedResults = {
@@ -49,6 +53,12 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                 break;
             case 'horse':
                 navigate(`/horse/${item.id}`);
+                break;
+            case 'photographer':
+                navigate(`/photographer/${item.id}`);
+                break;
+            case 'photo':
+                navigate(`/photo/${item.id}`);
                 break;
         }
     };
@@ -139,7 +149,32 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
         if (horses.length) newGroups['horse'] = horses;
         count += horses.length;
 
-        // Photographers REMOVED per user request
+        // 4. Photographers
+        const photographers = PHOTOGRAPHERS.filter(p =>
+            `${p.firstName} ${p.lastName}`.toLowerCase().includes(lower)
+        ).slice(0, MAX_PER_GROUP).map(p => ({
+            id: p.id,
+            type: 'photographer' as const,
+            title: `${p.firstName} ${p.lastName}`,
+            subtitle: p.city || 'Photographer'
+        }));
+        if (photographers.length) newGroups['photographer'] = photographers;
+        count += photographers.length;
+
+        // 5. Photos (Search by ID)
+        // Clean query for ID search: remove # if present
+        const cleanQuery = lower.replace(/^#/, '');
+        const matchingPhotos = photos.filter(p =>
+            p.id.toLowerCase().includes(cleanQuery)
+        ).slice(0, MAX_PER_GROUP).map(p => ({
+            id: p.id,
+            type: 'photo' as const,
+            title: `#${p.id.toUpperCase()}`,
+            subtitle: `${p.event} • ${p.rider}`
+        }));
+
+        if (matchingPhotos.length) newGroups['photo'] = matchingPhotos;
+        count += matchingPhotos.length;
 
         setGroups(newGroups);
         setHasResults(count > 0);
@@ -183,6 +218,8 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             case 'event': return 'Events';
             case 'rider': return 'Riders';
             case 'horse': return 'Horses';
+            case 'photographer': return 'Photographers';
+            case 'photo': return 'Photos';
             default: return '';
         }
     };
@@ -190,13 +227,16 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     const getIcon = (type: SearchResult['type']) => {
         switch (type) {
             case 'event': return <Calendar size={16} />;
-            case 'rider': return <User size={16} />;
-            case 'horse': return <Trophy size={16} />;
+            case 'rider': return <RiderIcon size={16} />;
+            case 'horse': return <HorseIcon size={16} />;
+            case 'photographer': return <Camera size={16} />;
+            case 'photo': return <Image size={16} />;
         }
     };
 
+
     // Priority Order for rendering groups
-    const groupOrder: Array<SearchResult['type']> = ['event', 'rider', 'horse'];
+    const groupOrder: Array<SearchResult['type']> = ['event', 'rider', 'horse', 'photographer', 'photo'];
 
     return (
         <div
@@ -216,27 +256,43 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                     ref={inputRef}
                     type="text"
                     className="search-input"
-                    placeholder="Search riders, horses, events..."
+                    placeholder="Search riders, horses, events, photographers, photo ID..."
                     value={query}
                     onChange={(e) => handleSearch(e.target.value)}
                     onFocus={() => query.length >= 2 && setHasResults(Object.keys(groups).length > 0) && setIsOpen(true)}
                     disabled={collapsible && !isExpanded} // Disable input when collapsed
                 />
 
+                {query && (
+                    <button
+                        className="clear-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (query) {
+                                setQuery('');
+                                setGroups({});
+                                setIsOpen(false);
+                                inputRef.current?.focus();
+                            }
+                        }}
+                    >
+                        <X size={14} />
+                    </button>
+                )}
+
                 <button
-                    className="clear-btn"
+                    className="search-go-btn"
                     onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering expansion if clicked (though clear usually hidden when collapsed)
-                        if (query) {
-                            setQuery('');
-                            setGroups({});
-                            setIsOpen(false);
-                        } else if (collapsible) {
-                            setIsExpanded(false);
+                        e.stopPropagation();
+                        // Focus input if not already
+                        if (!isOpen && query.length >= 2) {
+                            setIsOpen(true);
                         }
+                        inputRef.current?.focus();
                     }}
+                    aria-label="Search"
                 >
-                    <X size={14} />
+                    <ArrowRight size={18} />
                 </button>
 
             </div>

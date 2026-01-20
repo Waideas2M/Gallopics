@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import type { Photo } from '../types';
-import { Share2, Plus, MoreVertical } from 'lucide-react';
+import { Share2, Plus, MoreVertical, Check } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { WatermarkedThumbnail } from './WatermarkedThumbnail';
 import './PhotoCard.css';
 
 interface PhotoCardProps {
@@ -12,15 +14,26 @@ interface PhotoCardProps {
 export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, onAddToCart }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const { addToCart, removeFromCartByPhotoId, isInCart } = useCart();
+
+    const isAdded = isInCart(photo.id);
 
     const toggleMobileMenu = (e: React.MouseEvent) => {
         e.stopPropagation();
         setShowMobileMenu(!showMobileMenu);
     };
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleToggleCart = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (onAddToCart) {
+
+        if (isAdded) {
+            removeFromCartByPhotoId(photo.id);
+        } else {
+            // Default quick add params: High Quality
+            addToCart(photo, 'high', 'High Quality', 999);
+        }
+
+        if (!isAdded && onAddToCart) {
             onAddToCart(photo);
         }
         setShowMobileMenu(false);
@@ -29,12 +42,12 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, onAddToCar
     return (
         <div className="photo-card" onClick={() => onClick(photo)} tabIndex={0}>
             <div className="card-image-wrapper" style={{ aspectRatio: `${photo.width}/${photo.height}` }}>
-                <img
+                <WatermarkedThumbnail
                     src={photo.src}
                     alt={`${photo.rider} on ${photo.horse}`}
-                    loading="lazy"
                     className={`card-image ${isLoaded ? 'loaded' : 'loading'}`}
                     onLoad={() => setIsLoaded(true)}
+                    photographer={photo.photographer}
                 />
                 {/* Hover Actions Overlay - Desktop */}
                 <div className="card-hover-overlay">
@@ -56,8 +69,12 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, onAddToCar
                         <button className="icon-btn-glass" onClick={(e) => { e.stopPropagation(); }} title="Share">
                             <Share2 size={18} />
                         </button>
-                        <button className="icon-btn-glass primary" onClick={handleAddToCart} title="Add to cart">
-                            <Plus size={18} />
+                        <button
+                            className={`icon-btn-glass primary ${isAdded ? 'added' : ''}`}
+                            onClick={handleToggleCart}
+                            title={isAdded ? "Remove from cart" : "Add to cart"}
+                        >
+                            {isAdded ? <Check size={18} /> : <Plus size={18} />}
                         </button>
                     </div>
                 </div>
@@ -78,8 +95,8 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, onAddToCar
                     {/* Mobile Menu Popup */}
                     {showMobileMenu && (
                         <div className="mobile-menu-popup">
-                            <button onClick={handleAddToCart}>
-                                <Plus size={16} /> Add to Cart
+                            <button onClick={handleToggleCart} style={isAdded ? { color: '#10b981' } : {}}>
+                                {isAdded ? <><Check size={16} /> Added</> : <><Plus size={16} /> Add to Cart</>}
                             </button>
                             <button onClick={(e) => { e.stopPropagation(); setShowMobileMenu(false); }}>
                                 <Share2 size={16} /> Share

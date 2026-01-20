@@ -60,6 +60,7 @@ export const EventBrowseFilter: React.FC<EventBrowseFilterProps> = ({
                         icon="🇸🇪" // Or dynamic based on selection, but user req "flag + label"
                         placeholder="Country"
                         label="Country"
+                        variant="pill"
                     />
 
                     <ModernDropdown
@@ -68,6 +69,7 @@ export const EventBrowseFilter: React.FC<EventBrowseFilterProps> = ({
                         onChange={(val) => onFilterChange('city', val)}
                         placeholder="City"
                         label="City"
+                        variant="pill"
                     />
 
                     <ModernDropdown
@@ -76,6 +78,7 @@ export const EventBrowseFilter: React.FC<EventBrowseFilterProps> = ({
                         onChange={(val) => onFilterChange('discipline', val)}
                         placeholder="Discipline"
                         label="Discipline"
+                        variant="pill"
                     />
 
                     <button

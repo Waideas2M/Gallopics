@@ -1,46 +1,37 @@
-import React, { useState } from 'react';
-import { User, Camera } from 'lucide-react';
+import React from 'react';
 import './InfoChip.css';
+import { ProfileAvatar } from './ProfileAvatar';
 
 interface InfoChipProps {
     label: string;
     name: string;
     avatarUrl?: string; // Optional, can fallback
-    fallbackIcon?: 'user' | 'camera'; // To choose which icon to show on error/missing
+    variant?: 'rider' | 'horse' | 'photographer'; // New: Context-aware styling
     onClick?: () => void;
     className?: string;
+    icon?: React.ReactNode; // Leave for flex, but mostly automated now
 }
 
 export const InfoChip: React.FC<InfoChipProps> = ({
     label,
     name,
     avatarUrl,
-    fallbackIcon = 'user',
+    variant,
     onClick,
     className = ''
 }) => {
-    const [imgError, setImgError] = useState(false);
-
-    const handleImgError = () => {
-        setImgError(true);
-    };
-
     return (
         <div
-            className={`info-chip ${onClick ? 'clickable' : ''} ${className}`}
+            className={`info-chip ${variant ? `variant-${variant}` : ''} ${onClick ? 'clickable' : ''} ${className}`}
             onClick={onClick}
         >
-            <div className="chip-avatar">
-                {!imgError && avatarUrl ? (
-                    <img
-                        src={avatarUrl}
-                        alt={name}
-                        onError={handleImgError}
-                    />
-                ) : (
-                    fallbackIcon === 'camera' ? <Camera size={16} /> : <User size={16} />
-                )}
-            </div>
+            <ProfileAvatar
+                variant={variant}
+                url={avatarUrl}
+                name={name}
+                size={34}
+                className="chip-avatar-ref"
+            />
             <div className="chip-content">
                 <span className="chip-label">{label}</span>
                 <span className="chip-name">{name}</span>

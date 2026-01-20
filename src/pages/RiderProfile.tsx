@@ -12,7 +12,9 @@ import { PhotoCard } from '../components/PhotoCard';
 import { ModernDropdown } from '../components/ModernDropdown';
 import { InfoChip } from '../components/InfoChip';
 import { photos as mockPhotos, RIDERS, HORSES, COMPETITIONS } from '../data/mockData';
+import { HorseIcon } from '../components/icons/HorseIcon';
 
+import { ShareIconButton, ActionSeparator, ActionCluster } from '../components/HeaderActions';
 import { useCart } from '../context/CartContext';
 import './ImageProfile.css'; // Re-use toast styles or add new ones
 
@@ -41,8 +43,6 @@ export function RiderProfile() {
         return RIDERS.find(r => r.id === riderId) || RIDERS[0];
     }, [riderId]);
 
-    const riderAvatar = `/images/${activeRider.firstName} ${activeRider.lastName}.jpg`;
-
     // Breadcrumb path construction
     const breadcrumbs = useMemo<BreadcrumbItem[]>(() => {
         const items: BreadcrumbItem[] = [];
@@ -58,17 +58,13 @@ export function RiderProfile() {
     }, [navigate, activeRider, from, photoId]);
 
     // Filter states
-    const [selectedEventId, setSelectedEventId] = useState<string>('all');
-    const [discipline, setDiscipline] = useState('All');
+    const [selectedEventId, setSelectedEventId] = useState<string>('');
     const [horse, setHorse] = useState('All');
     const [eventClass, setEventClass] = useState('All');
     const [photographer, setPhotographer] = useState('All');
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            // Filter global mock photos by this rider name or ID logic
-            // In mockData.ts, photos usually have 'rider' field as "FirstName LastName"
-            // We need to match that.
             const riderFullName = `${activeRider.firstName} ${activeRider.lastName}`;
             const riderPhotos = mockPhotos.filter(p => p.rider === riderFullName);
             setPhotos(riderPhotos);
@@ -78,51 +74,44 @@ export function RiderProfile() {
         return () => clearTimeout(timer);
     }, [activeRider]);
 
-    const isResetDisabled = selectedEventId === 'all' && discipline === 'All' && eventClass === 'All' && horse === 'All' && photographer === 'All';
+    // Compute latest event once photos are loaded
+    useEffect(() => {
+        if (photos.length > 0 && !selectedEventId) {
+            const uniqueIds = Array.from(new Set(photos.map(p => p.eventId)));
+            const relevantEvents = COMPETITIONS.filter(c => uniqueIds.includes(c.id));
+            if (relevantEvents.length > 0) {
+                relevantEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                setSelectedEventId(relevantEvents[0].id);
+            }
+        }
+    }, [photos, selectedEventId]);
 
-    // Filters Inter-dependency? 
-    // Usually selecting a horse constrains photos, which might constrain available events.
-    // The "options" memos below handle the "available photos" based on other filters.
+    const isResetDisabled = !selectedEventId && eventClass === 'All' && horse === 'All' && photographer === 'All';
 
     const filteredPhotos = useMemo(() => {
         return photos.filter(photo => {
-            const matchEvent = selectedEventId === 'all' || photo.eventId === selectedEventId;
-            const matchDiscipline = discipline === 'All' || photo.discipline === discipline;
+            const matchEvent = !selectedEventId || photo.eventId === selectedEventId;
             const matchHorse = horse === 'All' || photo.horse === horse;
             const matchClass = eventClass === 'All' || ((photo as any).class || '1.30m') === eventClass; // Mock class match
             const matchPhotographer = photographer === 'All' || ((photo as any).photographer || 'Unknown') === photographer;
 
-            return matchEvent && matchDiscipline && matchHorse && matchClass && matchPhotographer;
+            return matchEvent && matchHorse && matchClass && matchPhotographer;
         });
-    }, [photos, selectedEventId, discipline, horse, eventClass, photographer]);
-
-    // Derived Options based on current photos (or all rider photos for inclusive filtering?)
-    // Usually standard drill-down: Available options are based on current filtered set (excluding self-filter to avoid lock-out?)
-    // Or based on "all rider photos" but constrained by other selections.
-    // Let's use "available based on OTHER filters" pattern.
+    }, [photos, selectedEventId, horse, eventClass, photographer]);
 
     const getAvailable = (scopingFilter: (p: Photo) => boolean) => photos.filter(scopingFilter);
 
     const eventOptions = useMemo(() => {
         const available = getAvailable(p =>
-            (discipline === 'All' || p.discipline === discipline) &&
             (horse === 'All' || p.horse === horse) &&
             (eventClass === 'All' || ((p as any).class || '1.30m') === eventClass) &&
             (photographer === 'All' || ((p as any).photographer || 'Unknown') === photographer)
         );
         const uniqueIds = Array.from(new Set(available.map(p => p.eventId)));
         const relevantEvents = COMPETITIONS.filter(c => uniqueIds.includes(c.id));
-        return [{ label: 'All Events', value: 'all' }, ...relevantEvents.map(e => ({ label: e.name, value: e.id }))];
-    }, [photos, discipline, horse, eventClass, photographer]);
-
-    const disciplineOptions = useMemo(() => {
-        const available = getAvailable(p =>
-            (selectedEventId === 'all' || p.eventId === selectedEventId) &&
-            (horse === 'All' || p.horse === horse)
-        );
-        const unique = Array.from(new Set(available.map(p => p.discipline).filter(Boolean))).sort();
-        return [{ label: 'All Disciplines', value: 'All' }, ...unique.map(d => ({ label: d as string, value: d as string }))];
-    }, [photos, selectedEventId, horse]);
+        // Remove All Events option
+        return relevantEvents.map(e => ({ label: e.name, value: e.id }));
+    }, [photos, horse, eventClass, photographer]);
 
     const classOptions = [
         { label: 'All Classes', value: 'All' },
@@ -132,21 +121,16 @@ export function RiderProfile() {
 
     const horseOptions = useMemo(() => {
         const available = getAvailable(p =>
-            (selectedEventId === 'all' || p.eventId === selectedEventId) &&
-            (discipline === 'All' || p.discipline === discipline)
+            (!selectedEventId || p.eventId === selectedEventId)
         );
         const unique = Array.from(new Set(available.map(p => p.horse))).sort();
         return [{ label: 'All Horses', value: 'All' }, ...unique.map(h => ({ label: h, value: h }))];
-    }, [photos, selectedEventId, discipline]);
+    }, [photos, selectedEventId]);
 
     const photographerOptions = useMemo(() => {
         const available = getAvailable(p =>
-            (selectedEventId === 'all' || p.eventId === selectedEventId)
+            (!selectedEventId || p.eventId === selectedEventId)
         );
-        // Photo mock data doesn't explicitly have photographerId usually, just 'photographer' string maybe?
-        // Let's check types. Photo type usually implies it. 
-        // In mockData context, activeProfile uses firstName lastName mapping.
-        // Let's assume photo.photographer is a string name.
         const unique = Array.from(new Set(available.map(p => p.photographer).filter(Boolean))).sort();
         return [{ label: 'All Photographers', value: 'All' }, ...unique.map(ph => ({ label: ph as string, value: ph as string }))];
     }, [photos, selectedEventId]);
@@ -164,7 +148,7 @@ export function RiderProfile() {
 
             <TitleHeader
                 title={`${activeRider.firstName} ${activeRider.lastName}`}
-                avatar={riderAvatar}
+                avatarVariant="rider"
                 subtitle="Rider"
                 stats={
                     <div className="event-stats-row">
@@ -174,28 +158,34 @@ export function RiderProfile() {
                     </div>
                 }
                 rightContent={
-                    (() => {
-                        // Find primary horse
-                        if (photos.length === 0) return null;
-                        const horseCounts: { [key: string]: number } = {};
-                        photos.forEach(p => {
-                            horseCounts[p.horse] = (horseCounts[p.horse] || 0) + 1;
-                        });
-                        const topHorseName = Object.keys(horseCounts).reduce((a, b) => horseCounts[a] > horseCounts[b] ? a : b);
-                        const topHorse = HORSES.find(h => h.name === topHorseName);
+                    <ActionCluster>
+                        {(() => {
+                            // Find primary horse
+                            if (photos.length === 0) return null;
+                            const horseCounts: { [key: string]: number } = {};
+                            photos.forEach(p => {
+                                horseCounts[p.horse] = (horseCounts[p.horse] || 0) + 1;
+                            });
+                            const topHorseName = Object.keys(horseCounts).reduce((a, b) => horseCounts[a] > horseCounts[b] ? a : b);
+                            const topHorse = HORSES.find(h => h.name === topHorseName);
 
-                        if (!topHorse) return null;
+                            if (!topHorse) return null;
 
-                        return (
-                            <InfoChip
-                                label="Primary Horse"
-                                name={topHorse.name}
-                                avatarUrl={`/images/${topHorse.name}.jpg`}
-                                fallbackIcon="camera"
-                                onClick={() => navigate(`/horse/${topHorse.id}?from=rider&riderId=${riderId}`)}
-                            />
-                        );
-                    })()
+                            return (
+                                <>
+                                    <InfoChip
+                                        label="Horse"
+                                        name={topHorse.name}
+                                        variant="horse"
+                                        icon={<HorseIcon size={20} />}
+                                        onClick={() => navigate(`/horse/${topHorse.id}?from=rider&riderId=${riderId}`)}
+                                    />
+                                    <ActionSeparator />
+                                </>
+                            );
+                        })()}
+                        <ShareIconButton />
+                    </ActionCluster>
                 }
             />
 
@@ -211,13 +201,7 @@ export function RiderProfile() {
                                     label="Events"
                                     placeholder="Events"
                                     showSearch={true}
-                                />
-                                <ModernDropdown
-                                    value={discipline}
-                                    options={disciplineOptions}
-                                    onChange={setDiscipline}
-                                    label="Discipline"
-                                    placeholder="Discipline"
+                                    variant="pill"
                                 />
                                 <ModernDropdown
                                     value={eventClass}
@@ -244,8 +228,13 @@ export function RiderProfile() {
                                 <button
                                     className="filter-reset-btn"
                                     onClick={() => {
-                                        setSelectedEventId('all');
-                                        setDiscipline('All');
+                                        // Auto-reset to latest
+                                        const uniqueIds = Array.from(new Set(photos.map(p => p.eventId)));
+                                        const relevantEvents = COMPETITIONS.filter(c => uniqueIds.includes(c.id));
+                                        if (relevantEvents.length > 0) {
+                                            relevantEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                                            setSelectedEventId(relevantEvents[0].id);
+                                        }
                                         setEventClass('All');
                                         setHorse('All');
                                         setPhotographer('All');
@@ -287,7 +276,7 @@ export function RiderProfile() {
                                         setToast({ message: 'Already in cart' });
                                         return;
                                     }
-                                    addToCart(p, 'high', 'High Resolution', 999);
+                                    addToCart(p, 'high', 'High Quality', 999);
                                     setToast({ message: 'Added to cart' });
                                 }}
                             />

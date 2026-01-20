@@ -1,0 +1,118 @@
+/* Settings Page specific overrides/additions */
+.pg-settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+.pg-settings-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.pg-page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+}
+
+.pg-settings-section {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.pg-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 20px 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.pg-settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.pg-settings-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.pg-row-info {
+    flex: 1;
+    padding-right: 24px;
+}
+
+.pg-row-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.pg-row-sub {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Toggle Switch */
+.pg-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.pg-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e5e5;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input:checked+.slider {
+    background-color: var(--brand, #1B3AEC);
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px var(--brand, #1B3AEC);
+}
+
+input:checked+.slider:before {
+    transform: translateX(22px);
+}

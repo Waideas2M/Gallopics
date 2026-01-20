@@ -160,7 +160,7 @@
     background: var(--color-brand-primary);
     color: #fff;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 500px;
     font-weight: 700;
     font-size: 1.1rem;
     cursor: pointer;
@@ -242,7 +242,7 @@
     background: var(--color-brand-primary);
     color: #fff;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 500px;
     font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;

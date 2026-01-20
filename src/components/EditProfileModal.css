@@ -1,0 +1,195 @@
+/* Container Override */
+.edit-profile-modal-container {
+    width: 600px;
+    /* Target desktop width */
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Header */
+.edit-profile-header {
+    padding: 24px 24px 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e5e5;
+    background: #fff;
+    z-index: 10;
+}
+
+.edit-profile-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+}
+
+.edit-profile-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-profile-close:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: #111;
+}
+
+/* Body */
+.edit-profile-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Avatar Section */
+.edit-profile-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-profile-avatar-preview {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    border: 1px solid #e5e5e5;
+    flex-shrink: 0;
+}
+
+.edit-profile-avatar-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.edit-profile-upload-btn {
+    color: #1B3AEC;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.edit-profile-remove-btn {
+    color: #ef4444;
+    font-weight: 400;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+/* Form Grid */
+.edit-profile-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.edit-profile-full-width {
+    grid-column: 1 / -1;
+}
+
+/* Input Overrides for Spacing */
+.edit-profile-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111;
+}
+
+/* Footer */
+.edit-profile-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e5e5;
+    background: #fff;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.edit-profile-btn-cancel {
+    padding: 0 20px;
+    height: 48px;
+    border: 1px solid #e5e5e5;
+    border-radius: 500px;
+    background: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-profile-btn-cancel:hover {
+    background: #f9f9f9;
+    border-color: #d1d1d1;
+}
+
+.edit-profile-btn-save {
+    padding: 0 24px;
+    height: 48px;
+    border: none;
+    border-radius: 500px;
+    background: #1B3AEC;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-profile-btn-save:hover {
+    background: #152dbb;
+    transform: translateY(-1px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    .edit-profile-modal-container {
+        width: 100%;
+        height: 100%;
+        /* Full screen or bottom sheet depending on pref, but user said 'max-width: 90vh' before in auth modal */
+        max-height: 90vh;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .edit-profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -5,18 +5,17 @@
 
 /* Trigger Styling (Pill/Chip) */
 .dropdown-trigger {
-    height: 40px;
-    padding: 0 16px;
+    min-height: 52px;
+    height: auto;
+    padding: 10px 16px;
     background: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 20px;
+    border-radius: var(--radius-md, 16px);
+    /* Match system radius */
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     cursor: pointer;
-    font-size: 0.9rem;
-    color: #111;
-    font-weight: 500;
     transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     min-width: 140px;
@@ -42,12 +41,29 @@
     justify-content: center;
 }
 
-.trigger-label {
+.trigger-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    gap: 2px;
+}
+
+.trigger-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    /* Medium weight for label */
+    color: #111;
+    white-space: normal;
+    /* Allow wrapping */
+}
+
+.trigger-subtext {
+    font-size: 0.8rem;
+    color: #888;
+    /* More muted */
+    font-weight: 400;
+    margin-top: 0px;
 }
 
 .chevron-icon {
@@ -64,8 +80,8 @@
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
-    width: 240px;
-    /* Compact but wide enough */
+    width: 100%;
+    min-width: 280px;
     background: #fff;
     border-radius: 8px;
     /* Match system */
@@ -92,8 +108,40 @@
     }
 }
 
+/* Pill Variant (Compact for Filters) */
+.modern-dropdown.variant-pill .dropdown-trigger {
+    min-height: 40px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    height: 40px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+    min-width: unset;
+    gap: 8px;
+}
+
+.modern-dropdown.variant-pill .dropdown-trigger:hover {
+    background: #f9f9f9;
+}
+
+.modern-dropdown.variant-pill.open .dropdown-trigger {
+    border-color: #1B3AEC;
+    color: #1B3AEC;
+}
+
+.modern-dropdown.variant-pill .trigger-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.modern-dropdown.variant-pill .trigger-icon {
+    font-size: 1rem;
+    width: 16px;
+}
+
 .dropdown-scroll {
-    max-height: 280px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -102,13 +150,12 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 20px;
-    /* Text | Check (Icon column hidden if no icons) */
-    align-items: center;
+    align-items: flex-start;
+    /* Align to top for better multi-line checkmark pos */
     gap: 12px;
-    padding: 0 16px;
-    /* Consistent padding */
-    height: 44px;
-    /* Fixed row height */
+    padding: 12px 16px;
+    height: auto;
+    min-height: 48px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -139,20 +186,31 @@
 /* Content wrapper (now the middle cell) */
 .item-content {
     display: flex;
-    align-items: center;
-    /* Vertical center text */
-    overflow: hidden;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
 }
 
 .item-label-main {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #111;
+    line-height: 1.4;
 }
 
-/* Subtext hidden for compact refinement, or handled below if needed */
 .item-subtext {
-    display: none;
+    font-size: 0.8rem;
+    color: #888;
+    line-height: 1.4;
+}
+
+.item-description {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.5;
+    /* Breathable line height */
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 /* Icon (Left cell) */
@@ -168,6 +226,8 @@
 .check-icon {
     color: #111;
     opacity: 1;
+    margin-top: 2px;
+    /* Nudge down slightly to align with first line */
 }
 
 /* Search Wrapper */

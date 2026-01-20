@@ -1,0 +1,121 @@
+/* Wrapper for Guest PhotoCard reuse */
+.pg-photo-card-wrapper {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--radius-md);
+    /* Match PhotoCard radius */
+    transition: transform 0.2s ease;
+}
+
+/* Selected State Visuals */
+.pg-photo-card-wrapper.selected {
+    /* Create a selection border effect */
+    box-shadow: 0 0 0 4px var(--brand, #1B3AEC);
+    z-index: 5;
+    /* Bring above others */
+}
+
+.pg-photo-card-wrapper.selected .photo-card {
+    /* Remove default shadow to avoid clash if needed, or let it be */
+}
+
+/* Hide Buyer Actions from Guest Component */
+.pg-photo-card-wrapper .hover-actions-bottom,
+.pg-photo-card-wrapper .card-mobile-actions,
+.pg-photo-card-wrapper .event-info-patch {
+    /* Optional: Hide Event Info Patch too if it's too cluttery for PG view? 
+       Prompt says "Reuse exact...". 
+       But usually workspace view is cleaner. 
+       Let's HIDE Buyer Buttons, KEEP Info Patch (Consistency).
+       Wait, Buyer Buttons are definitely unwanted. 
+    */
+    display: none !important;
+}
+
+/* Restore Info Patch if we wanted it, but let's hide buttons distinctively first */
+.pg-photo-card-wrapper .hover-actions-bottom {
+    display: none !important;
+}
+
+.pg-photo-card-wrapper .card-mobile-actions {
+    display: none !important;
+}
+
+/* We keep .event-info-patch visible as per consistency, 
+   unless distinct instructions to remove text overlays?
+   Prompt: "Keep PG-only elements as lightweight overlays".
+   "Remove PG-specific tile visuals... different text placement... unless guest also shows them".
+   Guest shows them. So we should keep the Info Patch? 
+   Actually, the Info Patch is strictly event info. 
+   Let's keep it to be safe on "Reuse exact", but ensure buttons are gone.
+*/
+
+/* Checkbox Overlay (Top Left) */
+.pg-selection-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pg-photo-card-wrapper:hover .pg-selection-overlay,
+.pg-photo-card-wrapper.selected .pg-selection-overlay {
+    opacity: 1;
+}
+
+.pg-check-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    transition: all 0.2s ease;
+}
+
+.pg-check-circle:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: #fff;
+}
+
+.pg-check-circle.checked {
+    background: var(--brand, #1B3AEC);
+    border-color: var(--brand, #1B3AEC);
+}
+
+/* Status Badge (Top Right) */
+.pg-card-status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    backdrop-filter: blur(4px);
+    z-index: 45;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+}
+
+.pg-card-status-badge.sold {
+    background: #10b981;
+}
+
+.pg-card-status-badge.processing {
+    background: #f59e0b;
+}
+
+.pg-card-status-badge.needsReview {
+    background: #ef4444;
+}

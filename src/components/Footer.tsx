@@ -5,11 +5,12 @@ import { Instagram, Youtube } from 'lucide-react';
 
 interface FooterProps {
     minimal?: boolean;
+    sidebar?: boolean;
 }
 
-export const Footer: React.FC<FooterProps> = ({ minimal = false }) => {
+export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false }) => {
     if (minimal) {
-        return <CopyrightBar minimal={true} />;
+        return <CopyrightBar minimal={true} sidebar={sidebar} />;
     }
 
     return (
