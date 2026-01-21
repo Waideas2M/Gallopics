@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Camera, Lock, Monitor, Link, Check } from 'lucide-react';
 import { useAuth, PROTOTYPE_USER } from '../context/AuthContext';
 import './AuthModal.css';
@@ -179,6 +180,7 @@ const SignInForm: React.FC = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const { login } = useAuth();
 
@@ -213,7 +215,7 @@ const SignInForm: React.FC = () => {
 
                 // Let's assume sign-in here sets a "User" and redirects to workspace for now:
                 login({ ...PROTOTYPE_USER, hasCompletedOnboarding: true }); // Mock returning user
-                window.location.href = '/pg';
+                navigate('/pg');
             }, 800);
             return;
         }
@@ -225,7 +227,7 @@ const SignInForm: React.FC = () => {
         setTimeout(() => {
             setIsLoading(false);
             login({ ...PROTOTYPE_USER, hasCompletedOnboarding: true });
-            window.location.href = '/pg';
+            navigate('/pg');
         }, 1500);
     };
 
@@ -237,7 +239,7 @@ const SignInForm: React.FC = () => {
                     onClick={() => {
                         console.log('Google Auth');
                         login({ ...PROTOTYPE_USER, hasCompletedOnboarding: true });
-                        window.location.href = '/pg';
+                        navigate('/pg');
                     }}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24">
@@ -315,6 +317,7 @@ const RegisterForm: React.FC = () => {
     });
     const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const { login } = useAuth();
 
@@ -359,7 +362,7 @@ const RegisterForm: React.FC = () => {
                     avatarUrl: PROTOTYPE_USER.avatarUrl,
                     hasCompletedOnboarding: false
                 });
-                window.location.href = '/pg/onboarding/profile';
+                navigate('/pg/onboarding/profile');
             }, 800);
             return;
         }
@@ -377,7 +380,7 @@ const RegisterForm: React.FC = () => {
                 avatarUrl: PROTOTYPE_USER.avatarUrl,
                 hasCompletedOnboarding: false
             });
-            window.location.href = '/pg/onboarding/profile';
+            navigate('/pg/onboarding/profile');
         }, 1500);
     };
 
@@ -390,7 +393,7 @@ const RegisterForm: React.FC = () => {
                         console.log('Google Auth');
                         // Mock Google Auth Success -> Onboarding
                         login({ displayName: 'Google User', city: '', hasCompletedOnboarding: false });
-                        window.location.href = '/pg/onboarding/profile';
+                        navigate('/pg/onboarding/profile');
                     }}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24">
