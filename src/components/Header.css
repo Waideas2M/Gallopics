@@ -14,8 +14,9 @@
 }
 
 .site-header.is-scrolled {
-    background-color: rgba(255, 255, 255, 0.98);
-    /* Optimized: removed backdrop-filter to eliminate scroll jitter */
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }

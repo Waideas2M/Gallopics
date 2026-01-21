@@ -280,20 +280,23 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                     </button>
                 )}
 
-                <button
-                    className="search-go-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        // Focus input if not already
-                        if (!isOpen && query.length >= 2) {
-                            setIsOpen(true);
-                        }
-                        inputRef.current?.focus();
-                    }}
-                    aria-label="Search"
-                >
-                    <ArrowRight size={18} />
-                </button>
+
+                {theme === 'light' && (
+                    <button
+                        className="search-go-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            // Focus input if not already
+                            if (!isOpen && query.length >= 2) {
+                                setIsOpen(true);
+                            }
+                            inputRef.current?.focus();
+                        }}
+                        aria-label="Search"
+                    >
+                        <ArrowRight size={18} />
+                    </button>
+                )}
 
             </div>
             {isOpen && hasResults && (

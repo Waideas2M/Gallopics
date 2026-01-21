@@ -41,7 +41,7 @@
     /* Tiny overlap to prevent gap */
     background-color: var(--brand-badge-bg);
     /* Brand tint accent */
-    border-radius: 24px 56px 0 0;
+    border-radius: 96px 144px 0 0;
     /* Asymmetric: Sharp Left, Sloped Right */
     border: 1px solid rgba(27, 58, 236, 0.15);
     border-bottom: none;
@@ -50,9 +50,9 @@
 }
 
 .folder-card:hover::before {
-    background-color: #1B3AEC;
-    /* Brand Color */
-    border-color: #1B3AEC;
+    background-color: rgba(27, 58, 236, 0.5);
+    /* Brand Color 50% */
+    border-color: rgba(27, 58, 236, 0.5);
 }
 
 /* Hover Lift */
@@ -62,13 +62,13 @@
 
 .folder-card:hover .folder-inner {
     box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.18);
-    border-color: rgba(27, 58, 236, 0.5);
+    border-color: rgba(27, 58, 236, 0.2);
 }
 
 /* Cover Image Wrapper: No rounding, inherited clipping */
 .folder-cover {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     position: relative;
     border-radius: 8px;
