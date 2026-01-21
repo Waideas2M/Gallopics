@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Photo } from '../../context/PhotographerContext';
 import { usePhotographer } from '../../context/PhotographerContext';
-import { X, Tag, Trash2, Calendar, Clock } from 'lucide-react';
+import { X, Tag, Trash2, Clock } from 'lucide-react';
 import './PhotoInspector.css';
 
 interface PhotoInspectorProps {
@@ -30,13 +30,7 @@ export const PhotoInspector: React.FC<PhotoInspectorProps> = ({ selectedPhotos, 
         }
     }, [selectedPhotos]);
 
-    const handleSave = (field: 'rider' | 'horse', value: string) => {
-        if (selectedPhotos.length === 0) return;
-
-        // In a real app, we might debounce this or save on blur/enter.
-        // For responsiveness, we update on blur or explicit action. 
-        // Let's stick to "Save on Blur" pattern for inputs.
-    };
+    // Removed unused handleSave function
 
     const handleBlur = (field: 'rider' | 'horse', value: string) => {
         if (!value.trim()) return; // Don't clear if just focusing out empty? 

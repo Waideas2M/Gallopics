@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Check } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Check } from 'lucide-react';
 import './Billing.css';
 
 export const PhotographerBilling: React.FC = () => {
-    const navigate = useNavigate();
     const [saved, setSaved] = useState(false);
     const [formData, setFormData] = useState({
         street: '',

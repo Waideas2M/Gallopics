@@ -92,7 +92,6 @@ export const UploadOverlay: React.FC = () => {
 
     // Derived State
     const files = session?.files || [];
-    const activeUploads = files.filter(q => q.status === 'uploading' || q.status === 'pending').length;
     const completedUploads = files.filter(q => q.status === 'completed').length;
     const isBatchComplete = session?.status === 'completed' && files.length > 0;
 
