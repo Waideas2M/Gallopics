@@ -15,7 +15,8 @@ export interface EventData {
         id: string;
         name: string;
         avatar: string;
-    };
+    } | null;
+    status?: 'active' | 'disabled';
 }
 
 // Config mapping for visual assets that aren't in the raw data
@@ -114,3 +115,41 @@ export const mockEvents: EventData[] = COMPETITIONS.map(comp => {
         }
     };
 });
+
+// Add 2 disabled events
+export const disabledEvents: EventData[] = [
+    {
+        id: 'd1',
+        name: 'Regional Dressage Cup',
+        coverImage: '', // No cover
+        period: '10 Feb – 12 Feb 2026', // Future Range
+        flag: '🇸🇪',
+        city: 'Västerås',
+        discipline: 'Dressage',
+        country: 'Sweden',
+        photoCount: 120,
+        logo: '/images/Uppsala Arena Cup.jpg', // Reusing existing mock logo
+        photographer: {
+            id: 'p1',
+            name: 'Hanna Björk',
+            avatar: '/images/Hanna Björk.jpg'
+        },
+        status: 'disabled'
+    },
+    {
+        id: 'd2',
+        name: 'Local Jumping Training',
+        coverImage: '', // No cover
+        period: '12 Feb – 13 Feb 2026', // Future Range
+        flag: '🇸🇪',
+        city: 'Enköping',
+        discipline: 'Show Jumping',
+        country: 'Sweden',
+        photoCount: 45,
+        logo: '/images/Malmö City Jumping.jpg', // Reusing existing mock logo
+        photographer: null,
+        status: 'disabled'
+    }
+];
+
+export const allMockEvents = [...mockEvents, ...disabledEvents];

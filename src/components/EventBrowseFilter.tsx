@@ -4,8 +4,10 @@ import { ModernDropdown } from './ModernDropdown';
 interface EventBrowseFilterProps {
     country: string;
     city: string;
-    discipline: string;
-    onFilterChange: (type: 'country' | 'city' | 'discipline', value: string) => void;
+
+    period: string;
+
+    onFilterChange: (type: 'country' | 'city' | 'period', value: string) => void;
     isSticky: boolean;
     resultsCount: number;
 }
@@ -13,7 +15,7 @@ interface EventBrowseFilterProps {
 export const EventBrowseFilter: React.FC<EventBrowseFilterProps> = ({
     country,
     city,
-    discipline,
+    period,
     onFilterChange,
     isSticky,
     resultsCount
@@ -40,18 +42,19 @@ export const EventBrowseFilter: React.FC<EventBrowseFilterProps> = ({
         { label: 'Malmö', value: 'Malmö' },
     ];
 
-    const disciplineOptions = [
-        { label: 'All Disciplines', value: 'all' },
-        { label: 'Show Jumping', value: 'Show Jumping' },
-        { label: 'Dressage', value: 'Dressage' },
-        { label: 'Eventing', value: 'Eventing' },
+    const periodOptions = [
+        { label: 'Recent', value: 'Recent' },
+        { label: 'Scheduled', value: 'Scheduled' },
+        { label: 'Live', value: 'Live', disabled: true },
+        { label: 'Last 3 months', value: 'Last 3 months', disabled: true },
+        { label: 'Last 1 year', value: 'Last 1 year', disabled: true },
     ];
 
-    const isResetDisabled = country === 'all' && city === 'all' && discipline === 'all';
+    const isResetDisabled = country === 'all' && city === 'all' && period === 'Recent';
 
     return (
         <div className={`event-browse-filter ${isSticky ? 'sticky-glass' : ''}`}>
-            <div className="filter-row">
+            <div className="filter-container">
                 <div className="filter-group">
                     <ModernDropdown
                         value={country}
@@ -73,20 +76,22 @@ export const EventBrowseFilter: React.FC<EventBrowseFilterProps> = ({
                     />
 
                     <ModernDropdown
-                        value={discipline}
-                        options={disciplineOptions}
-                        onChange={(val) => onFilterChange('discipline', val)}
-                        placeholder="Discipline"
-                        label="Discipline"
+                        value={period}
+                        options={periodOptions}
+                        onChange={(val) => onFilterChange('period', val)}
+                        placeholder="Period"
+                        label="Period"
                         variant="pill"
                     />
+
+
 
                     <button
                         className="filter-reset-btn"
                         onClick={() => {
                             onFilterChange('country', 'all');
                             onFilterChange('city', 'all');
-                            onFilterChange('discipline', 'all');
+                            onFilterChange('period', 'Recent');
                         }}
                         title="Reset filters"
                         disabled={isResetDisabled}

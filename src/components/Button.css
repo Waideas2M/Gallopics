@@ -1,0 +1,242 @@
+/* Button - Shared component for all buttons */
+/* Single source of truth for button styling */
+
+:root {
+    --button-radius: 9999px;
+    /* Global token - change here to update ALL buttons */
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--button-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Sizes - Dramatically Different for Clear Visual Distinction */
+/* Increase specificity to override global .btn-primary from index.css */
+.btn.btn-small {
+    padding: 6px 16px !important;
+    /* Compact - force override */
+    font-size: 0.8125rem !important;
+    /* 13px */
+    min-height: 36px !important;
+    height: auto !important;
+    /* Override fixed height */
+    font-weight: 600;
+}
+
+.btn.btn-medium {
+    padding: 12px 24px !important;
+    /* Standard */
+    font-size: 1rem !important;
+    /* 16px - clearly larger */
+    min-height: 48px !important;
+    height: auto !important;
+    font-weight: 600;
+}
+
+.btn.btn-large {
+    padding: 16px 36px !important;
+    /* Generous */
+    font-size: 1.125rem !important;
+    /* 18px - noticeably larger */
+    min-height: 56px !important;
+    height: auto !important;
+    font-weight: 700;
+    /* Bolder */
+}
+
+/* Hero Button - Distinct from Large */
+.btn-hero {
+    padding: 16px 40px;
+    font-size: 1.125rem;
+    min-height: 56px;
+    font-weight: 700;
+}
+
+.btn-icon-only {
+    padding: 10px;
+}
+
+.btn-icon-only.btn-small {
+    padding: 6px;
+}
+
+.btn-icon-only.btn-large {
+    padding: 14px;
+}
+
+/* Variants */
+.btn-primary {
+    background: #1B3AEC;
+    color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #1532d1;
+}
+
+.btn-primary:active:not(:disabled) {
+    background: #0f28b8;
+}
+
+.btn-secondary {
+    background: #fff;
+    color: var(--color-text-primary, #111);
+    border: 1px solid var(--color-border, #e5e5e5);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--color-brand-tint, rgba(27, 58, 236, 0.04));
+    border-color: var(--color-brand-primary, #1B3AEC);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:active:not(:disabled) {
+    background: var(--color-brand-tint-strong, rgba(27, 58, 236, 0.08));
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: #666;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+.btn-ghost:active:not(:disabled) {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+    background: transparent;
+    color: #666;
+    padding: 8px;
+}
+
+.btn-icon:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+.btn-icon:active:not(:disabled) {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Icon and label spacing */
+.btn-icon-wrapper {
+    display: flex;
+    align-items: center;
+    line-height: 0;
+    /* Prevent line-height from increasing height */
+}
+
+.btn-label {
+    line-height: 1;
+}
+
+
+/* Circular Icon Buttons */
+/* Increase specificity to override global .btn-primary padding from index.css */
+.btn.btn-circle {
+    border-radius: 50%;
+    padding: 0 !important;
+    /* Force override of global styles */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--btn-circle-size, 44px);
+    height: var(--btn-circle-size, 44px);
+    border: 1px solid transparent;
+}
+
+/* Specific Sizes for Circle Buttons */
+.btn-circle.btn-small {
+    --btn-circle-size: 36px;
+    width: 36px;
+    height: 36px;
+}
+
+.btn-circle.btn-medium {
+    --btn-circle-size: 44px;
+    width: 44px;
+    height: 44px;
+}
+
+/* New 48px Floating Size */
+.btn-circle.btn-floating {
+    --btn-circle-size: 48px;
+    width: 48px;
+    height: 48px;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+}
+
+.btn-circle.btn-floating:hover:not(:disabled) {
+    background: #f5f5f5;
+    /* Simple grey hover */
+    /* No lift, no shadow if user considers it "unwanted" */
+}
+
+.btn-primary.btn-circle.btn-floating,
+.btn-primary.btn-circle.btn-floating:hover:not(:disabled) {
+    background: var(--color-brand-primary);
+    color: white;
+    border: none;
+    /* Removed colored shadows as requested */
+}
+
+.btn-primary.btn-circle.btn-floating:hover:not(:disabled) {
+    background: var(--color-brand-primary-hover);
+}
+
+/* Large FAB Size */
+.btn-circle.btn-large {
+    --btn-circle-size: 56px;
+    width: 56px;
+    height: 56px;
+    box-shadow: var(--shadow-hover);
+    /* Use standard token */
+}
+
+.btn-circle.btn-large:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-overlay);
+}
+
+
+/* White Circle Variant (Floating) */
+.btn-white {
+    background: white;
+    color: #333;
+    border: 1px solid var(--color-border);
+}
+
+.btn-white:hover:not(:disabled) {
+    background: white;
+    color: #111;
+    transform: scale(1.05);
+    /* Match icon-btn zoom behavior */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* Subtle lift shadow */
+}

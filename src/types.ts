@@ -14,9 +14,10 @@ export interface Photo {
   city: string;
   arena: string;
   countryCode: string;
-  discipline?: string;
   photographer?: string;
   photographerId?: string;
+  isDuplicate?: boolean;
+  duplicateGroupId?: string;
 }
 
 export interface FilterState {

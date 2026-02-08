@@ -121,6 +121,109 @@
     color: #333;
 }
 
+/* V2 VARIANT STYLES */
+.scoped-results-dropdown.v2-variant {
+    padding: 0;
+    max-height: 380px;
+}
+
+.scoped-result-group {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 4px;
+}
+
+.scoped-result-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.scoped-group-header {
+    padding: 12px 16px 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #999;
+    font-weight: 700;
+}
+
+.scoped-search-result-item.v2-item {
+    height: auto;
+    padding: 8px 16px;
+    min-height: 52px;
+}
+
+.scoped-search-result-item.v2-item.focused {
+    background-color: rgba(27, 58, 236, 0.04);
+}
+
+.scoped-result-icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    margin-right: 12px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.scoped-result-icon-box.type-rider {
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.08);
+}
+
+.scoped-result-icon-box.type-horse {
+    color: #E65100;
+    background: rgba(230, 81, 0, 0.08);
+}
+
+.scoped-result-icon-box.type-photo {
+    color: #1B3AEC;
+    background: rgba(27, 58, 236, 0.08);
+}
+
+.scoped-result-text-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    overflow: hidden;
+}
+
+.scoped-result-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scoped-result-subtitle {
+    font-size: 0.75rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+}
+
+.scoped-result-arrow {
+    color: #ccc;
+    margin-left: 8px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
+}
+
+.scoped-search-result-item.v2-item:hover .scoped-result-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
 .scoped-no-results {
     padding: 16px;
     text-align: center;

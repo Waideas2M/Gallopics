@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingBag, User, LayoutGrid } from 'lucide-react';
+import { ShoppingBag, User, Camera } from 'lucide-react';
 import { ModernSearchBar } from './ModernSearchBar';
 import { useCart } from '../context/CartContext';
 import { AuthModal } from './AuthModal';
@@ -77,10 +77,10 @@ export const Header: React.FC = () => {
     return (
         <>
             <header className={`site-header ${scrolled ? 'is-scrolled' : ''}`}>
-                <div className="header-top container">
+                <div className="header-top container-fluid">
                     {/* 1. Logo (Left) */}
                     <a href="/" className="logo-section">
-                        <img src="/images/logo1.svg" alt="GALLOPICS" className="logo-img" />
+                        <img src="/images/logo1-blue.svg" alt="GALLOPICS" className="logo-img" />
                     </a>
 
                     {/* 3. Utility Icons (Right) */}
@@ -103,9 +103,9 @@ export const Header: React.FC = () => {
                                                 className="icon-btn workspace-btn"
                                                 aria-label="Workspace"
                                                 onClick={() => navigate('/pg')}
-                                                title="Go to Workspace"
+                                                title="Go to My Studio"
                                             >
-                                                <LayoutGrid size={20} />
+                                                <Camera size={20} />
                                             </button>
                                         </>
                                     )}

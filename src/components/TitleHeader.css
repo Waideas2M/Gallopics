@@ -10,6 +10,32 @@
     border-bottom: none;
 }
 
+/* Workspace Variant (Compact, smaller titles) */
+/* Workspace Variant (Compact, smaller titles) */
+.title-header.variant-workspace {
+    padding-top: 32px;
+}
+
+.title-header.variant-workspace .title-header-title {
+    font-size: var(--fs-h1);
+    /* 2rem */
+}
+
+/* Upload Variant (Compact, fullscreen context) */
+.title-header.variant-upload {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+}
+
+.title-header.variant-upload .title-header-title {
+    font-size: var(--fs-upload-title, 1.25rem);
+    font-weight: 700;
+}
+
+.title-header.variant-upload .title-header-main {
+    align-items: center;
+}
+
 .title-header-main {
     display: flex;
     justify-content: space-between;
@@ -114,6 +140,12 @@
 }
 
 .title-header-right {
+    display: flex;
+    align-items: center;
+}
+
+.title-header-close {
+    margin-left: var(--spacing-md);
     display: flex;
     align-items: center;
 }
@@ -251,6 +283,9 @@
     transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-primary-small:hover {
@@ -267,6 +302,15 @@
 .btn-primary-small:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary-small.icon-only {
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    border-radius: 50%;
+    /* Circle for icon only */
 }
 
 /* --- Modern Hero Redesign (Ehome) --- */
@@ -319,6 +363,8 @@
     border: none;
     color: #FFFFFF;
     /* Ensure all text is default white for contrast on image */
+    padding: 56px;
+    /* Custom padding for hero large */
 }
 
 /* Typography Overrides for Card 1 (Image Background) */
@@ -343,27 +389,34 @@
     gap: 16px;
     max-width: 480px;
     z-index: 2;
+    flex: 1;
+    /* Allow content to fill space */
+}
+
+/* Push body text to bottom of content area (right above actions) */
+.hero-body {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #475569;
+    font-weight: 450;
+    margin: 0;
 }
 
 .hero-title {
     font-family: 'Urbanist', sans-serif;
     font-size: 3rem;
-    /* Larger for impact */
     font-weight: 800;
     line-height: 1.05;
     color: #0F172A;
-    /* Deeper, more premium charcoal */
     letter-spacing: -0.03em;
-    /* Tighter for "display" feel */
     margin: 0;
-    text-wrap: balance;
-    /* Modern browser support for better heading wraps */
+    text-wrap: wrap;
+    white-space: normal;
 }
 
 .hero-title-small {
     font-family: 'Urbanist', sans-serif;
     font-size: 1.5rem;
-    /* Reduced to match Card 3 */
     font-weight: 800;
     letter-spacing: -0.02em;
     color: #1E293B;
@@ -372,7 +425,6 @@
     text-wrap: balance;
 }
 
-/* Utility for section titles that match card 3 style */
 .section-title {
     font-family: 'Urbanist', sans-serif;
     font-size: 1.5rem;
@@ -381,16 +433,6 @@
     color: #0F172A;
     line-height: 1.2;
     margin-bottom: 24px;
-}
-
-.hero-body {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    /* Better readability */
-    color: #475569;
-    /* Refined slate grey */
-    font-weight: 450;
-    margin: 0;
 }
 
 .hero-card-small .hero-body {
@@ -458,6 +500,7 @@
 .hero-card-small {
     background-color: #f4f4f5;
     /* Neutral light grey base */
+    padding: 32px;
 }
 
 /* Card 2: Image Background with Overlay */
@@ -561,29 +604,107 @@
     }
 }
 
+/* Mobile Carousel Pagination */
+.hero-pagination {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .hero-grid {
-        grid-template-columns: 1fr;
-        /* Mobile: Stack */
-        grid-template-areas:
-            "card-l"
-            "card-m"
-            "card-s";
-        gap: 16px;
+    .hero-carousel-container {
+        /* Restore container constraint (no full-bleed breakout) */
+        width: 100%;
+        overflow: hidden;
     }
 
+    .hero-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 0;
+        /* Ensure no extra bottom padding creating huge gaps */
+        padding-bottom: 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Firefox */
+    }
+
+    .hero-grid::-webkit-scrollbar {
+        display: none;
+        /* Chrome/Safari */
+    }
+
+    /* Override grid areas for carousel flow */
     .hero-card {
-        padding: 24px;
-        min-height: auto;
-        border-radius: 24px;
+        flex: 0 0 100%;
+        /* Match container width */
+        max-width: 100%;
+        scroll-snap-align: center;
+
+        /* Restore rounded corners & spacing */
+        border-radius: 32px;
+        /* Match desktop radius */
+        margin: 0;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+
+        padding: 32px 24px;
+        /* Balanced mobile padding */
+
+        /* Enforce consistent height */
+        height: auto;
+        min-height: 440px;
+        /* Fixed minimum height for consistency across B1, B2, B3 */
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        box-sizing: border-box;
+    }
+
+    .hero-card-large {
+        width: 100%;
+        /* ensure background covers */
+        background-size: cover;
+        /* Keep specific styling but match height rule above */
+    }
+
+    .hero-card-small {
+        /* Ensure top spacing is consistent */
+        justify-content: flex-start;
+        gap: 24px;
+    }
+
+    .hero-card-small .hero-actions {
+        margin-top: auto;
+        /* Push button to bottom */
+    }
+
+    /* Pagination Dots - tighter spacing */
+    .hero-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+        /* Consistent gap */
+        padding-bottom: 0;
+    }
+
+    .hero-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        /* Neutral grey */
+        transition: all 0.2s ease;
+    }
+
+    .hero-dot.active {
+        background-color: #1B3AEC;
+        /* Brand color */
+        transform: scale(1.2);
     }
 
     .hero-title {
         font-size: 2rem;
-    }
-
-    .hero-card-large {
-        min-height: 360px;
-        /* Tall for impact on mobile */
     }
 }

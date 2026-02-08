@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, Download } from 'lucide-react';
+import { TitleHeader } from '../../components/TitleHeader';
 
 export const Receipts: React.FC = () => {
     // Mock data for receipts
@@ -11,10 +12,11 @@ export const Receipts: React.FC = () => {
 
     return (
         <div className="pg-receipts">
-            <header style={{ marginBottom: '32px' }}>
-                <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 8px 0' }}>Receipts</h1>
-                <p style={{ color: '#666', margin: 0 }}>Download and manage your payout receipts and invoices.</p>
-            </header>
+            <TitleHeader
+                variant="workspace"
+                title="Receipts"
+                subtitle="Download and manage your payout receipts and invoices."
+            />
 
             <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #eaeaea', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>

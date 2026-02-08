@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { usePhotographer } from '../../context/PhotographerContext';
 import { X, UploadCloud, Image as ImageIcon, CheckCircle, AlertCircle, Plus, ArrowRight } from 'lucide-react';
+import { Button } from '../../components/Button';
 import './UploadOverlay.css';
 
 // Safe Thumbnail Component
@@ -135,9 +136,7 @@ export const UploadOverlay: React.FC = () => {
                     Upload Photos
                     {event && <span className="pg-upload-h-meta"> to {event.title}</span>}
                 </div>
-                <button className="pg-upload-close-btn" onClick={handleClose}>
-                    <X size={24} />
-                </button>
+                <Button variant="icon" onClick={handleClose} icon={<X size={24} />} />
             </div>
 
             {/* Body */}
@@ -153,14 +152,13 @@ export const UploadOverlay: React.FC = () => {
                         <p>{files.length} photos have been added to the event.</p>
 
                         <div className="pg-success-actions">
-                            <button className="pg-btn pg-btn-secondary" onClick={handleStartNewBatch}>
-                                <Plus size={18} style={{ marginRight: 8 }} />
+                            <Button variant="secondary" onClick={handleStartNewBatch} icon={<Plus size={18} />}>
                                 Upload another batch
-                            </button>
-                            <button className="pg-btn pg-btn-primary" onClick={handleViewPhotos}>
+                            </Button>
+                            <Button variant="primary" className="pg-btn-black" onClick={handleViewPhotos}>
                                 View Photos
                                 <ArrowRight size={18} style={{ marginLeft: 8 }} />
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 ) : (
@@ -235,9 +233,9 @@ export const UploadOverlay: React.FC = () => {
             {/* Footer (Hidden if Batch Complete, or just secondary actions) */}
             {!isBatchComplete && (
                 <div className="pg-upload-footer">
-                    <button className="pg-btn pg-btn-secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={handleClose}>
                         Minimize
-                    </button>
+                    </Button>
                 </div>
             )}
         </div>

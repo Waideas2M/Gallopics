@@ -1,0 +1,164 @@
+/* Mobile Hero Carousel Fixes - Guest Home Only */
+@media (max-width: 768px) {
+
+    :root {
+        --mobile-page-gutter: 16px;
+        /* Matches page padding */
+    }
+
+    /* 1) Wrapper & Spacing Reset */
+    .guestHome .ehome-intro-inner,
+    .guestHome .hero-wrapper {
+        padding-top: 8px !important;
+        /* Reduced top padding */
+        margin-top: 0 !important;
+        padding-bottom: 0px !important;
+        /* Minimized bottom space */
+    }
+
+    /* 2) Carousel Structure - Full Bleed Viewport */
+    .guestHome .hero-carousel-container {
+        /* Full bleed logic */
+        width: calc(100% + (2 * var(--mobile-page-gutter))) !important;
+        margin-left: calc(-1 * var(--mobile-page-gutter)) !important;
+        margin-right: calc(-1 * var(--mobile-page-gutter)) !important;
+        overflow: hidden !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .guestHome .hero-grid {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 0 !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+        grid-template-columns: none !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        width: 100% !important;
+    }
+
+    .guestHome .hero-grid::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    /* 3) Slide + Card Styling */
+    .guestHome .hero-card,
+    .guestHome .hero-card-large,
+    .guestHome .hero-card-small {
+        /* 
+           Stride = 100% (Screen Width).
+           Card Width = Screen - 32px (Gutters).
+           Margin = 16px each side (Gutters).
+           Total Flex Space = Width + Margin = 100%.
+        */
+        flex: 0 0 calc(100% - (2 * var(--mobile-page-gutter))) !important;
+        width: calc(100% - (2 * var(--mobile-page-gutter))) !important;
+        margin: 0 var(--mobile-page-gutter) !important;
+
+        max-width: 100% !important;
+        scroll-snap-align: center !important;
+
+        /* Layout */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+
+        /* Styling */
+        border-radius: 32px !important;
+        padding: 24px 20px !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+
+        /* Height Control */
+        height: auto !important;
+        min-height: var(--hero-mobile-height, 300px) !important;
+        max-height: 520px !important;
+        overflow-y: hidden !important;
+    }
+
+    /* Ensure Backgrounds Cover */
+    .guestHome .hero-card-large,
+    .guestHome .hero-card-small.photographer {
+        background-size: cover !important;
+        background-position: center !important;
+    }
+
+    /* 4) Compact Content Alignment */
+    .guestHome .hero-content {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        flex: 1 1 auto !important;
+    }
+
+    .guestHome .hero-title {
+        font-size: 1.75rem !important;
+        line-height: 1.1 !important;
+    }
+
+    .guestHome .hero-body {
+        font-size: 0.9375rem !important;
+        line-height: 1.4 !important;
+        margin-top: 0 !important;
+    }
+
+    /* Push Actions to Bottom */
+    .guestHome .hero-actions {
+        margin-top: auto !important;
+        padding-top: 16px !important;
+        width: 100% !important;
+    }
+
+    /* 5) Pagination Positioning */
+    .guestHome .hero-pagination {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin-top: 8px !important;
+        margin-bottom: 0px !important;
+        /* Minimized bottom spacing (0px) */
+        padding-bottom: 0 !important;
+        gap: 8px !important;
+        height: 12px !important;
+    }
+
+    .guestHome .hero-dot {
+        width: 8px !important;
+        height: 8px !important;
+        border-radius: 50% !important;
+        background-color: #e2e8f0 !important;
+        border: none !important;
+        margin: 0 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .guestHome .hero-dot.active {
+        background-color: #1B3AEC !important;
+        transform: scale(1.2) !important;
+    }
+
+    /* Mobile Search Bar Font Fix */
+    .guestHome .hero-actions .modern-search-bar {
+        height: 48px !important;
+    }
+}
+
+/* Small Device Tweaks */
+@media (max-width: 374px) {
+    .guestHome .hero-title {
+        font-size: 1.5rem !important;
+    }
+
+    .guestHome .hero-card,
+    .guestHome .hero-card-large,
+    .guestHome .hero-card-small {
+        min-height: 300px !important;
+        padding: 24px 16px !important;
+    }
+}

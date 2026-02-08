@@ -17,9 +17,7 @@
     /* Bring above others */
 }
 
-.pg-photo-card-wrapper.selected .photo-card {
-    /* Remove default shadow to avoid clash if needed, or let it be */
-}
+
 
 /* Hide Buyer Actions from Guest Component */
 .pg-photo-card-wrapper .hover-actions-bottom,
@@ -96,7 +94,7 @@
     top: 10px;
     right: 10px;
     padding: 4px 8px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;

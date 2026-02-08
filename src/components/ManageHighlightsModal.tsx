@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import { usePhotographer } from '../context/PhotographerContext';
+import { Button } from './Button';
 import './ManageHighlightsModal.css';
 
 interface ManageHighlightsModalProps {
@@ -21,9 +22,10 @@ export const ManageHighlightsModal: React.FC<ManageHighlightsModalProps> = ({
     // Local state for the draft selection
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(initialIds));
     const [activeEventId, setActiveEventId] = useState<string>(events.filter(e => e.isRegistered)[0]?.id || '');
+    const [toast, setToast] = useState<string | null>(null);
 
     // Reset state when opening
-    React.useEffect(() => {
+    useEffect(() => {
         if (isOpen) {
             setSelectedIds(new Set(initialIds));
             // Default to first 'my event'
@@ -32,6 +34,14 @@ export const ManageHighlightsModal: React.FC<ManageHighlightsModalProps> = ({
         }
     }, [isOpen, initialIds, events]);
 
+    // Auto-hide toast
+    useEffect(() => {
+        if (toast) {
+            const timer = setTimeout(() => setToast(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast]);
+
     // Data derivation
     const myEvents = useMemo(() => events.filter(e => e.isRegistered), [events]);
     const currentPhotos = useMemo(() => activeEventId ? getPhotosByEvent(activeEventId) : [], [activeEventId, getPhotosByEvent]);
@@ -39,12 +49,13 @@ export const ManageHighlightsModal: React.FC<ManageHighlightsModalProps> = ({
     const handleToggle = (photoId: string) => {
         const newSet = new Set(selectedIds);
         if (newSet.has(photoId)) {
+            // Deselecting - always allowed
             newSet.delete(photoId);
         } else {
+            // Selecting - enforce strict limit
             if (newSet.size >= 10) {
-                // Shake or show toast? For now just return early as requested "Block selecting >10"
-                // Ideally show a message.
-                alert("Maximum 10 highlights allowed.");
+                // Already at max, block selection
+                setToast("Maximum 10 highlights allowed.");
                 return;
             }
             newSet.add(photoId);
@@ -144,9 +155,18 @@ export const ManageHighlightsModal: React.FC<ManageHighlightsModalProps> = ({
                 </div>
 
                 <div className="highlights-modal-footer">
-                    <button className="btn-cancel" onClick={onClose}>Cancel</button>
-                    <button className="btn-save" onClick={handleSave}>Save changes</button>
+                    <Button variant="secondary" onClick={onClose}>Cancel</Button>
+                    <Button variant="primary" onClick={handleSave}>Save changes</Button>
                 </div>
+
+                {/* Toast Notification */}
+                {toast && (
+                    <div className="modal-toast-container">
+                        <div className="modal-toast">
+                            <span>{toast}</span>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

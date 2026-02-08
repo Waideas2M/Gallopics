@@ -1,269 +1,717 @@
 /* Event Detail Page */
 .pg-event-detail {
-    padding-bottom: 80px;
-    /* Space for content */
+    padding-bottom: 0;
 }
 
-/* Header v2 (Guest Flow Alignment) */
-.pg-detail-header-v2 {
-    margin-bottom: 32px;
+/* Tabs Container - White header patch with subtle divider */
+.pg-tabs-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0;
+    transition: transform 0.3s ease, max-height 0.3s ease, opacity 0.3s ease;
+
+    position: sticky;
+    top: 0;
+    z-index: 101;
 }
 
-.pg-breadcrumbs-v2 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 16px;
-}
-
-.pg-breadcrumbs-v2 a {
-    text-decoration: none;
-    color: inherit;
-}
-
-.pg-breadcrumbs-v2 a:hover {
-    color: var(--brand, #1B3AEC);
-}
-
-.pg-breadcrumbs-v2 .separator {
-    color: #ccc;
-}
-
-.pg-breadcrumbs-v2 .active {
-    color: #111;
-    font-weight: 500;
-}
-
-.pg-header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-}
-
-.pg-header-left {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}
-
-.pg-header-logo {
-    width: 100px;
-    height: 100px;
-    background: #fff;
-    border: 1px solid #eaeaea;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.pg-tabs-container.expanded-tabs {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    /* In expanded, header is gone, so this sticks at 0 pure */
+    top: 0;
+    /* Prepare for collapse */
+    max-height: 100px;
     overflow: hidden;
-    padding: 12px;
-    flex-shrink: 0;
 }
 
-.pg-header-logo img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+.pg-tabs-container.header-hidden {
+    transform: translateY(-100%);
+    pointer-events: none;
+    border-bottom: none;
 }
 
-.pg-header-text {
+.pg-tabs-container.expanded-tabs.header-hidden {
+    transform: none;
+    max-height: 0;
+    opacity: 0;
+}
+
+/* Grey Content Section */
+.pg-grey-section {
+    background: var(--color-bg, #f5f6f8);
+    position: relative;
+    padding-top: 0;
+    /* Remove top padding to allow sticky header to sit flush */
+    padding-bottom: 24px;
+    min-height: calc(100vh - 200px);
+}
+
+.pg-grey-section-inner {
     display: flex;
     flex-direction: column;
+    min-height: inherit;
+}
+
+/* Photo Grid */
+.pg-photos-grid {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ============================================
+   Header V2 Compact Styles
+   ============================================ */
+
+.pg-compact-header {
+    padding-top: 16px !important;
+    padding-bottom: 20px !important;
+}
+
+.pg-compact-header .title-avatar-wrapper.is-square {
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 8px !important;
+}
+
+.pg-compact-header .title-avatar-wrapper.is-square .profile-avatar {
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 6px !important;
+}
+
+.pg-compact-header .title-header-title {
+    font-size: 1.5rem !important;
+    /* Reduced from 2rem (fs-h1) */
+}
+
+.pg-compact-header .title-header-top-subtitle {
+    font-size: 0.75rem !important;
+    /* Reduced from 0.875rem */
+}
+
+.pg-compact-header .title-header-subtitle {
+    font-size: 0.9375rem !important;
+    /* Reduced from 1.125rem */
+}
+
+.pg-compact-header .title-text-group {
+    gap: 2px !important;
+}
+
+/* Expanded Header variant - ONLY logo + event name */
+.expanded-header-compact {
+    border-bottom: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    z-index: 102;
+    background: #fff;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+}
+
+.expanded-header-compact .title-avatar-wrapper.is-square,
+.expanded-header-compact .title-avatar-wrapper.is-square .profile-avatar {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.expanded-header-compact .title-header-title {
+    font-size: 1.125rem !important;
+}
+
+/* ============================================
+   Bottom Action Bar (PgEventBottomBar)
+   ============================================ */
+
+.pg-action-bar-wrapper {
+    position: fixed;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--container-padding);
+    pointer-events: none;
+}
+
+.is-expanded .pg-action-bar-wrapper {
+    position: fixed;
+    /* Keep it fixed at the bottom in expanded mode */
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
+.pg-action-bar {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+    border-radius: 999px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    max-width: 1200px;
+    pointer-events: auto;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* Left: Folders with scroll behavior */
+.action-bar-left {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    /* Important for local scroll */
+    flex: 1;
+}
+
+.pg-folder-scroll-area {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+    position: relative;
+    mask-image: linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent);
+    padding: 0 4px;
+}
+
+.pg-folder-scroll-area::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.pg-folder-group {
+    display: flex;
+    align-items: center;
     gap: 4px;
 }
 
-.pg-header-top-meta {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+/* Right: Actions group */
+.action-bar-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding-left: 8px;
+    border-left: 1px solid #f1f2f4;
 }
 
-.pg-header-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #111;
-    margin: 0;
-    line-height: 1.1;
-}
-
-.pg-header-bottom-meta {
+.pg-actions-group {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #666;
-    font-size: 1rem;
-    margin-top: 8px;
 }
 
-.meta-bullet {
-    color: #ccc;
-    font-size: 1rem;
-}
-
-.pg-header-actions {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 8px;
-    /* Slightly raise buttons for alignment */
-}
-
-/* Tabs Removed */
-.pg-detail-content {
-    /* Container for content below header */
-}
-
-/* Photo Tools: Chips & Progress */
-.pg-photos-tools {
-    margin-bottom: 24px;
-}
-
-.pg-chips-row {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scrollbar-width: none;
-}
-
-.pg-chips-row::-webkit-scrollbar {
-    display: none;
-}
-
-.pg-chip {
-    padding: 6px 16px;
-    border-radius: 20px;
-    background: #fff;
-    border: 1px solid #eaeaea;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #333;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
+/* Folder Pills */
+.folder-pill {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    padding: 0 16px;
+    height: 48px;
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #444;
+    white-space: nowrap;
 }
 
-.pg-chip:hover {
-    background: #f9f9f9;
-    border-color: #dcdcdc;
+.folder-label {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.pg-chip.active {
+.folder-pill:hover:not(.active) {
+    background: #f1f2f4;
+    color: #111;
+}
+
+.folder-pill.active {
     background: #111;
+    /* Black Variant */
     color: #fff;
-    border-color: #111;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.pg-chip-badge {
-    background: #ef4444;
-    color: white;
-    font-size: 0.7rem;
-    padding: 0 5px;
-    border-radius: 10px;
-    height: 16px;
-    display: flex;
+.folder-badge {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.06);
+    color: #666;
 }
 
-/* Upload Progress Bar */
-.pg-upload-progress {
-    margin-top: 12px;
-    background: #e0e7ff;
-    /* light blue tint */
-    border-radius: 6px;
-    padding: 8px 12px;
+.folder-pill.active .folder-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Duplicates Count Badge - Always Red Accent */
+.folder-badge.duplicates-badge,
+.folder-pill.active .folder-badge.duplicates-badge {
+    background: #FEF2F2 !important;
+    color: #DC2626 !important;
+}
+
+/* Collapsible Search */
+.pg-bar-search-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--brand, #1B3AEC);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
 }
 
-.pg-upload-progress-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    background: rgba(27, 58, 236, 0.1);
-    transition: width 0.3s ease;
-    z-index: 0;
-}
-
-.pg-upload-text {
-    z-index: 1;
-    font-weight: 500;
-}
-
-/* Sticky Action Bar */
-.pg-sticky-actions {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff;
-    padding: 12px 24px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+.pg-bar-search-input-wrapper {
     display: flex;
     align-items: center;
-    gap: 16px;
-    z-index: 100;
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1px solid #eaeaea;
+    gap: 12px;
+    background: #f1f2f4;
+    border-radius: 999px;
+    padding: 0 16px;
+    height: 48px;
+    width: 320px;
+    animation: searchExpand 0.3s cubic-bezier(0.2, 0, 0.2, 1);
 }
 
-@keyframes slideUp {
+@keyframes searchExpand {
     from {
-        transform: translate(-50%, 100%);
+        width: 48px;
         opacity: 0;
     }
 
     to {
-        transform: translate(-50%, 0);
+        width: 320px;
         opacity: 1;
     }
 }
 
-.pg-action-count {
-    font-weight: 600;
+.pg-bar-search-input {
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: 0.875rem;
+    outline: none;
     color: #111;
-    margin-right: 8px;
-    padding-right: 16px;
-    border-right: 1px solid #eaeaea;
 }
 
-.pg-action-btn {
-    background: none;
+.search-close-btn {
+    color: #999;
+    padding: 4px;
     border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+}
+
+.search-close-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666;
+}
+
+/* Action Buttons */
+.pg-bar-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: #111;
+}
+
+.pg-bar-btn:hover {
+    background: #f1f2f4;
+}
+
+.pg-bar-btn.search-trigger-btn {
+    background: #111;
+    color: #fff;
+}
+
+.pg-bar-btn.upload-btn {
+    background: #111;
+    color: #fff;
+}
+
+.pg-bar-btn.upload-btn:hover {
+    background: #000;
+    transform: translateY(-2px);
+}
+
+.bar-separator {
+    width: 1px;
+    height: 24px;
+    background: #e5e7eb;
+    margin: 0 4px;
+}
+
+/* ============================================
+   Expand ↔ Shrink Behavior
+   ============================================ */
+
+.pg-event-detail.is-expanded {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: #fff;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
-    color: #444;
+    overflow: hidden;
+}
+
+.pg-event-detail.is-expanded .pg-grey-section {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 100px;
+    min-height: 0;
+}
+
+.pg-grey-section-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+/* Transitions */
+.pg-event-detail {
+    transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* Cleanup old unused classes */
+.pg-bottom-strip,
+.pg-folder-bar,
+.folder-bar-inner,
+.pg-search-row,
+.pg-search-input-wrapper-old {
+    display: none;
+}
+
+/* Selection & Card wrapper styles */
+.pg-photo-card-wrapper {
+    position: relative;
     cursor: pointer;
-    padding: 0 4px;
+    transition: transform 0.15s ease;
 }
 
-.pg-action-btn:hover {
-    color: #000;
+.pg-photo-card-wrapper:hover {
+    transform: translateY(-2px);
 }
 
-.pg-action-btn.danger {
+.pg-photo-card-wrapper.selected {
+    transform: scale(0.98);
+    border-radius: var(--radius-md, 8px);
+    box-shadow: 0 0 0 3px #1B3AEC, 0 8px 24px rgba(27, 58, 236, 0.15);
+}
+
+/* Remove shadow from inner card to avoid double shadow or masking issues */
+.pg-photo-card-wrapper.selected .photo-card {
+    box-shadow: none;
+}
+
+.pg-photo-card-wrapper.selected .card-image-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(27, 58, 236, 0.04);
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Chip Bar Actions */
+.pg-chip-actions-cluster {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    padding-left: 16px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    /* Prevent actions from shrinking */
+}
+
+/* New Chip-Style Button (Select All / Clear) */
+.pg-chip-btn {
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #fff;
+    color: #111;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.pg-chip-btn:hover {
+    background: #f1f2f4;
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #111;
+}
+
+/* Primary variant for Publish */
+.pg-chip-btn.primary {
+    background: #1B3AEC;
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 6px rgba(27, 58, 236, 0.25);
+}
+
+.pg-chip-btn.primary:hover {
+    background: #152dc4;
+    transform: translateY(-1px);
+}
+
+/* Round Action Button (Edit / Delete) */
+.pg-action-round-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.pg-action-round-btn:hover {
+    background: #f1f2f4;
+    color: #111;
+}
+
+.pg-action-round-btn.delete {
     color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+    background: #FEF2F2;
 }
 
-.pg-action-btn.danger:hover {
-    color: #dc2626;
+.pg-action-round-btn.delete:hover {
+    background: #FEE2E2;
+    border-color: #ef4444;
+}
+
+.pg-selection-status {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #111;
+    white-space: nowrap;
+    margin-right: 4px;
+}
+
+/* Filter Chips Row - Sticky Glass */
+.pg-filter-chips-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* Single line */
+    gap: 0;
+    margin-bottom: 24px;
+    min-width: 0;
+
+    position: sticky;
+    top: 58px;
+    z-index: 99;
+    padding: 20px 0;
+
+    background: rgba(245, 246, 248, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: top 0.3s ease, background 0.2s;
+}
+
+.pg-chips-scroll-container {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-right: 16px;
+    align-items: center;
+    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+}
+
+.pg-chips-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Adjust top when sticky context changes */
+.pg-tabs-container.header-hidden+.pg-grey-section .pg-filter-chips-row {
+    top: 0;
+}
+
+.pg-event-detail.is-expanded .pg-filter-chips-row {
+    top: 0 !important;
+}
+
+
+.pg-content-split {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+/* Selection Overlay */
+/* Large variants */
+.pg-chip-btn.size-lg {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 0.875rem;
+}
+
+.pg-action-round-btn.size-lg {
+    width: 40px;
+    height: 40px;
+}
+
+.pg-selection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    /* Large hit area */
+    height: 60px;
+    padding: 8px;
+    /* Position checkbox at 8px, 8px */
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.pg-photo-card-wrapper:hover .pg-selection-overlay,
+.pg-selection-overlay.visible {
+    opacity: 1;
+}
+
+.pg-new-checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s cubic-bezier(0.2, 0, 0.2, 1);
+    color: white;
+}
+
+.pg-new-checkbox.checked {
+    background: #1B3AEC;
+    border-color: #1B3AEC;
+    box-shadow: 0 2px 4px rgba(27, 58, 236, 0.3);
+}
+
+.pg-new-checkbox:hover:not(.checked) {
+    border-color: rgba(0, 0, 0, 0.3);
+    background: #fff;
+}
+
+.pg-check-circle .check-icon {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Empty State */
+.pg-empty-state {
+    padding: 60px;
+    text-align: center;
+    color: #888;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #eaeaea;
+}
+
+/* "All" chip - Black style when active */
+.filter-chip.filter-chip-count.chip-all-black.active {
+    background: #111 !important;
+    border-color: #111 !important;
+}
+
+/* Highlight Animation for Deep Linked Duplicate Group */
+.pg-duplicate-group {
+    transition: all 0.5s ease;
+    border: 2px solid transparent;
+}
+
+.pg-duplicate-group.highlight-duplicate-group {
+    border-color: #1B3AEC;
+    box-shadow: 0 0 0 4px rgba(27, 58, 236, 0.15);
+    background-color: #f8faff !important;
+    /* Slight blue tint */
+}
+
+/* Tab Count Badge */
+.pg-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    padding: 0 6px;
+    height: 18px;
+    min-width: 20px;
+    border-radius: 10px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+}
+
+.pg-tabs-container button .pg-tab-badge {
+    background: #f1f2f4;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.pg-tabs-container button.active .pg-tab-badge {
+    background: rgba(27, 58, 236, 0.1);
+    color: #1B3AEC;
+    border: 1px solid rgba(27, 58, 236, 0.2);
+}
+
+.pg-tabs-container button:hover:not(.active) .pg-tab-badge {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* Highlight Ring for Search Result */
+.pg-photo-card-wrapper.highlight-ring {
+    box-shadow: 0 0 0 4px #1B3AEC, 0 8px 32px rgba(27, 58, 236, 0.4);
+    transform: scale(1.02);
+    z-index: 50;
+    border-radius: var(--radius-md, 8px);
 }

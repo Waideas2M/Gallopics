@@ -385,10 +385,150 @@
 }
 
 /* Fix Dropdown Alignment for Header */
+/* Fix Dropdown Alignment for Header */
 .modern-search-wrapper.is-collapsible.expanded .search-results-dropdown {
     right: 0;
     left: auto;
-    width: 320px;
+    width: 380px;
+}
+
+/* Mobile Scoped Fixes (Portal Based) */
+@media (max-width: 768px) {
+
+    /* Portal Overlay Container */
+    .mobile-search-overlay-container {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        /* Highest priority */
+        pointer-events: none;
+        /* Let clicks pass to backdrop unless on content */
+        padding-top: calc(env(safe-area-inset-top) + 12px);
+        padding-left: 12px;
+        padding-right: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Backdrop */
+    .search-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        /* Darker dim for readability */
+        backdrop-filter: blur(2px);
+        z-index: 2001;
+        /* Behind Search, Above page/header */
+        pointer-events: auto;
+        animation: fadeIn 0.2s ease;
+    }
+
+    /* Content Wrapper */
+    .mobile-search-bar-wrapper {
+        position: relative;
+        /* Flow within container padding */
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        z-index: 2005;
+        /* Above Backdrop */
+        pointer-events: auto;
+    }
+
+    /* Mobile Expanded Bar (Inside Portal) */
+    .modern-search-bar.mobile-expanded {
+        background: #1A1A1A;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 0 16px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        flex-shrink: 0;
+    }
+
+    /* Helper Line */
+    .mobile-search-helper-line {
+        margin-top: 8px;
+        padding-left: 0;
+        width: 100%;
+        color: rgba(255, 255, 255, 0.9);
+        /* High contrast */
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+        /* Subtle shadow for readability */
+        white-space: normal;
+        /* Allow wrap */
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: center;
+        /* Center align */
+        pointer-events: none;
+    }
+
+    .modern-search-bar.mobile-expanded .search-input {
+        flex: 1;
+        font-size: 16px;
+        /* Prevent Zoom */
+        color: white !important;
+        margin-left: 8px;
+        outline: none;
+        border: none;
+        background: transparent;
+        /* Mobile Placeholder Truncation */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+    }
+
+    .modern-search-bar.mobile-expanded .search-icon {
+        color: #999;
+    }
+
+    /* Dropdown in Portal */
+    .mobile-search-overlay-container .search-results-dropdown {
+        position: static;
+        /* Flow naturally below bar in wrapper */
+        margin-top: 8px;
+        width: 100%;
+        max-height: calc(100vh - 140px);
+        background: #262626;
+        border-radius: 12px;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    .mobile-search-overlay-container .search-results-dropdown.empty {
+        padding: 24px;
+        text-align: center;
+        color: #999;
+    }
+
+    /* Hide Original Input/Clear when collapsed on mobile (handled by React logic mostly) */
+    .modern-search-wrapper.is-collapsible:not(.expanded) {
+        width: 44px !important;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* ==========================================================================

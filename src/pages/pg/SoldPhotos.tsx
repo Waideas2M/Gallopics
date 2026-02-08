@@ -1,7 +1,9 @@
 import React from 'react';
 import { usePhotographer } from '../../context/PhotographerContext';
 import { MasonryGrid } from '../../components/MasonryGrid';
+
 import { PgPhotoCard } from './PgPhotoCard';
+import { TitleHeader } from '../../components/TitleHeader';
 import { DollarSign } from 'lucide-react';
 
 export const SoldPhotos: React.FC = () => {
@@ -12,10 +14,11 @@ export const SoldPhotos: React.FC = () => {
 
     return (
         <div className="pg-sold-photos">
-            <header style={{ marginBottom: '32px' }}>
-                <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 8px 0' }}>Sold Photos</h1>
-                <p style={{ color: '#666', margin: 0 }}>View all photos that have been purchased by customers.</p>
-            </header>
+            <TitleHeader
+                variant="workspace"
+                title="Sold Photos"
+                subtitle="View all photos that have been purchased by customers."
+            />
 
             {allSoldPhotos.length > 0 ? (
                 <MasonryGrid isLoading={false}>

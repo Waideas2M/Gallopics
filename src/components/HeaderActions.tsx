@@ -1,6 +1,65 @@
-import React, { useState } from 'react';
-import { Share2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Share2, MoreHorizontal } from 'lucide-react';
 import './HeaderActions.css';
+
+export interface ActionItem {
+    label: string;
+    onClick: () => void;
+    variant?: 'default' | 'destructive';
+}
+
+interface MoreMenuProps {
+    actions: ActionItem[];
+}
+
+export const MoreMenu: React.FC<MoreMenuProps> = ({ actions }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
+
+    return (
+        <div className="header-action-more-wrapper" ref={menuRef}>
+            <button
+                className={`share-icon-btn ${isOpen ? 'active' : ''}`}
+                onClick={() => setIsOpen(!isOpen)}
+                title="More actions"
+            >
+                <MoreHorizontal size={20} />
+            </button>
+
+            {isOpen && (
+                <div className="header-action-dropdown">
+                    {actions.map((action, index) => (
+                        <button
+                            key={index}
+                            className={`header-action-item ${action.variant === 'destructive' ? 'destructive' : ''}`}
+                            onClick={() => {
+                                action.onClick();
+                                setIsOpen(false);
+                            }}
+                        >
+                            {action.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 interface ShareIconButtonProps {
     url?: string;

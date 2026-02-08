@@ -1,0 +1,150 @@
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    /* Pill shape */
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-chip:hover:not(.active):not(.disabled) {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: #d1d1d1;
+    color: var(--color-text-primary);
+}
+
+.filter-chip.active {
+    background-color: var(--color-text-primary);
+    /* Black/Dark active */
+    color: #ffffff;
+    border-color: var(--color-text-primary);
+}
+
+.filter-chip-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    height: 18px;
+    border-radius: 9px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+/* Badge colors dependent on state might be needed, but usually white on active */
+.filter-chip.active .filter-chip-badge {
+    background-color: #ef4444;
+    /* Alert color for badges often */
+    color: #ffffff;
+}
+
+.filter-chip:not(.active) .filter-chip-badge {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+/* ============================================
+   NEW: filterCount Variant for PG Uploads
+   ============================================ */
+
+.filter-chip.filter-chip-count {
+    gap: 6px;
+    padding: 6px 10px 6px 14px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+}
+
+.filter-chip.filter-chip-count .chip-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-secondary, #666);
+}
+
+.filter-chip.filter-chip-count:hover:not(.active):not(.disabled) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.filter-chip.filter-chip-count:hover:not(.active):not(.disabled) .chip-label {
+    color: var(--color-text-primary, #111);
+}
+
+/* Count Badge - Pill style */
+.chip-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+/* Active state */
+.filter-chip.filter-chip-count.active {
+    background: var(--color-brand-primary, #1B3AEC);
+    border-color: var(--color-brand-primary, #1B3AEC);
+}
+
+.filter-chip.filter-chip-count.active .chip-label {
+    color: #fff;
+}
+
+.filter-chip.filter-chip-count.active .chip-count-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Disabled state (count = 0) */
+.filter-chip.filter-chip-count.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.filter-chip.filter-chip-count.disabled .chip-label {
+    color: #9ca3af;
+}
+
+.filter-chip.filter-chip-count.disabled .chip-count-badge {
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+}
+
+/* Red Accent for Missing Tags */
+.filter-chip.filter-chip-count.accent-red:not(.active) {
+    border-color: #fecaca;
+    background: #fff5f5;
+}
+
+.filter-chip.filter-chip-count.accent-red:not(.active) .chip-label {
+    color: #dc2626;
+}
+
+.filter-chip.filter-chip-count.accent-red:not(.active) .chip-count-badge {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+}
+
+.filter-chip.filter-chip-count.accent-red:hover:not(.active):not(.disabled) {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}

@@ -21,7 +21,7 @@ export const CopyrightBar: React.FC<CopyrightBarProps> = ({ minimal = false, sid
 
     return (
         <div className={`copyright-bar ${minimal ? 'minimal' : ''} ${sidebar ? 'sidebar-mode' : ''}`}>
-            {sidebar ? content : <div className="container">{content}</div>}
+            {sidebar ? content : <div className="container-fluid">{content}</div>}
         </div>
     );
 };

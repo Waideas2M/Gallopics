@@ -36,6 +36,12 @@ export function PhotographerProfile() {
     const [activeTab, setActiveTab] = useState<'highlights' | 'photos'>('highlights');
 
     const activeProfile = getActivePhotographerProfile(id);
+
+    // Safety check
+    if (!activeProfile || !activeProfile.photographer) {
+        return <div>Photographer not found</div>;
+    }
+
     const photographer = activeProfile.photographer;
     const photographerAvatar = `/images/${photographer.firstName} ${photographer.lastName}.jpg`;
 
@@ -89,10 +95,27 @@ export function PhotographerProfile() {
         const uniqueRiders = Array.from(new Set(available.map(p => p.rider))).sort();
         const uniqueHorses = Array.from(new Set(available.map(p => p.horse))).sort();
 
-        return [
-            ...uniqueRiders.map(r => ({ label: r, value: r })),
-            ...uniqueHorses.map(h => ({ label: h, value: h }))
-        ];
+        const riderOptions = uniqueRiders.map(r => {
+            const photo = available.find(p => p.rider === r);
+            return {
+                label: r,
+                value: r,
+                type: 'rider' as const,
+                subtitle: photo?.horse
+            };
+        });
+
+        const horseOptions = uniqueHorses.map(h => {
+            const photo = available.find(p => p.horse === h);
+            return {
+                label: h,
+                value: h,
+                type: 'horse' as const,
+                subtitle: photo?.rider
+            };
+        });
+
+        return [...riderOptions, ...horseOptions];
     }, [photos, selectedEventId]);
 
     const filteredPhotos = useMemo(() => {
@@ -233,9 +256,15 @@ export function PhotographerProfile() {
 
                         {/* Hire Button logic: Show if Owner (driven by context) or if Guest & Available */}
                         {(isOwner ? availableToHire : photographer.isAvailableToHire) ? (
-                            <button className="btn-primary-small">Hire me</button>
+                            <button className="pg-btn pg-btn-primary">Hire me</button>
                         ) : (
-                            <button className="btn-primary-small" disabled style={{ background: '#F3F4F6', color: '#9CA3AF', border: 'none', cursor: 'not-allowed', boxShadow: 'none' }}>Not available atm</button>
+                            <button
+                                className="pg-btn pg-btn-primary"
+                                disabled
+                                style={{ background: '#F3F4F6', color: '#9CA3AF', border: 'none', cursor: 'not-allowed', boxShadow: 'none' }}
+                            >
+                                Not available atm
+                            </button>
                         )}
 
                         <ActionSeparator />
@@ -328,7 +357,8 @@ export function PhotographerProfile() {
                     <section className="grid-section" style={{ background: 'transparent', padding: 0 }}>
                         <div className="container">
                             <div className="filters-wrapper">
-                                <div className="filter-row">
+                                {/* New Shared Filter Structure */}
+                                <div className="filter-container">
                                     <div className="filter-group">
                                         <ModernDropdown
                                             value={selectedEventId}
@@ -348,15 +378,6 @@ export function PhotographerProfile() {
                                             placeholder="Class"
                                             variant="pill"
                                         />
-                                        <div style={{ flex: 2, minWidth: '300px' }}>
-                                            <ScopedSearchBar
-                                                placeholder="Search by riders or horses..."
-                                                options={combinedOptions}
-                                                currentValue={searchQuery}
-                                                onSelect={(val) => setSearchQuery(val)}
-                                                onSearchChange={(val) => setSearchQuery(val)}
-                                            />
-                                        </div>
                                         <button
                                             className="filter-reset-btn"
                                             onClick={() => {
@@ -370,6 +391,17 @@ export function PhotographerProfile() {
                                         >
                                             <RotateCcw size={18} />
                                         </button>
+                                    </div>
+
+                                    <div className="search-group">
+                                        <ScopedSearchBar
+                                            placeholder="Search by riders or horses..."
+                                            options={combinedOptions}
+                                            currentValue={searchQuery}
+                                            onSelect={(val) => setSearchQuery(val)}
+                                            onSearchChange={(val) => setSearchQuery(val)}
+                                            variant="v2"
+                                        />
                                     </div>
 
                                     <div className="filter-results-count">

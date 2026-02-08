@@ -1,9 +1,6 @@
 .pg-events-container {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    max-width: 900px;
-    margin: 0 auto;
     padding-bottom: 60px;
 }
 
@@ -17,7 +14,7 @@
 .pg-events-header h1 {
     font-size: 2rem;
     font-weight: 700;
-    color: #111;
+    color: var(--color-text-primary);
     margin: 0;
 }
 
@@ -27,40 +24,25 @@
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
+    margin-top: 24px;
+    /* Space after header */
+    margin-bottom: 24px;
+}
+
+.pg-events-controls,
+.pg-events-list {
+    width: 100%;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
 }
 
 .pg-events-filters {
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.pg-filter-select {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 0.9rem;
-    color: #333;
-    transition: all 0.2s ease;
-}
-
-.pg-filter-select:hover {
-    border-color: #dcdcdc;
-    background: #fdfdfd;
-}
-
-.pg-native-select {
-    border: none;
-    background: transparent;
-    font-size: 0.9rem;
-    color: #333;
-    outline: none;
-    cursor: pointer;
-    font-family: inherit;
-    padding-right: 4px;
 }
 
 
@@ -86,19 +68,19 @@
 }
 
 .pg-segment-btn:hover {
-    color: #333;
+    color: var(--color-text-primary);
 }
 
 .pg-segment-btn.active {
-    background: #fff;
-    color: #111;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Event List Row */
 .pg-event-row {
-    background: #fff;
-    border: 1px solid #eaeaea;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -106,11 +88,12 @@
     gap: 16px;
     transition: all 0.2s ease;
     position: relative;
+    color: var(--color-text-primary);
 }
 
 .pg-event-row:hover {
-    border-color: #dcdcdc;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-hover);
 }
 
 .pg-event-thumb {
@@ -147,13 +130,13 @@
 .pg-event-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #111;
+    color: var(--color-text-primary);
     margin: 0;
 }
 
 .pg-event-meta {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -174,7 +157,7 @@
 
 .pg-event-meta-line3 {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -240,4 +223,66 @@
 
 .pg-btn-ghost:hover {
     background: rgba(0, 0, 0, 0.05);
+}
+
+/* My Events Grid */
+.pg-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+}
+
+.pg-events-list {
+    width: 100%;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+}
+
+/* Upcoming Red Badge */
+.pg-tab-badge-red {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    background: #ef4444;
+    /* Modern red */
+    border-radius: 50%;
+    border: 1px solid #fff;
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+}
+
+.pg-empty-state {
+    padding: 60px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9375rem;
+    grid-column: 1 / -1;
+}
+
+/* Transition between views */
+.pg-events-list,
+.pg-events-grid {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

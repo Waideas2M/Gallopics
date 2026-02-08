@@ -4,9 +4,9 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    transition: background-color 0.4s ease, transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0, 0.2, 1);
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
+    transition: background-color 0.4s ease, box-shadow 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    /* will-change: transform; REMOVED to allow fixed children escape */
+    /* transform: translate3d(0, 0, 0); REMOVED to allow fixed children escape */
     overflow: visible;
     /* Required for search dropdown */
     background: #fff;
@@ -43,7 +43,7 @@
     width: auto;
     display: block;
     /* Color: #1B3AEC */
-    filter: brightness(0) saturate(100%) invert(18%) sepia(85%) saturate(4649%) hue-rotate(238deg) brightness(89%) contrast(104%);
+    /* filter: brightness(0) saturate(100%) invert(18%) sepia(85%) saturate(4649%) hue-rotate(238deg) brightness(89%) contrast(104%); REMOVED */
 }
 
 /* 2. Actions (Icons) */
@@ -55,6 +55,8 @@
     /* Push icons to the far right */
     position: relative;
     /* Anchor for expanding search */
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .icon-btn {
@@ -62,21 +64,27 @@
     align-items: center;
     justify-content: center;
     width: 44px;
-    /* Larger touch target */
     height: 44px;
     border-radius: 50%;
     color: var(--color-text-primary);
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    background-color: transparent;
-    /* Clean start */
+
+    /* Header Actions Group Style */
+    background: #ffffff;
+    /* White background */
+    border: 1px solid #eaeaea;
+    /* Subtle border */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    /* Very subtle shadow */
 }
 
 /* Hover Effect - Prominent */
 .icon-btn:hover {
     background-color: #f0f0f0;
+    border-color: #d1d1d1;
+    /* Slightly darker border on hover */
     transform: scale(1.05);
-    /* Subtle pop */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 
@@ -108,7 +116,26 @@
 /* Mobile Responsive: Adjust actions on small screens */
 @media (max-width: 768px) {
     .header-actions {
-        gap: 8px;
+        gap: 6px;
+    }
+
+    .header-top {
+        gap: 12px;
+        min-height: 64px;
+    }
+
+    .header-separator {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-actions {
+        gap: 4px;
+    }
+
+    .logo-img {
+        height: 24px;
     }
 }
 
@@ -136,17 +163,16 @@
 
 /* --- Photographer Signed-In Header --- */
 
-/* Workspace Icon */
+/* Workspace Icon - Harmonized with Header Actions */
 .icon-btn.workspace-btn {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    /* Subtle border */
+    /* No special styling - inherits from .icon-btn */
     width: 44px;
     height: 44px;
 }
 
 .icon-btn.workspace-btn:hover {
-    background-color: #f9f9f9;
-    border-color: rgba(0, 0, 0, 0.15);
+    /* Inherits scale(1.05) and shadow from .icon-btn:hover */
+    background-color: #f0f0f0;
 }
 
 /* User Chip */
@@ -156,17 +182,26 @@
     gap: 12px;
     padding: 6px 16px 6px 6px;
     border-radius: 32px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: transparent;
+    border: 1px solid #eaeaea;
+    /* Match Header Actions Group */
+    background: #ffffff;
+    /* White background */
     cursor: pointer;
     transition: all 0.2s ease;
     margin-left: 8px;
-    /* Breathing room from icons */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    /* Subtle shadow */
 }
 
 .user-chip:hover {
-    background: #f9f9f9;
-    border-color: rgba(27, 58, 236, 0.2);
+    background: #f0f0f0;
+    /* Match icon-btn hover */
+    border-color: #d1d1d1;
+    /* Match icon-btn hover border */
+    transform: scale(1.02);
+    /* Subtle scale - less than icons since it's larger */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Match icon-btn shadow */
 }
 
 .user-avatar-circle {

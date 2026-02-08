@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
+import { TitleHeader } from '../../components/TitleHeader';
 import './Billing.css';
 
 export const PhotographerBilling: React.FC = () => {
@@ -23,19 +24,14 @@ export const PhotographerBilling: React.FC = () => {
     };
 
     return (
-        <div style={{ background: '#fff' }}>
-            <div className="billing-container" style={{ padding: 0, maxWidth: '800px' }}>
-                {/* 
-                <button
-                    onClick={() => navigate(-1)}
-                    style={{ display: 'flex', alignItems: 'center', color: '#666', marginBottom: '24px', border: 'none', background: 'none', padding: 0, cursor: 'pointer', fontSize: '0.9rem' }}
-                >
-                    <ChevronLeft size={16} style={{ marginRight: '4px' }} />
-                    Back
-                </button>
-                */}
+        <div className="pg-billing-container">
+            <div className="billing-wrapper">
+                <TitleHeader
+                    variant="workspace"
+                    title="Billing Details"
+                />
 
-                <div className="billing-section" style={{ marginTop: 0 }}>
+                <div className="billing-section">
                     <div className="billing-section-header">
                         <h2 className="billing-title">Billing Address</h2>
                         <p className="billing-subtitle">This address is used for tax purposes and your invoices.</p>
@@ -135,5 +131,6 @@ export const PhotographerBilling: React.FC = () => {
 
             </div>
         </div>
+
     );
 };

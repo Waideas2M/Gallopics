@@ -1,3 +1,5 @@
+@import './styles/shared-filters.css';
+
 :root {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
@@ -21,7 +23,14 @@
   --fs-base: 1rem;
   --fs-lg: 1.125rem;
   --fs-xl: 1.25rem;
+  --fs-xl: 1.25rem;
   --fs-2xl: 1.5rem;
+  --fs-3xl: 2rem;
+  --fs-display: 3rem;
+
+  /* Semantic Aliases */
+  --fs-h1: var(--fs-3xl);
+  --fs-h2: var(--fs-2xl);
 
   --fw-regular: 400;
   --fw-medium: 500;
@@ -61,8 +70,15 @@
 @media (max-width: 768px) {
   :root {
     --spacing-lg: 16px;
-    /* Mobile spec: 16px padding */
     --container-padding: 24px;
+  }
+}
+
+@media (max-width: 430px) {
+  :root {
+    --container-padding: 16px;
+    --spacing-lg: 12px;
+    /* Tighter spacing for mobile */
   }
 }
 
@@ -104,6 +120,13 @@ a {
   padding-left: var(--container-padding);
   padding-right: var(--container-padding);
   width: 100%;
+  box-sizing: border-box;
+}
+
+.container-fluid {
+  width: 100%;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
   box-sizing: border-box;
 }
 
@@ -216,32 +239,6 @@ a {
 }
 
 .ehome-intro-toggle span {
-  white-space: nowrap;
-}
-
-.filters-wrapper {
-  margin-bottom: 24px;
-}
-
-.filter-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.filter-results-count {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  font-weight: 400;
   white-space: nowrap;
 }
 

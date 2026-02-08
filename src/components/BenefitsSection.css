@@ -97,8 +97,8 @@
 /* Mobile */
 @media (max-width: 640px) {
     .benefits-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
+        display: none;
+        /* Hide on mobile as per request */
     }
 
     .benefit-item {

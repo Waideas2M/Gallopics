@@ -30,15 +30,32 @@ export interface Photo {
     id: string;
     url: string;
     eventId: string;
-    status: 'uploading' | 'processing' | 'needsReview' | 'uploadedUnpublished' | 'published';
+    status: 'uploading' | 'processing' | 'needsReview' | 'uploadedUnpublished' | 'published' | 'archived';
     soldCount: number;
     /* Metadata */
     rider?: string;
+    riderId?: string;
     horse?: string;
+    horseId?: string;
     timestamp?: string;
     width: number;
     height: number;
     title?: string;
+    description?: string;
+    isGeneric?: boolean;
+    /* New fields for Uploads tab */
+    fileName?: string;
+    photoCode?: string; // e.g. "PHT-9X2A1"
+    uploadDate?: string; // ISO date string
+    batch?: string; // Batch name (empty = Uncategorised)
+    classId?: string;
+    className?: string;
+    isDuplicate?: boolean;
+    duplicateResolved?: boolean; // True after "Keep" action resolves duplicates
+    duplicateGroupId?: string; // Identifies which duplicate group this instance belongs to
+    storedLocation?: 'Random' | 'Misc' | 'Uncategorised' | 'Published'; // Where this instance lives
+    priceStandard?: number; // e.g. 499
+    priceHigh?: number; // e.g. 999
 }
 
 export interface UploadFile {
@@ -69,8 +86,13 @@ interface PhotographerContextType {
     getPhotosByEvent: (eventId: string) => Photo[];
     updatePhotoStatus: (photoIds: string[], status: Photo['status']) => void;
     deletePhotos: (photoIds: string[]) => void;
+    restorePhotos: (photosToRestore: Photo[]) => void;
     setPhotoPrice: (photoIds: string[], price: number) => void;
     updatePhotoMetadata: (photoIds: string[], metadata: Partial<Photo>) => void;
+    republishPhoto: (photoId: string) => void;
+
+    // Duplicates
+    resolveDuplicate: (photoId: string, action: 'keep' | 'remove') => void;
 
     // Upload System
     isUploadOverlayOpen: boolean;
@@ -78,7 +100,8 @@ interface PhotographerContextType {
     uploadSessions: Record<string, UploadSession>; // Keyed by eventId
     openUploadOverlay: (eventId: string) => void;
     closeUploadOverlay: () => void;
-    startUpload: (files: File[]) => void;
+    setCurrentUploadEventId: (eventId: string | null) => void; // New export
+    startUpload: (files: File[], metadata?: { classId?: string }) => void; // Updated sig
     clearUploadSession: (eventId: string) => void;
 
     // Highlights
@@ -116,11 +139,18 @@ const mapToPgEvent = (e: EventData, isMyEvent: boolean): PgEvent => {
     };
 };
 
-const MY_EVENT_IDS = ['c1', 'c2', 'c3'];
+const MY_EVENT_IDS = ['c1', 'c2', 'c3', 'c4', 'c5'];
 
 const MOCK_EVENTS: PgEvent[] = mockEvents.map(e => {
     const isMine = MY_EVENT_IDS.includes(e.id);
-    return mapToPgEvent(e, isMine);
+    const mapped = mapToPgEvent(e, isMine);
+
+    // User request: Let the first one (c1) have no cover.
+    if (e.id === 'c1') {
+        mapped.coverImage = '';
+    }
+
+    return mapped;
 });
 
 // Helpers for randomization (Copied/Adapted from EventProfile.tsx)
@@ -129,14 +159,20 @@ function pick<T>(arr: T[]): T {
 }
 const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min);
 
+// Class names from existing mock data patterns (Limited to 3 per user request)
+const MOCK_CLASSES = ['1.20m Jumping', '1.30m Grand Prix', 'Dressage Int. B'];
+const MOCK_BATCHES = ['Random', 'Misc', '']; // Empty = Uncategorised
+
+const generatePhotoCode = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return 'PHT-' + Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+};
+
 const generateMockPhotos = (eventId: string, count: number): Photo[] => {
     const srcPool = Array.from(new Set(basePhotos.map(p => p.src)));
 
     return Array.from({ length: count }).map((_, i) => {
         const src = pick(srcPool);
-        const rider = pick(RIDERS);
-        const horseMapping = RIDER_PRIMARY_HORSE.find(m => m.riderId === rider.id);
-        const horse = HORSES.find(h => h.id === horseMapping?.primaryHorseId) || HORSES[0];
 
         const ratioType = Math.random();
         let width = 600;
@@ -146,41 +182,219 @@ const generateMockPhotos = (eventId: string, count: number): Photo[] => {
 
         if (ratioType < 0.33) height += randomInt(-50, 50);
 
-        // Determine mock status
-        // Randomly assign some statuses for variety
+        // Determine mock status - Increased Published density for better demo
         const rand = Math.random();
-        let status: Photo['status'] = 'published';
+        let status: Photo['status'] = 'uploadedUnpublished'; // Default for "Uploads" tab
         let soldCount = 0;
 
-        if (rand > 0.95) {
+        if (rand > 0.6) { // 40% are published now
             status = 'published';
-            soldCount = randomInt(1, 5);
-        } else if (rand > 0.85) {
-            status = 'needsReview'; // 15% needs review
-        } else if (rand > 0.75) {
-            status = 'uploadedUnpublished';
+            // Randomly assign soldCount (Mostly 0, some 1, a few 2)
+            const sellRand = Math.random();
+            if (sellRand > 0.8) soldCount = 1;      // 20% of published have 1 sale
+            if (sellRand > 0.95) soldCount = 2;     // 5% of published have 2 sales
+        } else if (rand > 0.45) { // ~15% need review
+            status = 'needsReview';
         }
 
+        // New metadata for Uploads tab
+        const hasTags = Math.random() > 0.1; // 90% have tags
+        const batch = pick(MOCK_BATCHES);
+        const hasClass = hasTags && Math.random() > 0.2; // 80% of tagged photos have a class
+        const classData = hasClass ? pick(MOCK_CLASSES) : undefined;
+
+        // Use consistent rider/horse names to ensure good distribution per tag
+        const riderIndex = i % 3 < 2 ? i % 2 : 2; // 2/3 of photos use first 2 riders
+        const selectedRider = RIDERS[riderIndex];
+        const selectedHorseMapping = RIDER_PRIMARY_HORSE.find(m => m.riderId === selectedRider.id);
+        const selectedHorse = HORSES.find(h => h.id === selectedHorseMapping?.primaryHorseId) || HORSES[0];
+
+        // Randomize price bundles for Published filtering coverage
+        const bundleRand = Math.random();
+        let priceStandard = 299;
+        let priceHigh = 499; // Standard
+        if (bundleRand < 0.33) {
+            priceStandard = 99;
+            priceHigh = 199; // Basic
+        } else if (bundleRand > 0.66) {
+            priceStandard = 499;
+            priceHigh = 999; // Premium
+        }
+
+        const isDuplicate = false;
+        const isGeneric = hasTags && Math.random() > 0.8; // 20% of tagged photos are generic
+
         return {
-            id: `${eventId}-p-mock-${i}`,
+            id: `${eventId}-p-${i}-${generatePhotoCode().slice(4)}`,
             url: src,
             eventId: eventId,
             status: status,
             soldCount: soldCount,
-            rider: `${rider.firstName} ${rider.lastName}`,
-            horse: horse.name,
-            timestamp: '12:00',
+            rider: (hasTags && !isGeneric) ? `${selectedRider.firstName} ${selectedRider.lastName}` : undefined,
+            riderId: (hasTags && !isGeneric) ? selectedRider.id : undefined,
+            horse: (hasTags && !isGeneric) ? selectedHorse.name : undefined,
+            horseId: (hasTags && !isGeneric) ? selectedHorse.id : undefined,
+            timestamp: `${10 + (i % 8)}:${String(randomInt(0, 59)).padStart(2, '0')}`,
             width,
             height,
-            title: `Photo ${i}`
+            title: isGeneric ? (i % 2 === 0 ? "Prize ceremony" : "Atmospheric") : `Photo ${i}`,
+            description: isGeneric ? "Beautiful sunny day at the arena" : undefined,
+            isGeneric: isGeneric,
+            fileName: `IMG_${2000 + i}.jpg`,
+            photoCode: generatePhotoCode(),
+            uploadDate: '2026-01-20',
+            batch: batch,
+            classId: (hasClass && !isGeneric) ? `class-${i % 3}` : undefined,
+            className: (hasClass && !isGeneric) ? classData : undefined,
+            isDuplicate: isDuplicate,
+            storedLocation: status === 'published' ? 'Published' : (batch || 'Uncategorised') as any,
+            priceStandard: priceStandard,
+            priceHigh: priceHigh
         };
     });
 };
 
+const generateDuplicateGroups = (eventId: string): Photo[] => {
+    const groups = [];
+    // src pool for duplicates
+    const srcPool = Array.from(new Set(basePhotos.map(p => p.src)));
+
+    // Group 1: 3 instances (Random, Misc, Published)
+    const src1 = srcPool[0];
+    const grp1Id = 'dup-group-1';
+    const baseP1 = {
+        fileName: 'IMG_DUPLICATE_1.jpg',
+        photoCode: 'DUP-10001',
+        url: src1,
+        width: 600,
+        height: 800
+    };
+
+    // Instance 1.1: Random
+    groups.push({
+        ...baseP1,
+        id: `${eventId}-dup-1-1`,
+        eventId,
+        status: 'uploadedUnpublished',
+        batch: 'Random',
+        storedLocation: 'Random',
+        isDuplicate: true,
+        duplicateGroupId: grp1Id,
+        soldCount: 0,
+        timestamp: '10:00',
+        uploadDate: '2026-01-20'
+    });
+    // Instance 1.2: Misc
+    groups.push({
+        ...baseP1,
+        id: `${eventId}-dup-1-2`,
+        eventId,
+        status: 'uploadedUnpublished',
+        batch: 'Misc',
+        storedLocation: 'Misc',
+        isDuplicate: true,
+        duplicateGroupId: grp1Id,
+        soldCount: 0,
+        timestamp: '10:00',
+        uploadDate: '2026-01-20'
+    });
+    // Instance 1.3: Published
+    groups.push({
+        ...baseP1,
+        id: `${eventId}-dup-1-3`,
+        eventId,
+        status: 'published',
+        batch: 'Random', // irrelevant if published usually, but let's keep it safe
+        storedLocation: 'Published',
+        isDuplicate: true,
+        duplicateGroupId: grp1Id,
+        soldCount: 0,
+        timestamp: '10:00',
+        uploadDate: '2026-01-20'
+    });
+
+    // Group 2: 2 instances (Uncategorised, Random)
+    const src2 = srcPool[1] || srcPool[0];
+    const grp2Id = 'dup-group-2';
+    const baseP2 = {
+        fileName: 'IMG_DUPLICATE_2.jpg',
+        photoCode: 'DUP-20002',
+        url: src2,
+        width: 800,
+        height: 600
+    };
+    groups.push({
+        ...baseP2,
+        id: `${eventId}-dup-2-1`,
+        eventId,
+        status: 'uploadedUnpublished',
+        batch: '', // Uncategorised
+        storedLocation: 'Uncategorised',
+        isDuplicate: true,
+        duplicateGroupId: grp2Id,
+        soldCount: 0,
+        timestamp: '11:30',
+        uploadDate: '2026-01-20'
+    });
+    groups.push({
+        ...baseP2,
+        id: `${eventId}-dup-2-2`,
+        eventId,
+        status: 'uploadedUnpublished',
+        batch: 'Random',
+        storedLocation: 'Random',
+        isDuplicate: true,
+        duplicateGroupId: grp2Id,
+        soldCount: 0,
+        timestamp: '11:30',
+        uploadDate: '2026-01-20'
+    });
+
+    // Group 3: 2 instances (Misc, Published)
+    const src3 = srcPool[2] || srcPool[0];
+    const grp3Id = 'dup-group-3';
+    const baseP3 = {
+        fileName: 'IMG_DUPLICATE_3.jpg',
+        photoCode: 'DUP-30003',
+        url: src3,
+        width: 600,
+        height: 800
+    };
+    groups.push({
+        ...baseP3,
+        id: `${eventId}-dup-3-1`,
+        eventId,
+        status: 'uploadedUnpublished',
+        batch: 'Misc',
+        storedLocation: 'Misc',
+        isDuplicate: true,
+        duplicateGroupId: grp3Id,
+        soldCount: 0,
+        timestamp: '14:15',
+        uploadDate: '2026-01-20'
+    });
+    groups.push({
+        ...baseP3,
+        id: `${eventId}-dup-3-2`,
+        eventId,
+        status: 'published',
+        batch: 'Misc',
+        storedLocation: 'Published',
+        isDuplicate: true,
+        duplicateGroupId: grp3Id,
+        soldCount: 0,
+        timestamp: '14:15',
+        uploadDate: '2026-01-20'
+    });
+
+    return groups as Photo[];
+};
+
 const MOCK_PHOTOS: Photo[] = [
-    ...generateMockPhotos('c1', 24),
-    ...generateMockPhotos('c2', 32),
-    ...generateMockPhotos('c3', 12),
+    ...generateMockPhotos('c1', 120),
+    ...generateDuplicateGroups('c1'),
+    ...generateMockPhotos('c2', 80),
+    ...generateMockPhotos('c3', 60),
 ];
 
 // --- Context & Provider ---
@@ -248,6 +462,15 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
         setPhotos(prev => prev.filter(p => !photoIds.includes(p.id)));
     };
 
+    const restorePhotos = (photosToRestore: Photo[]) => {
+        setPhotos(prev => {
+            // Avoid duplicates just in case
+            const newIds = new Set(photosToRestore.map(p => p.id));
+            const filtered = prev.filter(p => !newIds.has(p.id));
+            return [...filtered, ...photosToRestore];
+        });
+    };
+
     const setPhotoPrice = (photoIds: string[], price: number) => {
         // Mock impl
         console.log(`Set price to ${price} for`, photoIds);
@@ -257,6 +480,77 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
         setPhotos(prev => prev.map(p =>
             photoIds.includes(p.id) ? { ...p, ...metadata } : p
         ));
+    };
+
+    const republishPhoto = (photoId: string) => {
+        setPhotos(prev => {
+            const original = prev.find(p => p.id === photoId);
+            if (!original) return prev;
+
+            // Generate new ID for payment log reasons
+            const newId = `${original.eventId}-p-repub-${Date.now()}`;
+
+            const newPhoto: Photo = {
+                ...original,
+                id: newId,
+                status: 'published',
+                soldCount: 0, // Reset sales
+                uploadDate: new Date().toISOString()
+            };
+
+            // We usually keep the archived one or replace it? 
+            // "Re-publishing... generate new... payment log". 
+            // Usually we'd archive the old one or just treating this as a new entry.
+            // If we replace, we lose history of the old ID.
+            // I'll Append new one, and maybe keep old one as archived?
+            // "Archive stores photos removed/unpublished".
+            // If I republish, does it leave the archive?
+            // Standard "Move" logic implies it leaves.
+            // But if I create NEW ID, the old ID stays in Archive?
+            // "Re-publishing... must generate new ID".
+            // I'll assume: Keep old in Archive, Add new to Published.
+            // Or Replace?
+            // I'll Replace the old object but update ID. Effectively "Moving and Renaming".
+            return prev.map(p => p.id === photoId ? newPhoto : p);
+        });
+    };
+
+    // --- Duplicates Logic ---
+    const resolveDuplicate = (photoId: string, action: 'keep' | 'remove') => {
+        if (action === 'remove') {
+            const photoToRemove = photos.find(p => p.id === photoId);
+            if (!photoToRemove) return;
+
+            // Check if removing this leaves only 1 duplicate group member
+            const potentialGroup = photos.filter(p => p.url === photoToRemove.url && p.isDuplicate && p.id !== photoId);
+
+            if (potentialGroup.length === 1) {
+                // Only 1 left, so it's no longer a duplicate
+                const survivor = potentialGroup[0];
+                setPhotos(prev => prev.filter(p => p.id !== photoId).map(p =>
+                    p.id === survivor.id ? { ...p, isDuplicate: false, duplicateResolved: true } : p
+                ));
+            } else {
+                // Remove this photo entirely from everywhere
+                setPhotos(prev => prev.filter(p => p.id !== photoId));
+            }
+        } else if (action === 'keep') {
+            // Mark this photo as resolved (kept) and remove other duplicates with same url
+            const photo = photos.find(p => p.id === photoId);
+            if (photo) {
+                setPhotos(prev => prev.map(p => {
+                    if (p.id === photoId) {
+                        // Mark as resolved
+                        return { ...p, duplicateResolved: true };
+                    }
+                    // Remove other duplicates that have the same url (simplified duplicate detection)
+                    if (p.url === photo.url && p.id !== photoId && p.isDuplicate) {
+                        return null; // Will be filtered out
+                    }
+                    return p;
+                }).filter((p): p is Photo => p !== null));
+            }
+        }
     };
 
     // --- Upload Logic ---
@@ -285,7 +579,7 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
         });
     };
 
-    const startUpload = (files: File[]) => {
+    const startUpload = (files: File[], metadata?: { classId?: string }) => {
         if (!currentUploadEventId) return;
         const eventId = currentUploadEventId;
 
@@ -311,11 +605,11 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
 
         // Simulate upload process for each file
         newFiles.forEach(item => {
-            simulateFileUpload(item.id, eventId);
+            simulateFileUpload(item.id, eventId, metadata);
         });
     };
 
-    const simulateFileUpload = (fileId: string, eventId: string) => {
+    const simulateFileUpload = (fileId: string, eventId: string, metadata?: { classId?: string }) => {
         let progress = 0;
         const interval = setInterval(() => {
             if (Math.random() > 0.95) {
@@ -327,7 +621,7 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(interval);
-                handleFileComplete(fileId, eventId);
+                handleFileComplete(fileId, eventId, metadata);
             } else {
                 updateFileProgress(fileId, eventId, progress);
             }
@@ -350,7 +644,7 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
         });
     };
 
-    const handleFileComplete = (fileId: string, eventId: string) => {
+    const handleFileComplete = (fileId: string, eventId: string, metadata?: { classId?: string }) => {
         setUploadSessions(prev => {
             const session = prev[eventId];
             if (!session) return prev;
@@ -376,7 +670,7 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
             status: 'uploadedUnpublished',
             soldCount: 0,
             rider: 'Processing...',
-            horse: '',
+            horse: metadata?.classId ? `Class: ${metadata.classId}` : '', // Mock usage of classId
             timestamp: new Date().toLocaleTimeString().slice(0, 5),
             width: 400 + Math.floor(Math.random() * 200),
             height: 300 + Math.floor(Math.random() * 200)
@@ -394,14 +688,18 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
             getPhotosByEvent,
             updatePhotoStatus,
             deletePhotos,
+            restorePhotos,
             setPhotoPrice,
             updatePhotoMetadata,
+            republishPhoto,
+            resolveDuplicate,
             // Upload controls
             isUploadOverlayOpen,
             currentUploadEventId,
             uploadSessions,
             openUploadOverlay,
             closeUploadOverlay,
+            setCurrentUploadEventId,
             startUpload,
             clearUploadSession,
             // Highlights

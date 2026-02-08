@@ -1,0 +1,412 @@
+/* Fullscreen Modal Page Wrapper */
+.pg-upload-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--color-bg, #f3f4f6);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.pg-upload-header {
+    height: 64px;
+    background: white;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+}
+
+.pg-upload-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.pg-upload-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    transition: background 0.2s;
+}
+
+.pg-upload-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-primary);
+}
+
+/* Main Container - Two Column Grid - Standard Sidebar Layout */
+/* Main Container - Two Column Grid - Standard Sidebar Layout */
+.pg-upload-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    /* Matches PhotoDetail: Flexible Main + 440px Sidebar */
+    gap: 48px;
+    overflow: hidden;
+    padding: 32px 64px;
+    max-width: 1200px;
+    /* MATCHED: PhotoDetail.css line 21 */
+    margin: 0 auto;
+    height: calc(100vh - 64px);
+    min-height: 0;
+}
+
+/* Main Content Area (Left Column) */
+.pg-upload-main {
+    background: transparent;
+    padding: 0;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    /* More air between card and dropzone */
+    height: 100%;
+}
+
+/* Card Styling (Shared) */
+.pg-upload-card,
+.pg-upload-queue {
+    background: white;
+    border-radius: 24px;
+    /* Matches PhotoDetail.css line 19/94 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border);
+    padding: 32px;
+    /* Match airy sidebar padding */
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+/* Flexible Dropzone Card */
+.pg-upload-card.dropzone-card {
+    flex: 1;
+    min-height: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form Layouts within Cards */
+.pg-form-row {
+    display: flex;
+    flex-direction: column;
+    /* Stacked for full width */
+    gap: 20px;
+    /* Balanced gap */
+    width: 100%;
+}
+
+/* Form Elements - Premium Aesthetic */
+.pg-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.pg-field-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    /* Match .detail-quality-selector label */
+}
+
+/* Unified Input Style - 48px (Matches inspiration dropdown) */
+.pg-input,
+.pg-batch-input,
+.pg-price-input {
+    width: 100%;
+    height: 48px;
+    /* MATCHED: PhotoDetail.css line 127 */
+    padding: 0 20px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: var(--radius-md, 12px);
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.pg-input:focus,
+.pg-batch-input:focus,
+.pg-price-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 3px var(--color-brand-tint);
+}
+
+/* Override ModernDropdown within Upload Page - 48px Style */
+.pg-upload-main .modern-dropdown .dropdown-trigger {
+    height: 48px !important;
+    min-height: 48px !important;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-shadow: none;
+    padding: 0 20px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Fix for icons inside dropdown trigger to align properly */
+.pg-upload-main .modern-dropdown .trigger-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-upload-main .modern-dropdown .trigger-label {
+    margin: 0;
+    line-height: 1;
+}
+
+.pg-upload-main .modern-dropdown .dropdown-trigger:hover {
+    background: #f0f1f3;
+}
+
+.pg-upload-main .modern-dropdown.open .dropdown-trigger {
+    background: #fff;
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Override CreatableCombobox within Upload Page - Match Premium 48px Style */
+.pg-upload-main .creatable-combobox .combobox-input {
+    height: 48px !important;
+    min-height: 48px !important;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-shadow: none;
+    padding: 0 40px 0 20px;
+    font-size: 0.95rem;
+}
+
+.pg-upload-main .creatable-combobox .combobox-input:focus {
+    background: #fff;
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 3px var(--color-brand-tint);
+}
+
+.pg-upload-main .creatable-combobox .combobox-trigger {
+    right: 12px;
+}
+
+
+.pg-field-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    margin-top: 4px;
+}
+
+/* Card Divider - Subtle separator within unified card */
+.pg-card-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 24px 0;
+}
+
+/* Drop Zone Card Styling - Flexible */
+.pg-drop-zone {
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    border: 2px dashed #e2e4e7;
+    border-radius: 12px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.pg-drop-zone:hover {
+    background: #f4f5f7;
+    border-color: #d0d3d6;
+}
+
+.pg-drop-zone.is-dragging {
+    border-color: #000;
+    background: #f9f9fb;
+    transform: scale(1.005);
+}
+
+.drop-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.drop-content-wrapper button {
+    pointer-events: auto;
+}
+
+.drop-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.drop-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.drop-text {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+/* Status Banner (Compact) */
+.pg-upload-status {
+    width: 100%;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+/* Queue Sidebar specific overrides */
+.pg-upload-queue {
+    border-left: 1px solid #e5e5e5;
+    /* In case border is wanted */
+    padding: 0;
+    background: white;
+    height: 100%;
+    max-height: 100%;
+}
+
+.queue-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: white;
+}
+
+.queue-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.queue-list {
+    padding: 16px 32px 32px;
+    background: white;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Simplified Queue Empty State - Subtle text only */
+.queue-empty-simple {
+    padding: 32px 16px;
+    text-align: center;
+}
+
+.queue-empty-text {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+}
+
+.queue-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.queue-item:hover {
+    border-color: #e5e5e5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.queue-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.queue-filename {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+}
+
+/* Gradient Progress Bar */
+.queue-progress {
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.queue-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6, #f97316);
+    transition: width 0.3s ease;
+}
+
+.queue-bar.completed {
+    background: #10b981;
+}
+
+/* Status Button Overrides */
+.btn-status-cancel {
+    border-color: #000 !important;
+    color: #000 !important;
+}
+
+.btn-status-view {
+    background: #000 !important;
+    color: #fff !important;
+}

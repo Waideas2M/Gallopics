@@ -192,7 +192,8 @@ export function RiderProfile() {
             <section className="grid-section">
                 <div className="container">
                     <div className="filters-wrapper">
-                        <div className="filter-row">
+                        {/* New Shared Filter Structure */}
+                        <div className="filter-container">
                             <div className="filter-group">
                                 <ModernDropdown
                                     value={selectedEventId}
@@ -209,6 +210,7 @@ export function RiderProfile() {
                                     onChange={setEventClass}
                                     label="Class"
                                     placeholder="Class"
+                                    variant="pill"
                                 />
                                 <ModernDropdown
                                     value={horse}
@@ -217,6 +219,7 @@ export function RiderProfile() {
                                     label="Horses"
                                     placeholder="Horses"
                                     showSearch={true}
+                                    variant="pill"
                                 />
                                 <ModernDropdown
                                     value={photographer}
@@ -224,6 +227,7 @@ export function RiderProfile() {
                                     onChange={setPhotographer}
                                     label="Photographer"
                                     placeholder="Photographer"
+                                    variant="pill"
                                 />
                                 <button
                                     className="filter-reset-btn"

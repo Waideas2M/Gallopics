@@ -16,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false
     return (
         <>
             <footer className="footer-full">
-                <div className="container">
+                <div className="container-fluid">
                     <div className="footer-grid">
                         {/* Left: Brand */}
                         <div className="footer-brand">

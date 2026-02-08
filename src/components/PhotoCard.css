@@ -9,11 +9,11 @@
     background-color: #fff;
     border-radius: var(--radius-md);
     border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--shadow-sm);
 
     /* Enforce Clipping */
     overflow: hidden;
-    display: inline-block;
+    display: block;
     will-change: transform, box-shadow;
     transform: translate3d(0, 0, 0);
     /* Force Stacking Context for Safari clipping */
@@ -21,11 +21,11 @@
     /* Flickering fix for Safari rounding */
     mask-image: radial-gradient(white, black);
 
-    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    transition: transform 0.2s var(--ease-hover), box-shadow 0.2s var(--ease-hover);
 }
 
 .photo-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
 /* Image Wrapper: No rounding, inherited clipping */
@@ -86,12 +86,12 @@
        Let's use a soft gradient for maximum subtlety and readability without a "box" look, 
        OR a very light dark glass. Gradient is safest for "product" look. */
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
-    padding: 16px 12px 12px 12px;
+    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm) var(--spacing-sm);
     z-index: 25;
 
     transform: translateY(10px);
     opacity: 0;
-    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s ease;
+    transition: transform 0.3s var(--ease-hover), opacity 0.3s ease;
     pointer-events: none;
 }
 
@@ -179,7 +179,7 @@
     background: #fff;
     transform: scale3d(1.05, 1.05, 1);
     color: #000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
 }
 
 .icon-btn-glass.added {
@@ -200,7 +200,7 @@
 
 /* Metadata Footer */
 .card-content {
-    padding: 12px 16px 16px 16px;
+    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-md) var(--spacing-md);
     background: #fff;
     position: relative;
     z-index: 2;
@@ -246,14 +246,276 @@
 }
 
 @media (max-width: 768px) {
-
-    .hover-actions-bottom,
     .event-info-patch {
         display: none;
-        /* Hide hover details on mobile for simplicity, or tap reveals */
+    }
+
+    .hover-actions-bottom {
+        display: flex;
+        opacity: 1;
+        /* Always visible on mobile */
+        transform: translateY(0);
+        top: 8px;
+        /* Slightly tighter */
+        right: 8px;
+    }
+
+    .hover-actions-bottom .icon-btn-glass:not(.primary) {
+        display: none;
+        /* Hide share button to reduce clutter */
+    }
+
+    .icon-btn-glass.primary {
+        width: 44px;
+        /* Touch target size */
+        height: 44px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-btn-glass.primary.added {
+        background: #10b981;
+        /* Keep accent */
     }
 
     .card-mobile-actions {
-        display: flex;
+        display: none;
+        /* Hide the kebab menu if we use the overlay tick */
     }
+}
+
+/* PG Upload Variant - Bottom Meta Styling */
+
+
+.photo-card.variant-pg-upload:hover {
+    transform: translateY(-2px);
+}
+
+.card-content.pg-upload-meta {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pg-card-filename {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #111);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.pg-meta-id {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 2px 6px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    font-family: monospace;
+    font-weight: 500;
+    color: #6b7280;
+    margin-top: 2px;
+    line-height: 1;
+}
+
+.pg-meta-datetime {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pg-meta-prices {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pg-meta-price-tag {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    color: #111;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+}
+
+.pg-meta-price-tag .label {
+    color: #6b7280;
+    font-weight: 400;
+    margin-right: 4px;
+    font-size: 0.7rem;
+}
+
+.pg-meta-price-tag .currency {
+    font-size: 0.6em;
+    vertical-align: super;
+    margin-left: 1px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* ============================================
+   PG Duplicate Variant - "Also in:" + Hover Actions
+   ============================================ */
+
+.photo-card.variant-pg-duplicate .card-image-wrapper {
+    position: relative;
+}
+
+/* "Also in:" meta styling */
+.pg-meta-also-in {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #666);
+    margin-top: 6px;
+    font-style: italic;
+}
+
+/* Duplicate Hover Actions Container */
+.pg-duplicate-actions {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.photo-card.variant-pg-duplicate:hover .pg-duplicate-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Duplicate Action Buttons */
+.pg-dup-action-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+    text-align: center;
+}
+
+.pg-dup-action-btn.keep {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-text-primary, #111);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.pg-dup-action-btn.keep:hover {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pg-dup-action-btn.remove {
+    background: rgba(239, 68, 68, 0.9);
+    color: #fff;
+}
+
+.pg-dup-action-btn.remove:hover {
+    background: #ef4444;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Duplicate Badge */
+.duplicate-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    top: auto;
+    background: #FEF2F2;
+    color: #DC2626;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 20;
+    pointer-events: none;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #FECACA;
+}
+
+/* Manage Duplicate Button */
+.manage-dup-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: rgba(255, 255, 255, 0.95);
+    color: #111;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 30;
+}
+
+.photo-card:hover .manage-dup-btn {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.manage-dup-btn:hover {
+    background: #fff;
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* PG Sold Count Badge (Prototype variant) */
+.pg-sold-badge {
+    padding: 2px 6px;
+    background: #ecfdf5;
+    /* Subtle green bg */
+    border: 1px solid #d1fae5;
+    color: #059669;
+    /* Green text */
+    font-size: 0.6875rem;
+    font-weight: 700;
+    border-radius: 4px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.pg-sold-badge:hover {
+    background: #d1fae5;
+    border-color: #a7f3d0;
+}
+
+/* Single Bundle Dot */
+.bundle-dot-single {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bundle-dot-single:hover {
+    transform: scale(1.3);
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePhotographer } from '../../context/PhotographerContext';
 import { ManageHighlightsModal } from '../../components/ManageHighlightsModal';
+import { TitleHeader } from '../../components/TitleHeader';
 import './Settings.css';
 
 export const Settings: React.FC = () => {
@@ -10,12 +11,16 @@ export const Settings: React.FC = () => {
 
     return (
         <div className="pg-settings-container">
-            <div className="pg-settings-header-row">
-                <h1 className="pg-page-title">Settings</h1>
-                <Link to={`/photographer/${photographerId}`} className="pg-btn pg-btn-secondary" target="_blank">
-                    Visit my public profile
-                </Link>
-            </div>
+
+            <TitleHeader
+                variant="workspace"
+                title="Settings"
+                rightContent={
+                    <Link to={`/photographer/${photographerId}`} className="pg-btn pg-btn-secondary" target="_blank">
+                        Visit my public profile
+                    </Link>
+                }
+            />
 
             <div className="pg-settings-section">
                 <h2 className="pg-section-title">Profile & public page</h2>

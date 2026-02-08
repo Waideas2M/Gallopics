@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutGrid, CreditCard, Settings, DollarSign, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutGrid, CreditCard, Settings, DollarSign, FileText, ChevronLeft, ChevronRight, Palette } from 'lucide-react';
 import { Header } from '../../components/Header';
-import { UploadOverlay } from './UploadOverlay';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { Footer } from '../../components/Footer';
 import './PhotographerLayout.css';
 
 export const PhotographerLayout: React.FC = () => {
-    // We don't need useAuth for user chip anymore as Header handles it.
-
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
         <div className="pg-layout-shell">
-            {/* 1. Global Header (Shared) */}
             <Header />
 
-            {/* 2. Workspace Content (Split View) */}
             <div className="pg-workspace-container">
-                {/* Left Sidebar */}
                 <aside className={`pg-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
                     <div className="pg-sidebar-header">
-                        {!isCollapsed && <span className="pg-sidebar-label">Workspace</span>}
+                        {!isCollapsed && <span className="pg-sidebar-label">My Studio</span>}
                         <button
                             className="pg-collapse-btn"
                             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -39,7 +33,7 @@ export const PhotographerLayout: React.FC = () => {
                         </NavLink>
                         <NavLink to="/pg/sold" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Sold photos" : ""}>
                             <DollarSign size={20} />
-                            <span>Sold photos</span>
+                            <span>Sales</span>
                         </NavLink>
                         <NavLink to="/pg/receipts" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Receipts" : ""}>
                             <FileText size={20} />
@@ -54,15 +48,17 @@ export const PhotographerLayout: React.FC = () => {
                             <Settings size={20} />
                             <span>Settings</span>
                         </NavLink>
+                        <NavLink to="/pg/tokens" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Tokens" : ""}>
+                            <Palette size={20} />
+                            <span>Tokens</span>
+                        </NavLink>
                     </nav>
-
 
                     <div className="pg-sidebar-footer">
                         <Footer minimal={true} sidebar={true} />
                     </div>
                 </aside>
 
-                {/* Main Content */}
                 <main className="pg-main">
                     <div className="pg-content-area">
                         <ErrorBoundary>
@@ -71,8 +67,6 @@ export const PhotographerLayout: React.FC = () => {
                     </div>
                 </main>
             </div>
-
-            <UploadOverlay />
         </div>
     );
 };

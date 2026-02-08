@@ -1,17 +1,21 @@
 /* Billing Page Styles */
-.billing-container {
+.pg-billing-container {
+    width: 100%;
+    padding-bottom: var(--spacing-4xl);
+}
+
+.billing-wrapper {
     max-width: 800px;
     margin: 0 auto;
-    padding-bottom: 80px;
 }
 
 .billing-section {
     background: #fff;
-    border-radius: var(--radius-lg, 16px);
-    border: 1px solid var(--color-border, #e5e5e5);
-    padding: 32px;
-    margin-bottom: 24px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
 }
 
 .billing-section-header {

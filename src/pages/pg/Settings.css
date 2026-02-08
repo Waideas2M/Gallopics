@@ -1,8 +1,8 @@
-/* Settings Page specific overrides/additions */
 .pg-settings-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding-bottom: 80px;
+    width: 100%;
+    padding-bottom: var(--spacing-4xl);
+    /* 64px or 80px depending on theme */
+    /* Align inner content to match header width if needed, but here max-width handles it */
 }
 
 .pg-settings-header-row {
@@ -23,16 +23,21 @@
     background: #fff;
     border: 1px solid #eaeaea;
     border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
+    /* radius-lg */
+    padding: var(--spacing-xl);
+    /* 24px */
+    max-width: 800px;
+    margin: var(--spacing-xl) auto var(--spacing-xl) auto;
 }
 
 .pg-section-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: #111;
-    margin: 0 0 20px 0;
-    padding-bottom: 16px;
+    margin: 0 0 var(--spacing-lg) 0;
+    /* 20px -> lg */
+    padding-bottom: var(--spacing-md);
+    /* 16px */
     border-bottom: 1px solid #f0f0f0;
 }
 
@@ -40,7 +45,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 0;
+    padding: var(--spacing-md) 0;
+    /* 16px */
     border-bottom: 1px solid #f5f5f5;
 }
 
@@ -51,7 +57,8 @@
 
 .pg-row-info {
     flex: 1;
-    padding-right: 24px;
+    padding-right: var(--spacing-xl);
+    /* 24px */
 }
 
 .pg-row-label {

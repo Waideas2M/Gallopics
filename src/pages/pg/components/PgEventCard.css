@@ -1,0 +1,285 @@
+/* Photographer Folder Card Variant - Refined Layout */
+
+.pg-folder-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease;
+    margin-top: 16px;
+}
+
+.pg-folder-inner {
+    background-color: #fff;
+    border-radius: 0 24px 24px 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+/* The Folder Tab Visual */
+.pg-folder-card::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 0;
+    width: 110px;
+    height: 13px;
+    background-color: var(--color-brand-tint, #f3f4f6);
+    border-radius: 96px 144px 0 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: none;
+    z-index: 0;
+    transition: all 0.3s ease;
+}
+
+.pg-folder-card:hover {
+    transform: translateY(-4px);
+}
+
+.pg-folder-card:hover .pg-folder-inner {
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.12);
+}
+
+/* Cover Image Section */
+.pg-folder-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+    background: #f1f2f4;
+}
+
+.pg-no-cover-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.pg-no-cover-text {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #9ca3af;
+    /* subtle grey */
+}
+
+.pg-folder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+    transition: transform 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.pg-folder-card:hover .pg-folder-img:not(.no-cover) {
+    transform: scale3d(1.04, 1.04, 1);
+}
+
+.pg-folder-img.no-cover {
+    filter: grayscale(1);
+    opacity: 0.1;
+    /* Even more subtle */
+}
+
+/* Top-Right Edit Circle (Synced with PhotoCard) */
+.pg-cover-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 30;
+
+    /* Container handles the slide-in/fade-in */
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    pointer-events: none;
+    /* Only button is clickable */
+}
+
+.pg-folder-card:hover .pg-cover-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.pg-cover-edit-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    pointer-events: auto;
+
+    /* Button handles the zoom-on-hover */
+    transition: transform 0.2s ease, background-color 0.1s ease, box-shadow 0.2s ease;
+}
+
+.pg-cover-edit-btn:hover:not(.disabled) {
+    background: #ffffff;
+    transform: scale3d(1.05, 1.05, 1);
+    color: #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pg-cover-edit-btn.disabled {
+    opacity: 0.3 !important;
+    cursor: default;
+    background: rgba(243, 244, 246, 0.8);
+    color: #9cb3af;
+    box-shadow: none;
+}
+
+/* Middle Section: Logo + Title/Date */
+.pg-folder-info {
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.pg-event-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.pg-event-logo-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+}
+
+.pg-event-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 2px;
+}
+
+.pg-event-title-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.pg-event-location-top {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.pg-flag {
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.pg-city-top {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+    /* Slate-400 */
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.pg-event-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.pg-event-date-text {
+    font-size: 0.75rem;
+    color: #64748b;
+    /* Slate-500 */
+    margin-top: 2px;
+}
+
+.pg-folder-divider {
+    height: 1px;
+    background: #f1f5f9;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+/* Footer Section */
+.pg-folder-footer {
+    display: flex;
+    justify-content: flex-end;
+    /* Align stats to right now that location moved */
+    align-items: center;
+}
+
+.pg-location-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pg-city {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Badges Area */
+.pg-stats-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-badge-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pg-badge-item.published {
+    background: #f1f5f9;
+    /* Slate-50/100ish */
+    color: #475569;
+    /* Slate-600 */
+}
+
+.pg-badge-item.sales {
+    background: #f0fdf4;
+    /* Green-50 */
+    color: #166534;
+    /* Green-800 for contrast */
+}
+
+.pg-badge-item.sales .label {
+    opacity: 0.8;
+}
+
+.pg-badge-item.sales .count {
+    color: #15803d;
+    /* Green-700 */
+    font-weight: 700;
+}

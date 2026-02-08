@@ -42,15 +42,15 @@ export const HORSES = [
 ];
 
 export const COMPETITIONS = [
-    { "id": "c1", "name": "Sweden International Horse Show", "country": "Sweden", "countryCode": "SE", "city": "Stockholm", "discipline": "Show Jumping", "date": "2026-11-26", "endDate": "2026-11-30" },
-    { "id": "c2", "name": "Gothenburg Indoor Masters", "country": "Sweden", "countryCode": "SE", "city": "Göteborg", "discipline": "Show Jumping", "date": "2026-02-19", "endDate": "2026-02-22" },
-    { "id": "c3", "name": "Falsterbo Summer Classic", "country": "Sweden", "countryCode": "SE", "city": "Falsterbo", "discipline": "Show Jumping", "date": "2026-07-11", "endDate": "2026-07-19" },
+    { "id": "c1", "name": "Sweden International Horse Show", "country": "Sweden", "countryCode": "SE", "city": "Stockholm", "discipline": "Show Jumping", "date": "2026-01-20", "endDate": "2026-01-23" }, // Live
+    { "id": "c2", "name": "Gothenburg Indoor Masters", "country": "Sweden", "countryCode": "SE", "city": "Göteborg", "discipline": "Show Jumping", "date": "2026-01-10", "endDate": "2026-01-12" }, // Recent
+    { "id": "c3", "name": "Falsterbo Summer Classic", "country": "Sweden", "countryCode": "SE", "city": "Falsterbo", "discipline": "Show Jumping", "date": "2026-01-05", "endDate": "2026-01-08" }, // Recent
     { "id": "c4", "name": "Strömsholm Spring Dressage", "country": "Sweden", "countryCode": "SE", "city": "Strömsholm", "discipline": "Dressage", "date": "2026-05-08", "endDate": "2026-05-10" },
-    { "id": "c5", "name": "Uppsala Arena Cup", "country": "Sweden", "countryCode": "SE", "city": "Uppsala", "discipline": "Show Jumping", "date": "2026-03-14", "endDate": "2026-03-15" },
+    { "id": "c5", "name": "Uppsala Arena Cup", "country": "Sweden", "countryCode": "SE", "city": "Uppsala", "discipline": "Show Jumping", "date": "2026-01-15", "endDate": "2026-01-16" }, // Recent
     { "id": "c6", "name": "Malmö City Jumping", "country": "Sweden", "countryCode": "SE", "city": "Malmö", "discipline": "Show Jumping", "date": "2026-04-25", "endDate": "2026-04-26" },
     { "id": "c7", "name": "Linköping Eventing Weekend", "country": "Sweden", "countryCode": "SE", "city": "Linköping", "discipline": "Eventing", "date": "2026-09-05", "endDate": "2026-09-06" },
     { "id": "c8", "name": "Örebro Autumn Cup", "country": "Sweden", "countryCode": "SE", "city": "Örebro", "discipline": "Show Jumping", "date": "2026-10-10", "endDate": "2026-10-11" },
-    { "id": "c9", "name": "Umeå Northern Lights Dressage", "country": "Sweden", "countryCode": "SE", "city": "Umeå", "discipline": "Dressage", "date": "2026-01-31", "endDate": "2026-02-01" },
+    { "id": "c9", "name": "Umeå Northern Lights Dressage", "country": "Sweden", "countryCode": "SE", "city": "Umeå", "discipline": "Dressage", "date": "2026-01-19", "endDate": "2026-01-22" }, // Live
     { "id": "c10", "name": "Jönköping Lake District Classic", "country": "Sweden", "countryCode": "SE", "city": "Jönköping", "discipline": "Show Jumping", "date": "2026-06-12", "endDate": "2026-06-14" }
 ];
 

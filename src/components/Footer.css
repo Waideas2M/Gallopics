@@ -210,6 +210,7 @@
         width: 100%;
         flex-wrap: wrap;
         /* Allow wrapping on small screens */
+        gap: 12px;
     }
 
     .footer-nav-row {

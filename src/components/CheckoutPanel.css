@@ -17,7 +17,7 @@
 
 .email-input {
     width: 100%;
-    padding: 14px 16px;
+    padding: var(--spacing-md);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     font-size: 1rem;
@@ -92,7 +92,7 @@
 .method-icon {
     width: 40px;
     height: 40px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: #f1f3f5;
     display: flex;
     align-items: center;
@@ -160,7 +160,7 @@
     background: var(--color-brand-primary);
     color: #fff;
     border: none;
-    border-radius: 500px;
+    border-radius: var(--radius-full);
     font-weight: 700;
     font-size: 1.1rem;
     cursor: pointer;
@@ -242,7 +242,7 @@
     background: var(--color-brand-primary);
     color: #fff;
     border: none;
-    border-radius: 500px;
+    border-radius: var(--radius-full);
     font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;

@@ -5,8 +5,8 @@
     border-radius: 50%;
     overflow: hidden;
     background: #f3f4f6;
-    /* Neutral background token */
-    color: #6b7280;
+    /* Keep explicit neutral, or map to var(--color-bg) if appropriate */
+    color: var(--color-text-secondary);
     /* Muted icon tone */
     flex-shrink: 0;
     border: 1px solid rgba(0, 0, 0, 0.04);
@@ -33,5 +33,5 @@
 }
 
 .profile-avatar.variant-photographer {
-    color: #6b7280;
+    color: var(--color-text-secondary);
 }

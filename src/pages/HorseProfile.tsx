@@ -197,7 +197,8 @@ export function HorseProfile() {
             <section className="grid-section">
                 <div className="container">
                     <div className="filters-wrapper">
-                        <div className="filter-row">
+                        {/* New Shared Filter Structure */}
+                        <div className="filter-container">
                             <div className="filter-group">
                                 <ModernDropdown
                                     value={selectedEventId}

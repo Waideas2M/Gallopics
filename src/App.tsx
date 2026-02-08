@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PhotographerProfile } from './pages/PhotographerProfile';
 import { RiderProfile } from './pages/RiderProfile';
@@ -22,9 +23,20 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { PhotographerLayout } from './pages/pg/PhotographerLayout';
 import { EventsList } from './pages/pg/EventsList';
 import { EventDetail } from './pages/pg/EventDetail';
+
 import { Settings } from './pages/pg/Settings';
+import { TokensPage } from './pages/pg/TokensPage';
+import { UploadPage } from './pages/pg/UploadPage';
+import { SoldPhotos } from './pages/pg/SoldPhotos';
+import { Receipts } from './pages/pg/Receipts';
 
 function App() {
+  useEffect(() => {
+    // Ensure app boot всегда lands clean: no search overlay/scroll-lock leftovers
+    document.body.style.overflow = '';
+    document.body.classList.remove('isSearchMode');
+  }, []);
+
   return (
     <CartProvider>
       <AuthProvider>
@@ -50,9 +62,18 @@ function App() {
               }>
                 <Route path="/pg/events" element={<EventsList />} />
                 <Route path="/pg/events/:eventId" element={<EventDetail />} />
+                <Route path="/pg/sold" element={<SoldPhotos />} />
+                <Route path="/pg/receipts" element={<Receipts />} />
                 <Route path="/pg/billing" element={<PhotographerBilling />} />
                 <Route path="/pg/settings" element={<Settings />} />
+                <Route path="/pg/tokens" element={<TokensPage />} />
               </Route>
+
+              <Route path="/pg/upload" element={
+                <ProtectedRoute>
+                  <UploadPage />
+                </ProtectedRoute>
+              } />
 
               <Route path="/pg" element={<Navigate to="/pg/events" replace />} />
 

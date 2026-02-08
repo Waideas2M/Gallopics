@@ -38,7 +38,7 @@ export const eventDetails: EventDetail[] = COMPETITIONS.map((comp) => {
         photoCount: randomInt(350, 850), // Reflect larger photo pool
         coverImage: coverImage,
         logo: enriched?.logo || '',
-        photographer: enriched?.photographer
+        photographer: enriched?.photographer || undefined
     };
 
     // 3. Generate Schedule (2 Days)

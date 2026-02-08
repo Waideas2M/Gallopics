@@ -5,6 +5,7 @@
 }
 
 .image-profile-main {
+    padding-top: var(--spacing-lg);
     padding-bottom: 60px;
 }
 
@@ -199,12 +200,20 @@
     margin-bottom: 24px;
 }
 
+.form-group {
+    width: 100%;
+}
+
 .form-group label {
     display: block;
     font-size: 0.85rem;
     color: #4B5563;
     margin-bottom: 8px;
     font-weight: 500;
+}
+
+.ipro-form .modern-dropdown {
+    width: 100%;
 }
 
 .ipro-actions {
@@ -233,7 +242,9 @@
     padding-top: 20px;
     border-top: 1px solid #F3F4F6;
     display: flex;
-    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
 }
 
 .trust-item {

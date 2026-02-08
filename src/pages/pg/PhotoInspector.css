@@ -1,8 +1,9 @@
 /* Right Sidebar Inspector */
 .pg-inspector {
     width: 320px;
-    background: #fff;
-    border-left: 1px solid #eaeaea;
+    width: 320px;
+    background: var(--color-surface);
+    border-left: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     position: sticky;
@@ -28,7 +29,8 @@
 
 .pg-inspector-header {
     padding: 16px;
-    border-bottom: 1px solid #eaeaea;
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,33 +39,33 @@
 .pg-inspector-title {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #111;
+    color: var(--color-text-primary);
 }
 
 .pg-inspector-close {
     background: none;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: var(--color-text-secondary);
     padding: 4px;
     border-radius: 4px;
 }
 
 .pg-inspector-close:hover {
-    background: #f5f5f5;
-    color: #000;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
 }
 
 /* Sections */
 .pg-inspector-section {
     padding: 20px 16px;
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1px solid var(--color-bg);
 }
 
 .pg-inspector-label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: #666;
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin-bottom: 8px;
@@ -73,7 +75,8 @@
 .pg-inspector-input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #eaeaea;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     font-size: 0.9rem;
     transition: all 0.2s;
@@ -87,7 +90,7 @@
 
 .pg-inspector-readonly {
     font-size: 0.9rem;
-    color: #333;
+    color: var(--color-text-primary);
     padding: 4px 0;
 }
 

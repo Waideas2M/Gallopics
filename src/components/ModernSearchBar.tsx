@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Calendar, ChevronRight, Camera, Image, ArrowRight } from 'lucide-react';
 import { RIDERS, HORSES, COMPETITIONS, RIDER_PRIMARY_HORSE, HORSE_PRIMARY_RIDER, PHOTOGRAPHERS, photos } from '../data/mockData';
 import './ModernSearchBar.css';
+import { useMobileSearchMode } from '../hooks/useMobileSearchMode';
 
 import { HorseIcon } from './icons/HorseIcon';
 import { RiderIcon } from './icons/RiderIcon';
@@ -23,11 +25,13 @@ type GroupedResults = {
 interface ModernSearchBarProps {
     collapsible?: boolean;
     theme?: 'dark' | 'light';
+    isMobileTrigger?: boolean;
 }
 
 export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     collapsible = false,
-    theme = 'dark'
+    theme = 'dark',
+    isMobileTrigger = false
 }) => {
     const [query, setQuery] = useState('');
     const [groups, setGroups] = useState<GroupedResults>({});
@@ -36,9 +40,14 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     const [isExpanded, setIsExpanded] = useState(!collapsible);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const isFirstRender = useRef(true);
     const navigate = useNavigate();
 
+    // Mobile Search Mode Hook
+    const { activateSearch, deactivateSearch } = useMobileSearchMode(wrapperRef as React.RefObject<HTMLElement>);
+
     const handleResultClick = (item: SearchResult) => {
+        deactivateSearch();
         setIsOpen(false);
         setQuery('');
         // Force full close if collapsible to ensure clean state
@@ -186,6 +195,7 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
         const outsideClick = (e: MouseEvent) => {
             if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
                 setIsOpen(false);
+                deactivateSearch();
                 if (collapsible) {
                     setIsExpanded(false);
                 }
@@ -194,6 +204,7 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 setIsOpen(false);
+                deactivateSearch();
                 if (collapsible) setIsExpanded(false);
             }
         };
@@ -204,14 +215,51 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
             document.removeEventListener('mousedown', outsideClick);
             document.removeEventListener('keydown', handleEsc);
         };
+    }, [collapsible, deactivateSearch]);
+
+    // Listener for external trigger (Header search specific)
+    useEffect(() => {
+        if (!collapsible) return; // Only header search listens
+
+        const handleOpenEvent = () => {
+            setIsExpanded(true);
+            setIsOpen(true);
+            // Small timeout to Ensure focus works after expansion render cycle
+            setTimeout(() => inputRef.current?.focus(), 50);
+        };
+
+        window.addEventListener('open-header-search', handleOpenEvent);
+        return () => window.removeEventListener('open-header-search', handleOpenEvent);
     }, [collapsible]);
 
-    // Focus input on expand
+    // Determine if we should use Portal (Mobile Only)
+    const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
+    const usePortal = collapsible && isExpanded && isMobile;
+
+    // Focus input on expand & Body Scroll Lock
     useEffect(() => {
-        if (isExpanded && inputRef.current) {
-            inputRef.current.focus();
+        if (isExpanded && !isFirstRender.current) {
+            inputRef.current?.focus();
         }
-    }, [isExpanded]);
+        isFirstRender.current = false;
+
+        // Critical Fix: Only lock scroll if we are in Portal/Overlay mode (Mobile + Collapsible Header Search)
+        // And ONLY if we are NOT in the PG workspace (as per ground rules to scope overlay/scroll-lock)
+        const isPgFlow = location.pathname.startsWith('/pg');
+
+        if (usePortal && !isPgFlow) {
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('isSearchMode');
+        } else {
+            document.body.style.overflow = '';
+            document.body.classList.remove('isSearchMode');
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.body.classList.remove('isSearchMode');
+        };
+    }, [isExpanded, usePortal, location.pathname]);
 
     const getGroupLabel = (type: string) => {
         switch (type) {
@@ -238,68 +286,12 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     // Priority Order for rendering groups
     const groupOrder: Array<SearchResult['type']> = ['event', 'rider', 'horse', 'photographer', 'photo'];
 
-    return (
-        <div
-            className={`modern-search-wrapper ${theme}-theme ${collapsible ? 'is-collapsible' : ''} ${isExpanded ? 'expanded' : ''}`}
-            ref={wrapperRef}
-        >
-            <div
-                className={`modern-search-bar ${isOpen ? 'active' : ''}`}
-                onClick={() => {
-                    if (collapsible && !isExpanded) {
-                        setIsExpanded(true);
-                    }
-                }}
-            >
-                <Search className="search-icon" size={20} />
-                <input
-                    ref={inputRef}
-                    type="text"
-                    className="search-input"
-                    placeholder="Search riders, horses, events, photographers, photo ID..."
-                    value={query}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    onFocus={() => query.length >= 2 && setHasResults(Object.keys(groups).length > 0) && setIsOpen(true)}
-                    disabled={collapsible && !isExpanded} // Disable input when collapsed
-                />
+    // Render Logic for Dropdown Results
+    const renderResults = () => {
+        if (!isOpen) return null;
 
-                {query && (
-                    <button
-                        className="clear-btn"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (query) {
-                                setQuery('');
-                                setGroups({});
-                                setIsOpen(false);
-                                inputRef.current?.focus();
-                            }
-                        }}
-                    >
-                        <X size={14} />
-                    </button>
-                )}
-
-
-                {theme === 'light' && (
-                    <button
-                        className="search-go-btn"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            // Focus input if not already
-                            if (!isOpen && query.length >= 2) {
-                                setIsOpen(true);
-                            }
-                            inputRef.current?.focus();
-                        }}
-                        aria-label="Search"
-                    >
-                        <ArrowRight size={18} />
-                    </button>
-                )}
-
-            </div>
-            {isOpen && hasResults && (
+        if (hasResults) {
+            return (
                 <div className="search-results-dropdown">
                     {groupOrder.map(type => {
                         const groupItems = groups[type];
@@ -328,13 +320,152 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                         );
                     })}
                 </div>
-            )}
+            );
+        }
 
-            {isOpen && query.length >= 2 && !hasResults && (
+        if (query.length >= 2 && !hasResults) {
+            return (
                 <div className="search-results-dropdown empty">
                     <span className="no-result-text">No matches found</span>
                 </div>
-            )}
+            )
+        }
+        return null;
+    };
+
+
+    // Mobile Overlay Content (Portaled)
+    const mobileOverlayContent = (
+        <div className="mobile-search-overlay-container">
+            <div className="search-backdrop" onClick={() => {
+                setIsOpen(false);
+                deactivateSearch();
+                setIsExpanded(false);
+            }} />
+
+            <div className="mobile-search-bar-wrapper">
+                <div className="modern-search-bar active mobile-expanded">
+                    <Search className="search-icon" size={20} />
+                    <input
+                        ref={usePortal ? inputRef : null}
+                        type="text"
+                        className="search-input"
+                        placeholder="Search..."
+                        value={query}
+                        onChange={(e) => handleSearch(e.target.value)}
+                    />
+                    {query && (
+                        <button
+                            className="clear-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setQuery('');
+                                setGroups({});
+                                inputRef.current?.focus();
+                            }}
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
+                </div>
+
+                {/* Mobile Helper Line */}
+                <div className="mobile-search-helper-line">
+                    Riders • Horses • Events • Photographers • Photo ID
+                </div>
+
+                {renderResults()}
+            </div>
         </div>
+    );
+
+    // If using portal, we DON'T add 'expanded' class to wrapper to keep it small
+    // But we need to handle the trigger
+    return (
+        <>
+            <div
+                className={`modern-search-wrapper ${theme}-theme ${collapsible ? 'is-collapsible' : ''} ${isExpanded && !usePortal ? 'expanded' : ''}`}
+                ref={wrapperRef}
+            >
+                <div
+                    className={`modern-search-bar ${isOpen ? 'active' : ''}`}
+                    onClick={() => {
+                        if (collapsible && !isExpanded) {
+                            setIsExpanded(true);
+                        }
+                    }}
+                >
+                    <Search className="search-icon" size={20} />
+
+                    {/* Only render Input inWrapper if NOT using Portal */}
+                    <input
+                        ref={!usePortal ? inputRef : null}
+                        type="text"
+                        className="search-input"
+                        placeholder="Search riders, horses, events, photographers, photo ID..."
+                        value={query}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        onFocus={(e) => {
+                            if (isMobileTrigger && window.matchMedia("(max-width: 768px)").matches) {
+                                e.preventDefault();
+                                e.target.blur();
+                                window.dispatchEvent(new Event('open-header-search'));
+                                return;
+                            }
+
+                            activateSearch();
+                            if (query.length >= 2) {
+                                setHasResults(Object.keys(groups).length > 0);
+                                setIsOpen(true);
+                            }
+                        }}
+                        onClick={(e) => {
+                            if (isMobileTrigger && window.matchMedia("(max-width: 768px)").matches) {
+                                e.preventDefault();
+                                e.currentTarget.blur();
+                                window.dispatchEvent(new Event('open-header-search'));
+                            }
+                        }}
+                        disabled={collapsible && !isExpanded}
+                        style={usePortal ? { display: 'none' } : {}}
+                    />
+
+                    {query && !usePortal && (
+                        <button
+                            className="clear-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setQuery('');
+                                setGroups({});
+                            }}
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
+
+                    {theme === 'light' && !collapsible && (
+                        <button
+                            className="search-go-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (!isOpen && query.length >= 2) setIsOpen(true);
+                                inputRef.current?.focus();
+                            }}
+                        >
+                            <ArrowRight size={18} />
+                        </button>
+                    )}
+                </div>
+
+                {/* Desktop Dropdown (In-Flow) */}
+                {!usePortal && renderResults()}
+            </div>
+
+            {/* Portal for Mobile Expanded */}
+            {usePortal && typeof document !== 'undefined' && ReactDOM.createPortal(
+                mobileOverlayContent,
+                document.body
+            )}
+        </>
     );
 };

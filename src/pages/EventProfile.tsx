@@ -120,10 +120,27 @@ export function EventProfile() {
         const uniqueRiders = Array.from(new Set(photos.map(p => p.rider))).sort();
         const uniqueHorses = Array.from(new Set(photos.map(p => p.horse))).sort();
 
-        return [
-            ...uniqueRiders.map(r => ({ label: r, value: r })),
-            ...uniqueHorses.map(h => ({ label: h, value: h }))
-        ];
+        const riderOptions = uniqueRiders.map(r => {
+            const photo = photos.find(p => p.rider === r);
+            return {
+                label: r,
+                value: r,
+                type: 'rider' as const,
+                subtitle: photo?.horse
+            };
+        });
+
+        const horseOptions = uniqueHorses.map(h => {
+            const photo = photos.find(p => p.horse === h);
+            return {
+                label: h,
+                value: h,
+                type: 'horse' as const,
+                subtitle: photo?.rider
+            };
+        });
+
+        return [...riderOptions, ...horseOptions];
     }, [photos]);
 
     // 3. Absolute Totals for Header (Stable)
@@ -213,7 +230,10 @@ export function EventProfile() {
             <section className="grid-section">
                 <div className="container">
                     <div className="filters-wrapper">
-                        <div className="filter-row">
+                        {/* New Shared Filter Structure */}
+                        <div className="filter-container">
+
+                            {/* Row 1/Col 1: Swipeable Filters + Reset */}
                             <div className="filter-group">
                                 <ModernDropdown
                                     value={eventClass}
@@ -223,15 +243,6 @@ export function EventProfile() {
                                     placeholder="Class"
                                     variant="pill"
                                 />
-                                <div style={{ flex: 2, minWidth: '300px' }}>
-                                    <ScopedSearchBar
-                                        placeholder="Search by riders or horses..."
-                                        options={combinedOptions}
-                                        currentValue={searchQuery}
-                                        onSelect={(val) => setSearchQuery(val)}
-                                        onSearchChange={(val) => setSearchQuery(val)}
-                                    />
-                                </div>
                                 <button
                                     className="filter-reset-btn"
                                     onClick={() => {
@@ -245,6 +256,19 @@ export function EventProfile() {
                                 </button>
                             </div>
 
+                            {/* Row 2/Col 2: Search (Full Width on Mobile) */}
+                            <div className="search-group">
+                                <ScopedSearchBar
+                                    placeholder="Search by riders or horses..."
+                                    options={combinedOptions}
+                                    currentValue={searchQuery}
+                                    onSelect={(val) => setSearchQuery(val)}
+                                    onSearchChange={(val) => setSearchQuery(val)}
+                                    variant="v2"
+                                />
+                            </div>
+
+                            {/* Optional: Results Count */}
                             <div className="filter-results-count">
                                 Showing {activePhotos.length} photos
                             </div>

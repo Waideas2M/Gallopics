@@ -1,0 +1,37 @@
+/* Status Pill Component Styles */
+/* Should match button sizing for consistency */
+.token-status-pill {
+    padding: 12px 24px;
+    /* Match .btn.btn-medium */
+    border-radius: 99px;
+    font-size: 1rem;
+    /* Match .btn.btn-medium */
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    min-height: 48px;
+    /* Match .btn.btn-medium */
+}
+
+/* Variants */
+.token-status-pill.status-neutral {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.token-status-pill.status-success {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.token-status-pill.status-warning {
+    background: #FFFBEB;
+    color: #D97706;
+}
+
+.token-status-pill.status-error {
+    background: #FEF2F2;
+    color: #DC2626;
+}
