@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { X, Clock, Trash2, MoreVertical, RotateCcw, Save, Slash, ChevronDown, CheckCircle, Plus, AlertTriangle, AlertCircle, Check, Pencil, Info, ChevronRight, HelpCircle, ChevronLeft } from 'lucide-react';
+import { X, Clock, Trash2, MoreVertical, RotateCcw, Save, Slash, ChevronDown, Plus, AlertCircle, Check, Pencil, Info, ChevronRight, HelpCircle, ChevronLeft } from 'lucide-react';
 import './PgSelectionPanel.css';
 import { usePhotographer, type Photo } from '../../context/PhotographerContext';
 import { RIDERS, HORSES } from '../../data/mockData';

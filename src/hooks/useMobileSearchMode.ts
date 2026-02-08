@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, RefObject } from 'react';
+import { useState, useEffect, useCallback, type RefObject } from 'react';
 
 /**
  * useMobileSearchMode - Enforces Google-like mobile search focus behavior

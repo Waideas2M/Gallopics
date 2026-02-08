@@ -320,10 +320,6 @@ export function ImageProfile() {
                                         <span className="detail-value">{detectedPortrait ? 'Portrait' : 'Landscape'}</span>
                                     </div>
                                     <div className="detail-item">
-                                        <span className="detail-label">Discipline</span>
-                                        <span className="detail-value">{photo.discipline}</span>
-                                    </div>
-                                    <div className="detail-item">
                                         <span className="detail-label">Class</span>
                                         <span className="detail-value">1.20m</span>
                                     </div>
