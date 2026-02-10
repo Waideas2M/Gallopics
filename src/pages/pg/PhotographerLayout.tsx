@@ -31,14 +31,28 @@ export const PhotographerLayout: React.FC = () => {
                             <LayoutGrid size={20} />
                             <span>Events</span>
                         </NavLink>
-                        <NavLink to="/pg/sold" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Sold photos" : ""}>
+                        <button
+                            type="button"
+                            className="pg-nav-item"
+                            title={isCollapsed ? "Sold photos" : ""}
+                            onClick={(e) => e.preventDefault()}
+                            aria-label="Sales"
+                            aria-disabled="true"
+                        >
                             <DollarSign size={20} />
                             <span>Sales</span>
-                        </NavLink>
-                        <NavLink to="/pg/receipts" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Receipts" : ""}>
+                        </button>
+                        <button
+                            type="button"
+                            className="pg-nav-item"
+                            title={isCollapsed ? "Receipts" : ""}
+                            onClick={(e) => e.preventDefault()}
+                            aria-label="Receipts"
+                            aria-disabled="true"
+                        >
                             <FileText size={20} />
                             <span>Receipts</span>
-                        </NavLink>
+                        </button>
                         <div className="pg-nav-divider" />
                         <NavLink to="/pg/billing" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Billing details" : ""}>
                             <CreditCard size={20} />

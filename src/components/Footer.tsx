@@ -28,9 +28,9 @@ export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false
                         {/* Right Column: Compact Actions (Desktop: Row, Mobile: Stacked) */}
                         <div className="footer-actions-container">
                             <div className="footer-secondary-links">
-                                <a href="#" className="footer-link">FAQs</a>
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>FAQs</a>
                                 <span className="nav-dot">•</span>
-                                <a href="#" className="footer-link">Photographers login</a>
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>Photographers login</a>
                             </div>
                             <div className="footer-primary-action">
                                 <a
