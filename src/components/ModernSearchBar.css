@@ -515,9 +515,9 @@
         color: #999;
     }
 
-    /* Hide Original Input/Clear when collapsed on mobile (handled by React logic mostly) */
-    .modern-search-wrapper.is-collapsible:not(.expanded) {
-        width: 44px !important;
+    /* MOBILE ONLY HIDE (Guest flow requirement: Only on home page) */
+    .is-home .modern-search-wrapper.is-collapsible:not(.expanded) {
+        display: none !important;
     }
 }
 

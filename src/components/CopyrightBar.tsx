@@ -1,5 +1,6 @@
 import React from 'react';
 import './Footer.css';
+import { Instagram, Youtube } from 'lucide-react';
 
 export interface CopyrightBarProps {
     minimal?: boolean; // If true, might adjust padding or border
@@ -8,10 +9,21 @@ export interface CopyrightBarProps {
 
 export const CopyrightBar: React.FC<CopyrightBarProps> = ({ minimal = false, sidebar = false }) => {
     const content = (
-        <div className="copyright-content">
-            <span className="copyright-text">© {new Date().getFullYear()} Gallopics</span>
-            {!sidebar && <span className="copyright-text mobile-hide">. All rights reserved.</span>}
-            <div className="copyright-links-row" style={{ marginLeft: sidebar ? 0 : 'auto', display: 'flex', flexWrap: 'wrap', gap: sidebar ? '4px 12px' : '16px' }}>
+        <div className="copyright-wrapper">
+            {!sidebar && (
+                <div className="copyright-social-wrapper">
+                    <div className="footer-socials">
+                        <a href="#" aria-label="Instagram" className="social-icon-btn"><Instagram size={20} /></a>
+                        <a href="#" aria-label="YouTube" className="social-icon-btn"><Youtube size={22} /></a>
+                    </div>
+                </div>
+            )}
+
+            <div className="copyright-info">
+                <span className="copyright-text">© {new Date().getFullYear()} Gallopics. All rights reserved.</span>
+            </div>
+
+            <div className="copyright-links-row">
                 <a href="#" className="copyright-link">Terms of service</a>
                 <a href="#" className="copyright-link">Privacy policy</a>
                 <a href="#" className="copyright-link">Cookie policy</a>
@@ -21,7 +33,7 @@ export const CopyrightBar: React.FC<CopyrightBarProps> = ({ minimal = false, sid
 
     return (
         <div className={`copyright-bar ${minimal ? 'minimal' : ''} ${sidebar ? 'sidebar-mode' : ''}`}>
-            {sidebar ? content : <div className="container-fluid">{content}</div>}
+            {sidebar ? content : <div className="container">{content}</div>}
         </div>
     );
 };

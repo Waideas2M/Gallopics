@@ -26,19 +26,32 @@ interface ModernSearchBarProps {
     collapsible?: boolean;
     theme?: 'dark' | 'light';
     isMobileTrigger?: boolean;
+    mobilePlaceholder?: string;
+    desktopPlaceholder?: string;
 }
 
 export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     collapsible = false,
     theme = 'dark',
-    isMobileTrigger = false
+    isMobileTrigger = false,
+    mobilePlaceholder,
+    desktopPlaceholder
 }) => {
+    const defaultDesktopPlaceholder = "Search riders, horses, events, photographers, photo ID...";
+    const defaultMobilePlaceholder = "Search...";
+
+    // Determine current placeholder based on width/prop
+    const isMobileBreakpoint = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
+    const currentPlaceholder = isMobileBreakpoint
+        ? (mobilePlaceholder || defaultMobilePlaceholder)
+        : (desktopPlaceholder || defaultDesktopPlaceholder);
     const [query, setQuery] = useState('');
     const [groups, setGroups] = useState<GroupedResults>({});
     const [hasResults, setHasResults] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isExpanded, setIsExpanded] = useState(!collapsible);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const isFirstRender = useRef(true);
     const navigate = useNavigate();
@@ -193,7 +206,10 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     // Close outside or Collapse
     useEffect(() => {
         const outsideClick = (e: MouseEvent) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+            const isInsideWrapper = wrapperRef.current && wrapperRef.current.contains(e.target as Node);
+            const isInsideDropdown = dropdownRef.current && dropdownRef.current.contains(e.target as Node);
+
+            if (!isInsideWrapper && !isInsideDropdown) {
                 setIsOpen(false);
                 deactivateSearch();
                 if (collapsible) {
@@ -235,6 +251,33 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     // Determine if we should use Portal (Mobile Only)
     const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 768 : false;
     const usePortal = collapsible && isExpanded && isMobile;
+
+    // Portal for Desktop clipping fix
+    const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; right: number; width: number } | null>(null);
+
+    useEffect(() => {
+        const updateRect = () => {
+            if (wrapperRef.current && isOpen && !usePortal) {
+                const rect = wrapperRef.current.getBoundingClientRect();
+                setDropdownRect({
+                    top: rect.bottom + window.scrollY,
+                    left: rect.left + window.scrollX,
+                    right: (window.innerWidth - rect.right),
+                    width: rect.width
+                });
+            }
+        };
+
+        if (isOpen && !usePortal) {
+            updateRect();
+            window.addEventListener('resize', updateRect);
+            window.addEventListener('scroll', updateRect);
+            return () => {
+                window.removeEventListener('resize', updateRect);
+                window.removeEventListener('scroll', updateRect);
+            };
+        }
+    }, [isOpen, usePortal]);
 
     // Focus input on expand & Body Scroll Lock
     useEffect(() => {
@@ -290,10 +333,24 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
     const renderResults = () => {
         if (!isOpen) return null;
 
-        if (hasResults) {
-            return (
-                <div className="search-results-dropdown">
-                    {groupOrder.map(type => {
+        const style: React.CSSProperties = dropdownRect && !usePortal ? {
+            position: 'absolute',
+            top: dropdownRect.top + 8,
+            left: collapsible ? 'auto' : dropdownRect.left,
+            right: collapsible ? dropdownRect.right : 'auto',
+            width: collapsible ? 380 : (dropdownRect.width || 420),
+            margin: 0,
+            zIndex: 9999,
+        } : {};
+
+        const content = (
+            <div
+                ref={dropdownRef}
+                className={`search-results-dropdown ${!hasResults ? 'empty' : ''}`}
+                style={style}
+            >
+                {hasResults ? (
+                    groupOrder.map(type => {
                         const groupItems = groups[type];
                         if (!groupItems) return null;
 
@@ -304,6 +361,7 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                                     <div
                                         key={item.id}
                                         className="search-result-item clickable"
+                                        onMouseDown={(e) => e.preventDefault()} // Prevent focus shift that might close portal
                                         onClick={() => handleResultClick(item)}
                                     >
                                         <div className={`result-icon-box type-${item.type}`}>
@@ -318,19 +376,23 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                                 ))}
                             </div>
                         );
-                    })}
+                    })
+                ) : (
+                    query.length >= 2 && <span className="no-result-text">No matches found</span>
+                )}
+            </div>
+        );
+
+        // If on desktop, we wrap in a themed context to ensure styles apply
+        if (dropdownRect && !usePortal) {
+            return (
+                <div className={`modern-search-wrapper ${theme}-theme ${collapsible ? 'is-collapsible expanded' : ''}`} style={{ position: 'static' }}>
+                    {content}
                 </div>
             );
         }
 
-        if (query.length >= 2 && !hasResults) {
-            return (
-                <div className="search-results-dropdown empty">
-                    <span className="no-result-text">No matches found</span>
-                </div>
-            )
-        }
-        return null;
+        return content;
     };
 
 
@@ -350,7 +412,7 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                         ref={usePortal ? inputRef : null}
                         type="text"
                         className="search-input"
-                        placeholder="Search..."
+                        placeholder={currentPlaceholder}
                         value={query}
                         onChange={(e) => handleSearch(e.target.value)}
                     />
@@ -402,14 +464,15 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                         ref={!usePortal ? inputRef : null}
                         type="text"
                         className="search-input"
-                        placeholder="Search riders, horses, events, photographers, photo ID..."
+                        placeholder={currentPlaceholder}
                         value={query}
                         onChange={(e) => handleSearch(e.target.value)}
                         onFocus={(e) => {
+                            // On mobile, if this is a trigger for the global search overlay,
+                            // we do NOT want to activate on focus alone (which can happen on back-nav).
                             if (isMobileTrigger && window.matchMedia("(max-width: 768px)").matches) {
                                 e.preventDefault();
                                 e.target.blur();
-                                window.dispatchEvent(new Event('open-header-search'));
                                 return;
                             }
 
@@ -420,6 +483,7 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                             }
                         }}
                         onClick={(e) => {
+                            // Only dispatch the open event on an explicit user click/tap
                             if (isMobileTrigger && window.matchMedia("(max-width: 768px)").matches) {
                                 e.preventDefault();
                                 e.currentTarget.blur();
@@ -457,9 +521,15 @@ export const ModernSearchBar: React.FC<ModernSearchBarProps> = ({
                     )}
                 </div>
 
-                {/* Desktop Dropdown (In-Flow) */}
-                {!usePortal && renderResults()}
+                {/* Desktop Dropdown (In-Flow fallback) */}
+                {!usePortal && !dropdownRect && renderResults()}
             </div>
+
+            {/* Portal for Desktop Dropdown (Escapes overflow:hidden) */}
+            {!usePortal && dropdownRect && isOpen && typeof document !== 'undefined' && ReactDOM.createPortal(
+                renderResults(),
+                document.body
+            )}
 
             {/* Portal for Mobile Expanded */}
             {usePortal && typeof document !== 'undefined' && ReactDOM.createPortal(

@@ -1,7 +1,6 @@
 import React from 'react';
 import './Footer.css';
 import { CopyrightBar } from './CopyrightBar';
-import { Instagram, Youtube } from 'lucide-react';
 
 interface FooterProps {
     minimal?: boolean;
@@ -15,32 +14,35 @@ export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false
 
     return (
         <>
-            <footer className="footer-full">
-                <div className="container-fluid">
+            <footer className="footer-full" data-footer="guest-full">
+                <div className="container">
                     <div className="footer-grid">
-                        {/* Left: Brand */}
+                        {/* Left Column: Brand */}
                         <div className="footer-brand">
                             <img src="/images/logo2.svg" alt="Gallopics" className="footer-logo-img" />
-
+                            <p className="footer-subtitle desktop-only">
+                                We capture horse competitions across Sweden. Search your event, spot your photos, and purchase your favorites.
+                            </p>
                         </div>
 
-                        {/* Right: Links & Social */}
-                        <div className="footer-right">
-                            {/* 1. Primary CTA */}
-                            <a href="#" className="btn-footer-cta">Contact support</a>
-
-                            {/* 2. Compact Nav Row */}
-                            <div className="footer-nav-row">
-                                <span className="nav-links">
-                                    <a href="#" className="footer-link">FAQs</a>
-                                    <span className="nav-dot">•</span>
-                                    <a href="#" className="footer-link">Photographers login</a>
-                                </span>
-                                <span className="nav-separator">|</span>
-                                <div className="footer-socials-inline">
-                                    <a href="#" aria-label="Instagram"><Instagram size={20} /></a>
-                                    <a href="#" aria-label="YouTube"><Youtube size={22} /></a>
-                                </div>
+                        {/* Right Column: Compact Actions (Desktop: Row, Mobile: Stacked) */}
+                        <div className="footer-actions-container">
+                            <div className="footer-secondary-links">
+                                <a href="#" className="footer-link">FAQs</a>
+                                <span className="nav-dot">•</span>
+                                <a href="#" className="footer-link">Photographers login</a>
+                            </div>
+                            <div className="footer-primary-action">
+                                <a
+                                    href="#"
+                                    className="btn-footer-cta"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        window.dispatchEvent(new Event('open-contact-support'));
+                                    }}
+                                >
+                                    Contact support
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -10,15 +10,17 @@ interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialTab?: 'signin' | 'register';
+    initialAccountType?: 'photographer' | 'buyer';
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
     isOpen,
     onClose,
-    initialTab = 'signin'
+    initialTab = 'signin',
+    initialAccountType = 'photographer'
 }) => {
     const [activeTab, setActiveTab] = useState<'signin' | 'register'>(initialTab);
-    const [accountType, setAccountType] = useState<'photographer' | 'buyer'>('photographer');
+    const [accountType, setAccountType] = useState<'photographer' | 'buyer'>(initialAccountType);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [copied, setCopied] = useState(false);
     const isMobile = windowWidth < 768;
@@ -34,8 +36,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             setActiveTab(initialTab);
+            setAccountType(initialAccountType);
         }
-    }, [isOpen, initialTab]);
+    }, [isOpen, initialTab, initialAccountType]);
 
     // Handle ESC key
     useEffect(() => {

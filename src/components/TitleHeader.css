@@ -91,8 +91,8 @@
 .title-text-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    /* Unified gap for all sub-elements */
+    gap: 0;
+    /* Unified gap removed in favor of explicit vertical rhythm */
 }
 
 .title-header-top-subtitle {
@@ -109,25 +109,27 @@
     letter-spacing: -0.01em;
     line-height: 1.05;
     color: var(--color-text-primary);
+    margin-bottom: 0;
 }
 
 .title-header-subtitle {
     font-size: 1.125rem;
     color: var(--color-text-secondary);
     font-weight: 400;
-    line-height: 1.4;
-    /* Unified */
+    line-height: 1;
+    margin-top: 1rem;
 }
 
 .title-header-stats {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
     font-size: 0.9375rem;
     color: var(--color-text-secondary);
     flex-wrap: wrap;
-    margin-top: 0;
-    /* Handled by container gap */
+    line-height: 1.15;
+    margin-top: 1rem;
 }
 
 .title-header-description {
@@ -135,8 +137,7 @@
     font-size: 1.125rem;
     line-height: 1.4;
     color: var(--color-text-secondary);
-    margin-top: 0;
-    /* Handled by container gap */
+    margin-top: 1rem;
 }
 
 .title-header-right {
@@ -159,6 +160,24 @@
 
     .title-header-title {
         font-size: 2rem;
+    }
+
+    /* Stack LOGO above Details on Guest Event page only */
+    .event-page-header .title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .event-page-header .title-avatar-wrapper.is-square {
+        width: 80px;
+        /* Slightly smaller on mobile to allow more space below */
+        height: 80px;
+        padding: 6px;
+    }
+
+    .event-page-header .title-text-group {
+        width: 100%;
     }
 }
 
@@ -221,36 +240,49 @@
 .event-meta-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
+    align-items: baseline;
+    gap: 0;
     font-size: 1.125rem;
-    line-height: 1.4;
+    line-height: 1.15;
     color: var(--color-text-secondary);
     text-decoration: none;
 }
 
+.meta-prefix {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    white-space: nowrap;
+}
+
 .meta-item {
     display: flex;
-    align-items: center;
-    gap: 6px;
+    align-items: baseline;
     white-space: nowrap;
     border-bottom: none !important;
     text-decoration: none !important;
 }
 
-.meta-bullet {
-    color: #ccc;
+.meta-prefix+.meta-item::before,
+.meta-item+.meta-item::before,
+.meta-prefix span+span::before {
+    content: "•";
+    margin: 0 0.75rem;
+    opacity: 0.35;
     font-size: 0.8em;
-    margin: 0 4px;
+    vertical-align: middle;
+    position: relative;
+    top: -0.05em;
+    /* Optical centering */
+    font-weight: 500;
 }
 
 .event-stats-row {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 0;
-    /* Handled by container gap */
+    align-items: baseline;
+    gap: 0;
     font-size: 0.9rem;
+    line-height: 1.15;
     color: #666;
 }
 
@@ -455,13 +487,36 @@
 /* Override ModernSearchBar inside Hero to be fluid */
 .hero-actions .modern-search-wrapper {
     width: 100%;
+    --heroButtonSize: 40px;
+    --heroSearchHeight: 56px;
+    --heroSearchInset: 8px;
+    /* (56 - 40) / 2 for vertical centering */
 }
 
 .hero-actions .modern-search-bar {
-    height: 56px;
+    height: var(--heroSearchHeight);
     /* Taller search bar for hero */
     border-radius: 99px;
-    padding: 0 16px;
+    position: relative;
+    padding-left: 20px;
+    padding-right: calc(var(--heroButtonSize) + var(--heroSearchInset) * 2);
+    display: flex;
+    align-items: center;
+}
+
+.hero-actions .search-go-btn {
+    position: absolute;
+    right: var(--heroSearchInset);
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--heroButtonSize);
+    height: var(--heroButtonSize);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 2;
 }
 
 .btn-hero-primary {
@@ -524,9 +579,17 @@
 }
 
 .hero-card-small.organizer {
-    background-color: #fff9e6;
-    /* Very subtle yellow tint */
+    background-color: #1B3AEC;
+    /* Brand Blue */
     grid-area: card-s;
+}
+
+.hero-card-small.organizer .hero-title-small {
+    color: #FFFFFF;
+}
+
+.hero-card-small.organizer .hero-body {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .btn-hero-secondary {
@@ -666,6 +729,9 @@
         /* ensure background covers */
         background-size: cover;
         /* Keep specific styling but match height rule above */
+        background-image:
+            linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.1) 60%, transparent 100%),
+            url('/images/card1_mobile.jpg');
     }
 
     .hero-card-small {
@@ -704,7 +770,27 @@
         transform: scale(1.2);
     }
 
+    .hero-card-large .hero-title,
     .hero-title {
-        font-size: 2rem;
+        font-size: 2.5rem;
+        line-height: 1.05;
+    }
+
+    .hero-title-small {
+        font-size: 2.5rem;
+        line-height: 1.1;
+    }
+}
+
+/* Extra small devices (iPhone SE) */
+@media (max-width: 375px) {
+
+    .hero-card-large .hero-title,
+    .hero-title {
+        font-size: 2.25rem;
+    }
+
+    .hero-title-small {
+        font-size: 1.75rem;
     }
 }

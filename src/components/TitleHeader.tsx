@@ -105,7 +105,11 @@ export const TitleHeader: React.FC<TitleHeaderProps> = ({
                                     <p className="hero-body">{description}</p>
                                 </div>
                                 <div className="hero-actions full-width-search">
-                                    <ModernSearchBar theme="light" isMobileTrigger={true} />
+                                    <ModernSearchBar
+                                        theme="light"
+                                        isMobileTrigger={true}
+                                        mobilePlaceholder="Search"
+                                    />
                                 </div>
                             </div>
 
@@ -116,7 +120,22 @@ export const TitleHeader: React.FC<TitleHeaderProps> = ({
                                     <p className="hero-body">Gallopics is a platform for competition photographers. Book events, upload galleries, manage orders and track your sales – all in one place.</p>
                                 </div>
                                 <div className="hero-actions">
-                                    <a href="/register" className="btn-hero-secondary">
+                                    <a
+                                        href="/register"
+                                        className="btn-hero-secondary"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            // DESKTOP ONLY: Open Auth Modal instead of navigating
+                                            if (window.innerWidth > 768) {
+                                                window.dispatchEvent(new CustomEvent('open-auth-modal', {
+                                                    detail: { tab: 'register', type: 'photographer' }
+                                                }));
+                                            } else {
+                                                // Mobile: Match header user icon behavior (show recommendation)
+                                                window.dispatchEvent(new Event('open-mobile-recommendation'));
+                                            }
+                                        }}
+                                    >
                                         Register
                                     </a>
                                 </div>
@@ -129,7 +148,14 @@ export const TitleHeader: React.FC<TitleHeaderProps> = ({
                                     <p className="hero-body">Helps you find the right photographers, coordinate coverage, and make it easy for riders to discover and purchase their photos.</p>
                                 </div>
                                 <div className="hero-actions">
-                                    <a href="/contact" className="btn-hero-secondary">
+                                    <a
+                                        href="/contact"
+                                        className="btn-hero-secondary"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            window.dispatchEvent(new Event('open-contact-support'));
+                                        }}
+                                    >
                                         Contact us
                                     </a>
                                 </div>

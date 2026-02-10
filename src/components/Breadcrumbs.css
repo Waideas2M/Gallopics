@@ -40,3 +40,46 @@
     font-size: 0.75rem;
     font-weight: 400;
 }
+
+@media (max-width: 768px) {
+    .breadcrumbs {
+        flex-wrap: nowrap;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .breadcrumb-item {
+        min-width: 0;
+        flex-shrink: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Keep first crumb visible */
+    .breadcrumb-item.is-first {
+        flex-shrink: 0;
+    }
+
+    /* Middle crumbs truncate first if they exist */
+    .breadcrumb-item:not(.is-first):not(.is-last) {
+        flex-shrink: 2;
+    }
+
+    /* Last crumb truncates elegantly but after middle ones */
+    .breadcrumb-item.is-last {
+        flex-shrink: 1;
+    }
+
+    .breadcrumb-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        display: block;
+    }
+
+    .breadcrumb-separator {
+        flex-shrink: 0;
+        margin: 0 4px;
+    }
+}

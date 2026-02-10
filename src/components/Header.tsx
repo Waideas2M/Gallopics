@@ -7,6 +7,9 @@ import { AuthModal } from './AuthModal';
 import { EditProfileModal } from './EditProfileModal';
 import { DesktopRecommendationModal } from './DesktopRecommendationModal';
 import { useAuth } from '../context/AuthContext';
+import { ContactSupportModal } from './ContactSupportModal';
+import { createPortal } from 'react-dom';
+import { PgToast } from '../pages/pg/PgToast';
 import './Header.css';
 
 export const Header: React.FC = () => {
@@ -14,7 +17,10 @@ export const Header: React.FC = () => {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
     const [isDesktopRecommendationModalOpen, setIsDesktopRecommendationModalOpen] = useState(false);
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [toast, setToast] = useState<{ type: 'success' | 'info' | 'danger'; message: string } | null>(null);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [authModalConfig, setAuthModalConfig] = useState<{ tab: 'signin' | 'register'; type: 'photographer' | 'buyer' }>({ tab: 'signin', type: 'photographer' });
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     const { cart } = useCart();
@@ -55,6 +61,42 @@ export const Header: React.FC = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        const handleOpenAuth = (e: any) => {
+            const { tab, type } = e.detail || { tab: 'signin', type: 'photographer' };
+            setAuthModalConfig({ tab, type });
+            setIsContactModalOpen(false); // Close other modals if open
+            setIsAuthModalOpen(true);
+        };
+        const handleOpenMobileRecommendation = () => {
+            setIsAuthModalOpen(false);
+            setIsContactModalOpen(false);
+            setIsDesktopRecommendationModalOpen(true);
+        };
+        const handleOpenContact = () => {
+            setIsAuthModalOpen(false); // Close other modals if open
+            setIsEditProfileModalOpen(false);
+            setIsContactModalOpen(true);
+        };
+        const handleShowToast = (e: any) => {
+            const { type, message } = e.detail;
+            setToast({ type, message });
+            setTimeout(() => setToast(null), 4000);
+        };
+
+        window.addEventListener('open-auth-modal', handleOpenAuth);
+        window.addEventListener('open-mobile-recommendation', handleOpenMobileRecommendation);
+        window.addEventListener('open-contact-support', handleOpenContact);
+        window.addEventListener('show-toast', handleShowToast);
+
+        return () => {
+            window.removeEventListener('open-auth-modal', handleOpenAuth);
+            window.removeEventListener('open-mobile-recommendation', handleOpenMobileRecommendation);
+            window.removeEventListener('open-contact-support', handleOpenContact);
+            window.removeEventListener('show-toast', handleShowToast);
+        };
+    }, []);
+
     // Close menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -76,7 +118,7 @@ export const Header: React.FC = () => {
 
     return (
         <>
-            <header className={`site-header ${scrolled ? 'is-scrolled' : ''}`}>
+            <header className={`site-header ${scrolled ? 'is-scrolled' : ''} ${location.pathname === '/' ? 'is-home' : ''}`}>
                 <div className="header-top container-fluid">
                     {/* 1. Logo (Left) */}
                     <a href="/" className="logo-section">
@@ -177,6 +219,8 @@ export const Header: React.FC = () => {
             <AuthModal
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
+                initialTab={authModalConfig.tab}
+                initialAccountType={authModalConfig.type}
             />
 
             <EditProfileModal
@@ -188,6 +232,31 @@ export const Header: React.FC = () => {
                 isOpen={isDesktopRecommendationModalOpen}
                 onClose={() => setIsDesktopRecommendationModalOpen(false)}
             />
+
+            <ContactSupportModal
+                isOpen={isContactModalOpen}
+                onClose={() => setIsContactModalOpen(false)}
+            />
+
+            {toast && createPortal(
+                <div style={{
+                    position: 'fixed',
+                    bottom: '32px',
+                    left: 0,
+                    width: '100%',
+                    pointerEvents: 'none',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    zIndex: 10000
+                }}>
+                    <PgToast
+                        type={toast.type}
+                        message={toast.message}
+                        style={{ pointerEvents: 'auto' }}
+                    />
+                </div>,
+                document.body
+            )}
         </>
     );
 };

@@ -354,7 +354,7 @@ export function ImageProfile() {
                 </div>
             )}
 
-            <Footer minimal={false} />
+            <Footer minimal={true} />
         </div>
     );
 }

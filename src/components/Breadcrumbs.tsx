@@ -22,11 +22,11 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
                     {items.map((item, index) => (
                         <React.Fragment key={index}>
                             <div
-                                className={`breadcrumb-item ${item.active ? 'active' : ''} ${item.onClick ? 'clickable' : ''}`}
+                                className={`breadcrumb-item ${item.active ? 'active' : ''} ${item.onClick ? 'clickable' : ''} ${index === 0 ? 'is-first' : ''} ${index === items.length - 1 ? 'is-last' : ''}`}
                                 onClick={item.onClick}
                             >
-                                {index === 0 && <ChevronLeft size={14} />}
-                                {item.label}
+                                {index === 0 && <ChevronLeft size={14} style={{ flexShrink: 0 }} />}
+                                <span className="breadcrumb-label">{item.label}</span>
                             </div>
                             {index < items.length - 1 && <span className="breadcrumb-separator">/</span>}
                         </React.Fragment>

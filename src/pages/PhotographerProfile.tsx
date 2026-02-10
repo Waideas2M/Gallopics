@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import type { Photo } from '../types';
-import { RotateCcw, Pencil } from 'lucide-react';
+import { RotateCcw, Pencil, Instagram, Music2 } from 'lucide-react';
 import { Header } from '../components/Header';
+import { Button } from '../components/Button';
 import { TitleHeader } from '../components/TitleHeader';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import type { BreadcrumbItem } from '../components/Breadcrumbs';
@@ -220,12 +221,18 @@ export function PhotographerProfile() {
                 title={`${photographer.firstName} ${photographer.lastName}`}
                 avatar={photographerAvatar}
                 avatarVariant="photographer"
-                subtitle={`Photographer • ${photographer.city || 'Sweden'}`}
+                subtitle={
+                    <div className="event-meta-row">
+                        <span className="meta-prefix">
+                            <span>Photographer</span>
+                            <span>{photographer.city || 'Sweden'}</span>
+                        </span>
+                    </div>
+                }
                 stats={
                     <div className="event-stats-row">
-                        <span>{totalEvents} events</span>
-                        <span className="meta-bullet">•</span>
-                        <span>{totalPhotosCount} photos</span>
+                        <span className="meta-item">{totalEvents} events</span>
+                        <span className="meta-item">{totalPhotosCount} photos</span>
                     </div>
                 }
                 rightContent={
@@ -256,18 +263,44 @@ export function PhotographerProfile() {
 
                         {/* Hire Button logic: Show if Owner (driven by context) or if Guest & Available */}
                         {(isOwner ? availableToHire : photographer.isAvailableToHire) ? (
-                            <button className="pg-btn pg-btn-primary">Hire me</button>
+                            <Button variant="primary" size="medium">Hire me</Button>
                         ) : (
-                            <button
-                                className="pg-btn pg-btn-primary"
+                            <Button
+                                variant="primary"
+                                size="medium"
                                 disabled
                                 style={{ background: '#F3F4F6', color: '#9CA3AF', border: 'none', cursor: 'not-allowed', boxShadow: 'none' }}
                             >
                                 Not available atm
-                            </button>
+                            </Button>
                         )}
 
                         <ActionSeparator />
+
+                        <a
+                            href="https://www.instagram.com/gallopics/"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="share-icon-btn"
+                            aria-label="Instagram"
+                            title="Instagram"
+                        >
+                            <Instagram size={20} />
+                        </a>
+
+                        <a
+                            href="https://www.tiktok.com/@gallopics"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="share-icon-btn"
+                            aria-label="TikTok"
+                            title="TikTok"
+                        >
+                            <Music2 size={20} />
+                        </a>
+
+                        <ActionSeparator />
+
                         <ShareIconButton />
                     </ActionCluster>
                 }

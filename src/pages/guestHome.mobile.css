@@ -98,8 +98,8 @@
     }
 
     .guestHome .hero-title {
-        font-size: 1.75rem !important;
-        line-height: 1.1 !important;
+        font-size: 2.5rem !important;
+        line-height: 1.05 !important;
     }
 
     .guestHome .hero-body {
@@ -120,27 +120,36 @@
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        margin-top: 8px !important;
-        margin-bottom: 0px !important;
-        /* Minimized bottom spacing (0px) */
-        padding-bottom: 0 !important;
-        gap: 8px !important;
-        height: 12px !important;
+        margin: 4px auto 0 !important;
+        /* Reduced gap */
+        padding: 4px 10px !important;
+        background: rgba(0, 0, 0, 0.04) !important;
+        /* Subtle backing plate */
+        border-radius: 99px !important;
+        width: fit-content !important;
+        gap: 6px !important;
+        height: auto !important;
+        padding-bottom: 4px !important;
+        padding-top: 4px !important;
     }
 
     .guestHome .hero-dot {
-        width: 8px !important;
-        height: 8px !important;
+        width: 6px !important;
+        height: 6px !important;
         border-radius: 50% !important;
-        background-color: #e2e8f0 !important;
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        /* Stronger contrast for inactive */
         border: none !important;
         margin: 0 !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1) !important;
     }
 
     .guestHome .hero-dot.active {
+        width: 20px !important;
+        /* Modern pill segment */
+        border-radius: 3px !important;
         background-color: #1B3AEC !important;
-        transform: scale(1.2) !important;
+        transform: none !important;
     }
 
     /* Mobile Search Bar Font Fix */
@@ -152,7 +161,7 @@
 /* Small Device Tweaks */
 @media (max-width: 374px) {
     .guestHome .hero-title {
-        font-size: 1.5rem !important;
+        font-size: 2.25rem !important;
     }
 
     .guestHome .hero-card,

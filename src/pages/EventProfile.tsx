@@ -180,6 +180,7 @@ export function EventProfile() {
             />
 
             <TitleHeader
+                className="event-page-header"
                 title={meeting.name}
                 avatar={meeting.logo}
                 avatarShape="square"
@@ -192,20 +193,19 @@ export function EventProfile() {
                 }
                 subtitle={
                     <div className="event-meta-row" style={{ textDecoration: 'none' }}>
-                        <span className="meta-item">{meeting.country.code === 'SE' ? '🇸🇪' : ''} {meeting.city}</span>
-                        <span className="meta-bullet">•</span>
+                        <span className="meta-prefix">
+                            <span>{meeting.country.code === 'SE' ? '🇸🇪' : ''}</span>
+                            <span>{meeting.city}</span>
+                        </span>
                         <span className="meta-item">{meeting.venueName}</span>
-                        <span className="meta-bullet">•</span>
                         <span className="meta-item">{meeting.disciplines.join(', ')}</span>
                     </div>
                 }
                 stats={
                     <div className="event-stats-row">
-                        <span>{totalRiders} riders</span>
-                        <span className="meta-bullet">•</span>
-                        <span>{totalHorses} horses</span>
-                        <span className="meta-bullet">•</span>
-                        <span>{meeting.photoCount} photos</span>
+                        <span className="meta-item">{totalRiders} riders</span>
+                        <span className="meta-item">{totalHorses} horses</span>
+                        <span className="meta-item">{meeting.photoCount} photos</span>
                     </div>
                 }
                 rightContent={

@@ -40,12 +40,12 @@
 }
 
 .btn.btn-medium {
-    padding: 12px 24px !important;
+    padding: 10px 24px !important;
     /* Standard */
-    font-size: 1rem !important;
-    /* 16px - clearly larger */
-    min-height: 48px !important;
-    height: auto !important;
+    font-size: 0.9375rem !important;
+    /* 15px */
+    min-height: 44px !important;
+    height: 44px !important;
     font-weight: 600;
 }
 

@@ -152,9 +152,8 @@ export function RiderProfile() {
                 subtitle="Rider"
                 stats={
                     <div className="event-stats-row">
-                        <span>{totalEvents} events</span>
-                        <span className="meta-bullet">•</span>
-                        <span>{totalPhotosCount} photos</span>
+                        <span className="meta-item">{totalEvents} events</span>
+                        <span className="meta-item">{totalPhotosCount} photos</span>
                     </div>
                 }
                 rightContent={

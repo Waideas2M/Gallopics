@@ -72,6 +72,18 @@
     --spacing-lg: 16px;
     --container-padding: 24px;
   }
+
+  /* Prevent iOS focus zoom on all inputs */
+  input[type="text"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100%;
+  }
 }
 
 @media (max-width: 430px) {
