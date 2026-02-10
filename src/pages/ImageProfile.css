@@ -403,10 +403,10 @@
 
 @media (max-width: 768px) {
     .image-profile-page {
-        overflow-x: clip;
-        /* Ultimate safeguard against micro-scroll */
+        overflow-x: hidden !important;
+        position: relative;
         width: 100%;
-        max-width: 100%;
+        max-width: 100vw;
     }
 
     .image-profile-main {
@@ -425,83 +425,102 @@
     }
 
     .photo-info-strip {
-        padding: 20px 16px;
+        padding: 16px;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        /* Split: Left (Pills) vs Right (Share) */
         align-items: flex-start;
-        gap: 24px;
+        justify-content: space-between;
+        gap: 12px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         box-sizing: border-box;
         width: 100%;
     }
 
-    /* Row 1: Identity Pills Strip (Wrappable) */
-    .chip-group.compact-row {
-        width: 100%;
+    /* Actions: Hide arrows and divider on mobile as requested */
+    .top-bar-actions {
+        flex-shrink: 0;
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
-        gap: 10px;
-        padding-bottom: 0;
-        margin-bottom: 0;
-        overflow-x: visible;
-        /* Allow wrapping instead of scroll */
+        margin-top: 4px;
+        /* Align Share with the top row of pills */
     }
 
-    /* Compact Pill Variant Styling (Always show labels) */
+    .nav-group,
+    .action-divider {
+        display: none !important;
+    }
+
+    .share-action-btn {
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        border: 1px solid #eee;
+        /* Subtle border like the pills */
+        background: #fff;
+    }
+
+    /* Row 1/2: Pills Strip (Wrappable) */
+    .chip-group.compact-row {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        /* Allow Photographer to wrap to Row 2 */
+        align-items: flex-start;
+        gap: 8px;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+        /* Important for flex child wrapping */
+    }
+
+    /* Compact Pill Variant Styling */
     .chip-group.compact-row .info-chip {
         flex: 0 1 auto;
-        /* Allow shrinking if needed but prefer content width */
-        padding: 6px 14px !important;
+        /* Grow/shrink based on content */
+        min-width: 0;
+        max-width: calc(50% - 4px);
+        /* Try to fit 2 items on row 1 */
+        padding: 8px 12px !important;
         height: auto !important;
-        min-height: 40px;
+        min-height: 44px;
         background: #F3F4FB;
         border-color: #E2E8F0;
         display: flex;
         align-items: center;
+        box-sizing: border-box;
     }
 
+    /* Enforce Photographer wrap if Rider/Horse are long, 
+       or let flex wrap handle it naturally based on max-width */
     .chip-group.compact-row .info-chip .chip-avatar-ref {
         display: none !important;
-        /* Hide avatars for density as established */
+        /* Hidden for density */
     }
 
     .chip-group.compact-row .info-chip .chip-label {
         display: block !important;
         font-size: 8px;
-        margin-bottom: 1px;
+        margin-bottom: 2px;
         opacity: 0.7;
         font-weight: 700;
         letter-spacing: 0.05em;
+        text-transform: uppercase;
     }
 
     .chip-group.compact-row .info-chip .chip-content {
         align-items: flex-start;
         justify-content: center;
+        min-width: 0;
     }
 
     .chip-group.compact-row .info-chip .chip-name {
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
         white-space: normal;
-        /* Allow wrapping internal text if extremely long name */
-        line-height: 1.2;
-    }
-
-    /* Row 2: Controls Row (Cluster) */
-    .top-bar-actions {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 12px;
-        margin-top: 0;
-    }
-
-    /* Ensure children inside actions don't stretch */
-    .nav-group {
-        display: flex;
-        align-items: center;
-        gap: 4px;
+        /* Allow 2 lines */
+        word-break: break-word;
+        /* Prevent overflow on long names */
+        line-height: 1.15;
     }
 
     /* Image Section */
