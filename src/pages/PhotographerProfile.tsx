@@ -223,10 +223,8 @@ export function PhotographerProfile() {
                 avatarVariant="photographer"
                 subtitle={
                     <div className="event-meta-row">
-                        <span className="meta-prefix">
-                            <span>Photographer</span>
-                            <span>{photographer.city || 'Sweden'}</span>
-                        </span>
+                        <span className="meta-item">Photographer</span>
+                        <span className="meta-item">{photographer.city || 'Sweden'}</span>
                     </div>
                 }
                 stats={

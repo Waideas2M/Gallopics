@@ -550,3 +550,87 @@
         width: 100%;
     }
 }
+/* Guest Flow Mobile Full Screen Preview */
+.ipro-fullscreen-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    animation: iproFadeIn 0.2s ease-out;
+    touch-action: none;
+}
+
+.ipro-fullscreen-close {
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top));
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 50%;
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    transition: background 0.2s;
+}
+
+.ipro-fullscreen-close:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.ipro-fullscreen-content {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ipro-fullscreen-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    touch-action: pinch-zoom;
+}
+
+@keyframes iproFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Make sure the watermark wrapper is transparent in fullscreen so the overlay shows */
+.ipro-fullscreen-content .watermarked-preview-wrapper {
+    background: transparent !important;
+}
+
+/* Ensure image fits nicely */
+.ipro-fullscreen-content .watermarked-preview-image {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+}
+
+/* On desktop, allow a bit more space for the close button */
+@media (min-width: 769px) {
+    .ipro-fullscreen-close {
+        top: 24px;
+        right: 24px;
+        background: rgba(255, 255, 255, 0.1);
+        width: 44px;
+        height: 44px;
+    }
+    
+    .ipro-fullscreen-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}

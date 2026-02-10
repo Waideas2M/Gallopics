@@ -193,8 +193,8 @@ export function EventProfile() {
                 }
                 subtitle={
                     <div className="event-meta-row" style={{ textDecoration: 'none' }}>
-                        <span className="meta-prefix">
-                            <span>{meeting.country.code === 'SE' ? '🇸🇪' : ''}</span>
+                        <span className="meta-item">
+                            {meeting.country.code === 'SE' && <span>🇸🇪</span>}
                             <span>{meeting.city}</span>
                         </span>
                         <span className="meta-item">{meeting.venueName}</span>

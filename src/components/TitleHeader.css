@@ -248,24 +248,18 @@
     text-decoration: none;
 }
 
-.meta-prefix {
-    display: flex;
-    align-items: baseline;
-    gap: 0;
-    white-space: nowrap;
-}
+/* Removed .meta-prefix - using .meta-item instead */
 
 .meta-item {
-    display: flex;
+    display: inline-flex;
     align-items: baseline;
+    gap: 0.35rem;
     white-space: nowrap;
     border-bottom: none !important;
     text-decoration: none !important;
 }
 
-.meta-prefix+.meta-item::before,
-.meta-item+.meta-item::before,
-.meta-prefix span+span::before {
+.meta-item+.meta-item::before {
     content: "•";
     margin: 0 0.75rem;
     opacity: 0.35;

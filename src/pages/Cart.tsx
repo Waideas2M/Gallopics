@@ -103,7 +103,16 @@ export function Cart() {
         <div className="page-wrapper cart-page">
             <Header />
 
-            <Breadcrumbs items={breadcrumbs} />
+            <div className="cart-header-group">
+                <Breadcrumbs items={breadcrumbs} />
+                {!isSuccess && (
+                    <div className="cart-title-section">
+                        <div className="container">
+                            <h1 className="cart-page-title">Cart</h1>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <main className="cart-main">
                 <div className="container">
@@ -145,7 +154,8 @@ export function Cart() {
                                         ))}
                                     </div>
                                 </div>
-                            )}
+                            )
+                            }
                         </div>
                     ) : cart.length === 0 ? (
                         <div className="empty-cart-container">

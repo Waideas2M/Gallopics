@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Breadcrumbs } from '../components/Breadcrumbs';
@@ -7,11 +8,12 @@ import { Footer } from '../components/Footer';
 import { ModernDropdown } from '../components/ModernDropdown';
 import { InfoChip } from '../components/InfoChip';
 import { photos as mockPhotos, COMPETITIONS, PHOTOGRAPHERS, RIDERS, HORSES } from '../data/mockData';
-import { Share2, ChevronLeft, ChevronRight, ShoppingBag, Check, Zap } from 'lucide-react';
+import { Share2, ChevronLeft, ChevronRight, ShoppingBag, Check, Zap, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { CheckoutPanel } from '../components/CheckoutPanel';
 import './ImageProfile.css';
 import { WatermarkedPhotoPreview } from '../components/WatermarkedPhotoPreview';
+import { ContactSupportModal } from '../components/ContactSupportModal';
 
 const getPrice = (quality: string) => {
     switch (quality) {
@@ -26,16 +28,50 @@ export function ImageProfile() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const [selectedQuality, setSelectedQuality] = useState('high');
+    const [selectedQuality, setSelectedQuality] = useState('web');
     const { cart, addToCart, removeFromCartByPhotoId } = useCart();
     const [showCheckout, setShowCheckout] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
     const [toast, setToast] = useState<{ message: string; action?: { label: string; onClick: () => void } } | null>(null);
 
     const from = searchParams.get('from');
     const eventIdParam = searchParams.get('eventId');
 
     const photo = useMemo(() => mockPhotos.find(p => p.id === id) || mockPhotos[0], [id, mockPhotos]);
+    const event = useMemo(() => COMPETITIONS.find(c => c.id === photo.eventId), [photo.eventId]);
+    const photographer = useMemo(() => {
+        const p = PHOTOGRAPHERS.find(pg => pg.primaryEventId === photo.eventId) || PHOTOGRAPHERS[0];
+        return p;
+    }, [photo.eventId]);
+
+    // Prevent body scroll when full screen is active
+    useEffect(() => {
+        if (isFullScreen) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.touchAction = 'none';
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
+        };
+    }, [isFullScreen]);
+
+    // Handle Escape key
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isFullScreen) {
+                setIsFullScreen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isFullScreen]);
+
     const [detectedPortrait, setDetectedPortrait] = useState<boolean>(photo.height > photo.width);
 
     // Sync orientation when photo changes
@@ -67,12 +103,6 @@ export function ImageProfile() {
         }
     }, [toast]);
 
-    const event = useMemo(() => COMPETITIONS.find(c => c.id === photo.eventId), [photo.eventId]);
-    const photographer = useMemo(() => {
-        const p = PHOTOGRAPHERS.find(pg => pg.primaryEventId === photo.eventId) || PHOTOGRAPHERS[0];
-        return p;
-    }, [photo.eventId]);
-
     const breadcrumbs = useMemo<BreadcrumbItem[]>(() => {
         const items: BreadcrumbItem[] = [];
 
@@ -103,19 +133,13 @@ export function ImageProfile() {
                 label: 'Web Quality',
                 value: 'web',
                 subtext: detectedPortrait ? 'Portrait: 720×1080' : 'Landscape: 1080×720',
-                description: 'Suitable for social media posts.'
+                description: 'Best for social media and screen use.'
             },
             {
                 label: 'High Quality',
                 value: 'high',
                 subtext: detectedPortrait ? 'Portrait: 4000×6000' : 'Landscape: 6000×4000',
-                description: 'Suitable for printing photo frames.'
-            },
-            {
-                label: 'Original Quality',
-                value: 'original',
-                subtext: 'Uncompressed Original Files',
-                description: 'Maximum resolution for professional use.'
+                description: 'Best for printing and large displays.'
             }
         ];
     }, [detectedPortrait]);
@@ -133,7 +157,7 @@ export function ImageProfile() {
                         <div className="ipro-left">
                             <div className="photo-card-large">
                                 <div className="photo-info-strip">
-                                    <div className="chip-group">
+                                    <div className="chip-group compact-row">
                                         <InfoChip
                                             label="Rider"
                                             name={photo.rider}
@@ -181,7 +205,11 @@ export function ImageProfile() {
                                     </div>
                                 </div>
 
-                                <div className="photo-viewer">
+                                <div
+                                    className="photo-viewer"
+                                    onClick={() => setIsFullScreen(true)}
+                                    style={{ cursor: 'zoom-in' }}
+                                >
                                     <WatermarkedPhotoPreview
                                         src={photo.src}
                                         alt={photo.rider}
@@ -268,7 +296,16 @@ export function ImageProfile() {
                                                 We’ll send you a download link after payment (valid for 24 hours). Images are delivered as JPEG.
                                             </div>
 
-                                            <a href="#" className="support-link">Questions? Contact support</a>
+                                            <button
+                                                className="support-link"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setIsSupportModalOpen(true);
+                                                }}
+                                                style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}
+                                            >
+                                                Questions? Contact support
+                                            </button>
                                         </div>
                                     </>
                                 ) : (
@@ -355,6 +392,40 @@ export function ImageProfile() {
             )}
 
             <Footer minimal={true} />
+            {/* Full Screen Mobile Preview Portal */}
+            {isFullScreen && createPortal(
+                <div
+                    className="ipro-fullscreen-overlay"
+                    onClick={() => setIsFullScreen(false)}
+                >
+                    <button
+                        className="ipro-fullscreen-close"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsFullScreen(false);
+                        }}
+                    >
+                        <X size={28} />
+                    </button>
+                    <div
+                        className="ipro-fullscreen-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <WatermarkedPhotoPreview
+                            src={photo.src}
+                            alt={photo.rider}
+                            photographer={`${photographer.firstName} ${photographer.lastName}`}
+                            className="ipro-fullscreen-image"
+                        />
+                    </div>
+                </div>,
+                document.body
+            )}
+            {/* Contact Support Modal */}
+            <ContactSupportModal
+                isOpen={isSupportModalOpen}
+                onClose={() => setIsSupportModalOpen(false)}
+            />
         </div>
     );
 }
