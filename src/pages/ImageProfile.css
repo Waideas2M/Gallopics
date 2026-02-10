@@ -400,3 +400,134 @@
         position: static;
     }
 }
+
+@media (max-width: 768px) {
+    .image-profile-page {
+        overflow-x: clip;
+        /* Ultimate safeguard against micro-scroll */
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .image-profile-main {
+        padding-top: 12px;
+        padding-bottom: 40px;
+    }
+
+    .photo-card-large {
+        border-radius: 12px;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        border: 1px solid var(--color-border);
+    }
+
+    .photo-info-strip {
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* Row 1: Identity Pills Strip (Wrappable) */
+    .chip-group.compact-row {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        overflow-x: visible;
+        /* Allow wrapping instead of scroll */
+    }
+
+    /* Compact Pill Variant Styling (Always show labels) */
+    .chip-group.compact-row .info-chip {
+        flex: 0 1 auto;
+        /* Allow shrinking if needed but prefer content width */
+        padding: 6px 14px !important;
+        height: auto !important;
+        min-height: 40px;
+        background: #F3F4FB;
+        border-color: #E2E8F0;
+        display: flex;
+        align-items: center;
+    }
+
+    .chip-group.compact-row .info-chip .chip-avatar-ref {
+        display: none !important;
+        /* Hide avatars for density as established */
+    }
+
+    .chip-group.compact-row .info-chip .chip-label {
+        display: block !important;
+        font-size: 8px;
+        margin-bottom: 1px;
+        opacity: 0.7;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+    }
+
+    .chip-group.compact-row .info-chip .chip-content {
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .chip-group.compact-row .info-chip .chip-name {
+        font-size: 0.875rem;
+        white-space: normal;
+        /* Allow wrapping internal text if extremely long name */
+        line-height: 1.2;
+    }
+
+    /* Row 2: Controls Row (Cluster) */
+    .top-bar-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 0;
+    }
+
+    /* Ensure children inside actions don't stretch */
+    .nav-group {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Image Section */
+    .photo-viewer {
+        min-height: auto;
+        padding: 16px;
+        background: #F9FAFB;
+        box-sizing: border-box;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .photo-viewer img {
+        max-width: 100%;
+        max-height: 60vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .ipro-card {
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+}
