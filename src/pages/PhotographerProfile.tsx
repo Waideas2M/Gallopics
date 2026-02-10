@@ -277,27 +277,25 @@ export function PhotographerProfile() {
 
                         <ActionSeparator />
 
-                        <a
-                            href="https://www.instagram.com/gallopics/"
-                            target="_blank"
-                            rel="noreferrer"
+                        <button
+                            type="button"
                             className="share-icon-btn"
                             aria-label="Instagram"
                             title="Instagram"
+                            onClick={(e) => e.preventDefault()}
                         >
                             <Instagram size={20} />
-                        </a>
+                        </button>
 
-                        <a
-                            href="https://www.tiktok.com/@gallopics"
-                            target="_blank"
-                            rel="noreferrer"
+                        <button
+                            type="button"
                             className="share-icon-btn"
                             aria-label="TikTok"
                             title="TikTok"
+                            onClick={(e) => e.preventDefault()}
                         >
                             <Music2 size={20} />
-                        </a>
+                        </button>
 
                         <ActionSeparator />
 
