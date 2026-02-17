@@ -3,6 +3,19 @@
     padding-bottom: 0;
 }
 
+/* Event Details modal - slightly smaller than full Edit Profile modal */
+.event-details-modal-container {
+    width: 480px;
+    max-width: 90vw;
+}
+
+@media (max-width: 600px) {
+    .event-details-modal-container {
+        width: 100%;
+        max-width: 100vw;
+    }
+}
+
 /* Tabs Container - White header patch with subtle divider */
 .pg-tabs-container {
     background: rgba(255, 255, 255, 0.95);
@@ -11,54 +24,46 @@
     border-bottom: 1px solid #eaeaea;
     padding-bottom: 0;
     transition: transform 0.3s ease, max-height 0.3s ease, opacity 0.3s ease;
-
-    position: sticky;
-    top: 0;
-    z-index: 101;
 }
+
+
 
 .pg-tabs-container.expanded-tabs {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    /* In expanded, header is gone, so this sticks at 0 pure */
-    top: 0;
     /* Prepare for collapse */
-    max-height: 100px;
+    max-height: 120px;
     overflow: hidden;
+    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s linear;
 }
 
 .pg-tabs-container.header-hidden {
     transform: translateY(-100%);
     pointer-events: none;
-    border-bottom: none;
 }
 
 .pg-tabs-container.expanded-tabs.header-hidden {
-    transform: none;
+    transform: translateY(-100%);
     max-height: 0;
     opacity: 0;
 }
 
-/* Grey Content Section */
-.pg-grey-section {
-    background: var(--color-bg, #f5f6f8);
-    position: relative;
-    padding-top: 0;
-    /* Remove top padding to allow sticky header to sit flush */
-    padding-bottom: 24px;
-    min-height: calc(100vh - 200px);
-}
+/* Grey Content Section moved to PhotographerLayout.css for shared use */
 
-.pg-grey-section-inner {
+/* Photo Grid - Reduced columns for side-panel layout */
+.pg-photos-grid .my-masonry-grid {
     display: flex;
-    flex-direction: column;
-    min-height: inherit;
+    margin-left: -16px;
+    /* gutter size offset */
+    width: auto;
 }
 
-/* Photo Grid */
-.pg-photos-grid {
-    flex: 1;
-    min-width: 0;
+.pg-photos-grid .my-masonry-grid_column {
+    padding-left: 16px;
+    /* gutter size */
+    background-clip: padding-box;
 }
+
+/* Adjust Masonry Breakpoints via React props, or force here if needed */
 
 /* ============================================
    Header V2 Compact Styles
@@ -380,9 +385,14 @@
     overflow: hidden;
 }
 
+.pg-event-detail .pg-grey-section {
+    padding-top: 0;
+}
+
 .pg-event-detail.is-expanded .pg-grey-section {
     flex: 1;
     overflow-y: auto;
+    padding-top: 0;
     padding-bottom: 100px;
     min-height: 0;
 }
@@ -391,6 +401,11 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
+}
+
+/* Adjust content spacing in standard view now that tabs are inside */
+.pg-event-detail:not(.is-expanded) .pg-grey-section-inner {
+    padding-top: 24px;
 }
 
 /* Transitions */
@@ -408,35 +423,7 @@
 }
 
 /* Selection & Card wrapper styles */
-.pg-photo-card-wrapper {
-    position: relative;
-    cursor: pointer;
-    transition: transform 0.15s ease;
-}
-
-.pg-photo-card-wrapper:hover {
-    transform: translateY(-2px);
-}
-
-.pg-photo-card-wrapper.selected {
-    transform: scale(0.98);
-    border-radius: var(--radius-md, 8px);
-    box-shadow: 0 0 0 3px #1B3AEC, 0 8px 24px rgba(27, 58, 236, 0.15);
-}
-
-/* Remove shadow from inner card to avoid double shadow or masking issues */
-.pg-photo-card-wrapper.selected .photo-card {
-    box-shadow: none;
-}
-
-.pg-photo-card-wrapper.selected .card-image-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(27, 58, 236, 0.04);
-    pointer-events: none;
-    z-index: 5;
-}
+/* Photo Card Wrapper - Moved to PhotographerLayout.css */
 
 /* Chip Bar Actions */
 .pg-chip-actions-cluster {
@@ -472,6 +459,17 @@
     background: #f1f2f4;
     border-color: rgba(0, 0, 0, 0.2);
     color: #111;
+}
+
+.pg-chip-btn.ghost {
+    background: transparent;
+    border-color: transparent;
+    padding: 0 12px;
+}
+
+.pg-chip-btn.ghost:hover {
+    background: #f1f2f4;
+    border-color: transparent;
 }
 
 /* Primary variant for Publish */
@@ -527,50 +525,114 @@
     margin-right: 4px;
 }
 
-/* Filter Chips Row - Sticky Glass */
-.pg-filter-chips-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    /* Single line */
-    gap: 0;
+/* Filter Bar (On Grey Surface) */
+.pg-detail-filters {
     margin-bottom: 24px;
-    min-width: 0;
-
+    background: transparent;
+    padding: 0;
+    border-bottom: none;
     position: sticky;
     top: 58px;
-    z-index: 99;
-    padding: 20px 0;
+    z-index: 100;
+    transition: top 0.3s ease;
+}
 
-    background: rgba(245, 246, 248, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+/* Revised Layout: Split into Side Column (Chips) + Fluid Row (Search/Actions) */
+.pg-detail-filters .filter-container {
+    display: flex;
+    align-items: flex-start;
+    /* Align top since chips might wrap/column */
+    gap: 32px;
+    height: auto;
+    /* Allow flexible height */
+    background: transparent;
+    /* Remove pill background */
+    padding: 16px 0;
+    border-radius: 0;
+    border: none;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: top 0.3s ease, background 0.2s;
+    /* Subtle separator */
+}
+
+/* Left Column: Chips Panel */
+.pg-detail-filters .filter-group {
+    flex: 0 0 240px;
+    /* Fixed width side panel */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-right: 24px;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    /* Make it sticky if needed, but for now just a column */
+}
+
+.pg-detail-filters .search-group {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+.pg-detail-filters .pg-events-filter-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.pg-detail-filters .filter-results-count {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #666;
+    white-space: nowrap;
+}
+
+.pg-detail-filters .pg-view-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-detail-filters .pg-view-separator {
+    width: 1px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.08);
 }
 
 .pg-chips-scroll-container {
-    flex: 1;
+    width: 100%;
     display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-right: 16px;
-    align-items: center;
-    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+    flex-direction: column;
+    /* Stack vertically in the panel */
+    gap: 8px;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    /* Prevent overflow if too many tags */
+    padding-right: 0;
+    mask-image: none;
+    /* Remove horizontal fade */
 }
 
 .pg-chips-scroll-container::-webkit-scrollbar {
-    display: none;
+    width: 4px;
 }
 
-/* Adjust top when sticky context changes */
-.pg-tabs-container.header-hidden+.pg-grey-section .pg-filter-chips-row {
+/* Right Side: Search + Actions Fluid Row */
+.pg-detail-filters .search-actions-row {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 4px;
+    /* Align with first chip roughly */
+}
+
+/* Sticky top adjustments */
+.pg-tabs-container.header-hidden+.pg-grey-section .pg-detail-filters {
     top: 0;
 }
 
-.pg-event-detail.is-expanded .pg-filter-chips-row {
+.pg-event-detail.is-expanded .pg-detail-filters {
     top: 0 !important;
 }
 
@@ -594,73 +656,29 @@
     height: 40px;
 }
 
-.pg-selection-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 60px;
-    /* Large hit area */
-    height: 60px;
-    padding: 8px;
-    /* Position checkbox at 8px, 8px */
-    z-index: 25;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-}
-
-.pg-photo-card-wrapper:hover .pg-selection-overlay,
-.pg-selection-overlay.visible {
-    opacity: 1;
-}
-
-.pg-new-checkbox {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(0, 0, 0, 0.15);
+/* Selection Toast Row - Horizontal Layout */
+.pg-selection-toast-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.15s cubic-bezier(0.2, 0, 0.2, 1);
-    color: white;
-}
-
-.pg-new-checkbox.checked {
-    background: #1B3AEC;
-    border-color: #1B3AEC;
-    box-shadow: 0 2px 4px rgba(27, 58, 236, 0.3);
-}
-
-.pg-new-checkbox:hover:not(.checked) {
-    border-color: rgba(0, 0, 0, 0.3);
+    gap: 12px;
+    padding: 12px 16px;
     background: #fff;
-}
-
-.pg-check-circle .check-icon {
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    margin: 0 auto 24px auto;
+    /* Center it */
+    position: sticky;
+    top: 24px;
+    z-index: 1000;
 }
 
 /* Empty State */
-.pg-empty-state {
-    padding: 60px;
-    text-align: center;
-    color: #888;
-    background: #fff;
-    border-radius: 16px;
-    border: 1px solid #eaeaea;
-}
+/* Shared Empty State */
 
-/* "All" chip - Black style when active */
-.filter-chip.filter-chip-count.chip-all-black.active {
-    background: #111 !important;
-    border-color: #111 !important;
-}
+/* "All" chip - Standard styling */
+/* "All" chip - Standard styling */
+/* .filter-chip.filter-chip-count.chip-all-black.active override removed */
 
 /* Highlight Animation for Deep Linked Duplicate Group */
 .pg-duplicate-group {
@@ -714,4 +732,223 @@
     transform: scale(1.02);
     z-index: 50;
     border-radius: var(--radius-md, 8px);
+}
+
+/* Sticky Component Styles - Handle Expanded Gap */
+.pg-sticky-sidebar {
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 80;
+    transition: top 0.3s ease, height 0.3s ease;
+}
+
+.pg-sticky-search {
+    position: sticky;
+    top: 64px;
+    z-index: 90;
+    transition: top 0.3s ease;
+}
+
+
+
+/* In Expanded View - Sticky relative to scroll container */
+.pg-event-detail.is-expanded .pg-sticky-sidebar,
+.pg-event-detail.is-expanded .pg-sticky-search {
+    top: 0;
+}
+
+.pg-event-detail.is-expanded .pg-sticky-sidebar {
+    height: 100%;
+}
+
+/* Modal Styling */
+.pg-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+}
+
+.pg-modal-card {
+    background: #fff !important;
+    width: 400px !important;
+    max-width: 90vw !important;
+    padding: 24px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1) !important;
+    animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    position: relative !important;
+}
+
+@keyframes modalPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.pg-modal-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 24px !important;
+}
+
+.pg-modal-btn {
+    height: 42px !important;
+    padding: 0 24px !important;
+    border-radius: 999px !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1) !important;
+    border: none !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    font-family: inherit !important;
+    position: relative !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: 100px !important;
+}
+
+.pg-modal-btn.primary {
+    background: #1B3AEC !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(27, 58, 236, 0.25) !important;
+}
+
+.pg-modal-btn.primary:hover {
+    background: #152dc4 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(27, 58, 236, 0.35) !important;
+}
+
+.pg-modal-btn.destructive {
+    background: #ef4444 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
+    border: none !important;
+}
+
+.pg-modal-btn.destructive:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35) !important;
+}
+
+.pg-modal-btn.secondary {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    box-shadow: none !important;
+}
+
+.pg-modal-btn.secondary:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #1e293b !important;
+}
+/* Badges Area (Shared with PgEventCard) */
+.pg-stats-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-badge-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pg-badge-item.published {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.pg-badge-item.published .label {
+    opacity: 0.7;
+}
+
+.pg-badge-item.published .count {
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.pg-badge-item.sales {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.pg-badge-item.sales .label {
+    opacity: 0.8;
+}
+
+.pg-badge-item.earnings {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.pg-badge-item.earnings .label {
+    opacity: 0.8;
+}
+
+.pg-badge-item.earnings .value {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+/* Stacked Variant Styles */
+.pg-badge-item.stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    padding: 6px 14px;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.pg-badge-item.stacked .label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0;
+    text-transform: none;
+    letter-spacing: normal;
+    opacity: 0.8;
+}
+
+.pg-badge-item.stacked .count,
+.pg-badge-item.stacked .value {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.2;
 }

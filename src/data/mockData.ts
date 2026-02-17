@@ -172,6 +172,17 @@ export const photos: Photo[] = Array.from({ length: 1000 }).map((_, i) => {
     const width = pickRandom([600, 800, 700]);
     const height = pickRandom([600, 800, 500, 900]);
 
+    // PG States
+    const statuses: any[] = ['published', 'published', 'archived', 'uploadedUnpublished', 'needsReview'];
+    const status = statuses[i % statuses.length];
+    const batchList = ['Random', 'Misc', 'Uncategorised', 'Class A', 'Class B'];
+    const batch = batchList[i % batchList.length];
+    const soldCount = status === 'published' || status === 'archived' ? (i % 5 === 0 ? 0 : Math.floor(Math.random() * 8)) : 0;
+
+    // Ensure at least some archived photos have sales for the "Sold" bucket
+    // Increase frequency: Make 50% of archived photos have sales
+    const finalSoldCount = (status === 'archived' && i % 2 === 0) ? Math.floor(Math.random() * 5) + 3 : soldCount;
+
     return {
         id: `m-${i}-${generateId()}`,
         src: `/images/${filename}`,
@@ -189,7 +200,20 @@ export const photos: Photo[] = Array.from({ length: 1000 }).map((_, i) => {
         countryCode: comp.countryCode.toLowerCase(),
         discipline: comp.discipline,
         photographer: pg.firstName + ' ' + pg.lastName,
-        photographerId: pg.id
+        photographerId: pg.id,
+        // Photographer Workspace fields
+        status: status,
+        batch: batch,
+        soldCount: finalSoldCount,
+        photoCode: `GAL-${1000 + i}`,
+        fileName: filename,
+        timestamp: '10:42 AM',
+        uploadDate: '2026-01-17',
+        storedLocation: status === 'published' ? 'Published' : (batch || 'Random'),
+        priceStandard: 499,
+        priceHigh: 999,
+        priceCommercial: 1500,
+        isGeneric: i % 10 === 0
     };
 });
 

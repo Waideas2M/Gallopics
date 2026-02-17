@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Send, Mail, MessageSquare, Loader2, Tag } from 'lucide-react';
 import './ContactSupportModal.css';
+import './Modal.css';
 
 interface ContactSupportModalProps {
     isOpen: boolean;
@@ -123,12 +124,11 @@ export const ContactSupportModal: React.FC<ContactSupportModalProps> = ({
                     <X size={20} />
                 </button>
 
-                <div className="auth-modal-header support-header">
+                <div className="modal-header-standard">
                     <h2 className="support-modal-title">Contact support</h2>
-                    <p className="support-modal-subtitle">We're here to help you with any questions.</p>
                 </div>
 
-                <div className="auth-modal-content support-content">
+                <div className="modal-body-standard">
                     <form id="contact-support-form" className="auth-form" onSubmit={handleSubmit}>
                         {/* Segmented Control for Role */}
                         <div className="auth-input-group">
@@ -178,13 +178,13 @@ export const ContactSupportModal: React.FC<ContactSupportModalProps> = ({
                                     onChange={(e) => setCountryCode(e.target.value)}
                                     disabled={status === 'sending'}
                                 >
-                                    <option value="+46">SE +46</option>
-                                    <option value="+47">NO +47</option>
-                                    <option value="+45">DK +45</option>
-                                    <option value="+358">FI +358</option>
-                                    <option value="+1">US +1</option>
-                                    <option value="+44">UK +44</option>
-                                    <option value="+49">DE +49</option>
+                                    <option value="+46">+46</option>
+                                    <option value="+47">+47</option>
+                                    <option value="+45">+45</option>
+                                    <option value="+358">+358</option>
+                                    <option value="+1">+1</option>
+                                    <option value="+44">+44</option>
+                                    <option value="+49">+49</option>
                                 </select>
                                 <input
                                     id="support-phone"
@@ -241,8 +241,8 @@ export const ContactSupportModal: React.FC<ContactSupportModalProps> = ({
                     </form>
                 </div>
 
-                <div className="auth-modal-footer support-footer">
-                    <div className="support-actions">
+                <div className="modal-footer-actions" style={{ flexDirection: 'column', height: 'auto', gap: '16px' }}>
+                    <div className="support-actions" style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                         <button
                             type="button"
                             className="btn-support-secondary"
@@ -256,6 +256,7 @@ export const ContactSupportModal: React.FC<ContactSupportModalProps> = ({
                             form="contact-support-form"
                             className="auth-btn-primary support-submit"
                             disabled={status === 'sending'}
+                            style={{ width: 'auto', padding: '0 24px' }}
                         >
                             {status === 'sending' ? (
                                 <>
@@ -271,7 +272,7 @@ export const ContactSupportModal: React.FC<ContactSupportModalProps> = ({
                         </button>
                     </div>
 
-                    <div className="support-footer-links">
+                    <div className="support-footer-links" style={{ borderTop: 'none', padding: 0 }}>
                         <a href="#" className="support-link">FAQs</a>
                         <span className="support-dot">•</span>
                         <a href="#" className="support-link">Terms</a>

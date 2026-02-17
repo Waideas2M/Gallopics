@@ -9,12 +9,18 @@ import { PgToast } from './PgToast';
 import { TOAST_TOKENS } from '../../context/ToastTokens';
 import { TitleHeader } from '../../components/TitleHeader';
 import { Breadcrumbs } from '../../components/Breadcrumbs';
-import { X, Check, Trash2, Pencil, AlertCircle } from 'lucide-react';
-import { ActionCluster, MoreMenu } from '../../components/HeaderActions';
+import { useWorkspace } from '../../context/WorkspaceContext';
+import { X, Check, Trash2, Pencil, AlertCircle, RotateCcw, Info } from 'lucide-react';
+import { ScopedSearchBar } from '../../components/ScopedSearchBar';
+import { ActionCluster, MoreMenu, ActionSeparator } from '../../components/HeaderActions';
+import { InfoChip } from '../../components/InfoChip';
+import { PHOTOGRAPHERS } from '../../data/mockData';
 import { FilterChip } from '../../components/FilterChip';
-import { StickyActionBar, type SearchResult } from '../../components/StickyActionBar';
-import { RIDERS, HORSES } from '../../data/mockData';
+import { StickyActionBar } from '../../components/StickyActionBar';
 import './EventDetail.css';
+import '../../components/AuthModal.css';
+import '../../components/EditProfileModal.css';
+import '../../components/Modal.css';
 
 // Tab type
 type TabType = 'uploads' | 'published' | 'archive';
@@ -28,6 +34,7 @@ export const EventDetail: React.FC = () => {
     const navigate = useNavigate();
 
     const location = useLocation();
+    const { basePath, isAdmin } = useWorkspace();
     const { getEvent, getPhotosByEvent, resolveDuplicate } = usePhotographer();
 
     const event = eventId ? getEvent(eventId) : undefined;
@@ -43,7 +50,7 @@ export const EventDetail: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [previewPhoto, setPreviewPhoto] = useState<any | null>(null);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [highlightedPhotoId, setHighlightedPhotoId] = useState<string | null>(null);
+    const [showInfoModal, setShowInfoModal] = useState(false);
 
     // Scroll Header Logic
     const [headerVisible, setHeaderVisible] = useState(true);
@@ -143,116 +150,6 @@ export const EventDetail: React.FC = () => {
         [allPhotos]
     );
 
-    // --- ADVANCED SEARCH LOGIC ---
-    const searchSuggestions = useMemo(() => {
-        if (!searchTerm.length) return [];
-        const lower = searchTerm.toLowerCase();
-        const results: SearchResult[] = [];
-
-        // 1. Riders
-        const matchingRiders = RIDERS.filter(r =>
-            `${r.firstName} ${r.lastName}`.toLowerCase().includes(lower)
-        ).slice(0, 3).map(r => ({
-            id: r.id,
-            type: 'rider' as const,
-            title: `${r.firstName} ${r.lastName}`,
-            subtitle: 'Rider',
-            groupLabel: 'Rider'
-        }));
-        results.push(...matchingRiders);
-
-        // 2. Horses
-        const matchingHorses = HORSES.filter(h =>
-            h.name.toLowerCase().includes(lower) || h.registeredName.toLowerCase().includes(lower)
-        ).slice(0, 3).map(h => ({
-            id: h.id,
-            type: 'horse' as const,
-            title: h.name,
-            subtitle: 'Horse',
-            groupLabel: 'Horse'
-        }));
-        results.push(...matchingHorses);
-
-        // 3. Photos (by name or ID)
-        const photoResults = allPhotos.filter(p =>
-            (p.fileName?.toLowerCase().includes(lower)) ||
-            (p.photoCode?.toLowerCase().includes(lower))
-        ).slice(0, 5).map(p => {
-            const isNameMatch = p.fileName?.toLowerCase().includes(lower);
-            const secondaryId = isNameMatch ? `ID: ${p.photoCode || p.id}` : `Name: ${p.fileName || 'Untitled'}`;
-            return {
-                id: p.id,
-                type: 'photo' as const,
-                title: isNameMatch ? (p.fileName || '') : (p.photoCode || p.id),
-                subtitle: `Photo • ${secondaryId}`,
-                groupLabel: 'Photo'
-            };
-        });
-        results.push(...photoResults);
-
-        return results;
-    }, [searchTerm, allPhotos]);
-
-    const handleSuggestionSelect = (suggestion: SearchResult) => {
-        // Set search term but don't clear it immediately so user sees what they selected
-        setSearchTerm(suggestion.title);
-
-        let targetPhoto: Photo | undefined;
-
-        if (suggestion.type === 'photo') {
-            targetPhoto = allPhotos.find(p => p.id === suggestion.id);
-        } else if (suggestion.type === 'rider') {
-            // Find most likely tab for rider: Uploads > Published > Archive
-            targetPhoto = allPhotos.find(p => p.riderId === suggestion.id && ['uploading', 'processing', 'needsReview', 'uploadedUnpublished'].includes(p.status)) ||
-                allPhotos.find(p => p.riderId === suggestion.id && p.status === 'published') ||
-                allPhotos.find(p => p.riderId === suggestion.id);
-        } else if (suggestion.type === 'horse') {
-            targetPhoto = allPhotos.find(p => p.horseId === suggestion.id && ['uploading', 'processing', 'needsReview', 'uploadedUnpublished'].includes(p.status)) ||
-                allPhotos.find(p => p.horseId === suggestion.id && p.status === 'published') ||
-                allPhotos.find(p => p.horseId === suggestion.id);
-        }
-
-        if (targetPhoto) {
-            // 1. Determine Tab
-            let tab: TabType = 'uploads';
-            if (targetPhoto.status === 'published') tab = 'published';
-            if (targetPhoto.status === 'archived') tab = 'archive';
-            setActiveTab(tab);
-
-            // 2. Determine Bucket
-            if (tab === 'uploads') {
-                const batch = targetPhoto.batch?.toLowerCase();
-                if (batch === 'random') setActiveFolder('random');
-                else if (batch === 'misc') setActiveFolder('misc');
-                else setActiveFolder('uncategorised');
-            } else if (tab === 'published') {
-                setActivePublishedFolder(targetPhoto.soldCount > 0 ? 'selling_photos' : 'unsold');
-            }
-
-            // 3. Determine Chip
-            if (suggestion.type === 'rider') {
-                setActiveChip(`rider-${suggestion.title}`);
-            } else if (suggestion.type === 'horse') {
-                setActiveChip(`horse-${suggestion.title}`);
-            } else {
-                setActiveChip('all');
-            }
-
-            // 4. Highlight and Scroll
-            const photoId = targetPhoto.id;
-            // Wait for React to re-render the appropriate view
-            setTimeout(() => {
-                setHighlightedPhotoId(photoId);
-                const el = document.getElementById(`photo-${photoId}`);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                // Clear highlight after 2 seconds
-                setTimeout(() => setHighlightedPhotoId(null), 2000);
-            }, 300);
-        }
-    };
-
     const publishedPhotosRaw = useMemo(() => {
         return allPhotos.filter(p => p.status === 'published');
     }, [allPhotos]);
@@ -288,22 +185,22 @@ export const EventDetail: React.FC = () => {
                 id: 'basic',
                 label: 'Basic',
                 color: '#9ca3af',
-                count: photos.filter(p => p.priceStandard === 99 && p.priceHigh === 199).length,
-                filterFn: (p: Photo) => p.priceStandard === 99 && p.priceHigh === 199
+                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500).length,
+                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500
             },
             {
                 id: 'standard',
                 label: 'Standard',
                 color: '#f97316',
-                count: photos.filter(p => p.priceStandard === 299 && p.priceHigh === 499).length,
-                filterFn: (p: Photo) => p.priceStandard === 299 && p.priceHigh === 499
+                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500).length,
+                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500
             },
             {
                 id: 'premium',
                 label: 'Premium',
                 color: '#a855f7',
-                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999).length,
-                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999
+                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500).length,
+                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500
             }
         ];
 
@@ -311,24 +208,101 @@ export const EventDetail: React.FC = () => {
     }, [publishedPhotosByBucket]);
 
     const filteredPublishedPhotos = useMemo(() => {
+        let photos = publishedPhotosByBucket;
+
+        // Apply search filter if search term exists
+        if (searchTerm.trim()) {
+            const term = searchTerm.toLowerCase().trim();
+            photos = photos.filter(p => {
+                const clientEmail = (p as any).clientEmail || `client_${p.id.slice(0, 4)}@example.com`;
+                return (p.fileName?.toLowerCase().includes(term)) ||
+                    (p.photoCode?.toLowerCase().includes(term)) ||
+                    (p.id?.toLowerCase().includes(term)) ||
+                    (clientEmail.toLowerCase().includes(term));
+            });
+        }
+
         const chip = publishedChips.find(c => c.id === activeChip);
-        if (!chip || activeChip === 'all') return publishedPhotosByBucket;
-        return publishedPhotosByBucket.filter(chip.filterFn);
-    }, [publishedPhotosByBucket, activeChip, publishedChips]);
+        if (!chip || activeChip === 'all') return photos;
+        return photos.filter(chip.filterFn);
+    }, [publishedPhotosByBucket, activeChip, publishedChips, searchTerm]);
 
 
-    const archivedPhotos = useMemo(() => {
-        let photos = allPhotos.filter(p => p.status === 'archived');
+    const archivedPhotosRaw = useMemo(() => {
+        return allPhotos.filter(p => p.status === 'archived');
+    }, [allPhotos]);
+
+    const archivedPhotosByBucket = useMemo(() => {
+        if (activePublishedFolder === 'selling_photos') {
+            return archivedPhotosRaw.filter(p => p.soldCount > 0);
+        }
+        return archivedPhotosRaw.filter(p => p.soldCount === 0);
+    }, [archivedPhotosRaw, activePublishedFolder]);
+
+    const archivedFolderCounts = useMemo(() => {
+        const selling = archivedPhotosRaw.filter(p => p.soldCount > 0);
+        return {
+            selling_photos: selling.length,
+            totalSales: selling.reduce((sum, p) => sum + p.soldCount, 0),
+            unsold: archivedPhotosRaw.filter(p => p.soldCount === 0).length
+        };
+    }, [archivedPhotosRaw]);
+
+    const archivedChips = useMemo(() => {
+        const photos = archivedPhotosByBucket;
+
+        const allChips = [
+            { id: 'all', label: 'All', count: photos.length, filterFn: () => true },
+            {
+                id: 'generic',
+                label: 'Generic',
+                count: photos.filter(p => p.isGeneric).length,
+                filterFn: (p: Photo) => p.isGeneric
+            },
+            {
+                id: 'basic',
+                label: 'Basic',
+                color: '#9ca3af',
+                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500).length,
+                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500
+            },
+            {
+                id: 'standard',
+                label: 'Standard',
+                color: '#f97316',
+                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500).length,
+                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500
+            },
+            {
+                id: 'premium',
+                label: 'Premium',
+                color: '#a855f7',
+                count: photos.filter(p => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500).length,
+                filterFn: (p: Photo) => p.priceStandard === 499 && p.priceHigh === 999 && p.priceCommercial === 1500
+            }
+        ];
+
+        return allChips;
+    }, [archivedPhotosByBucket]);
+
+    const filteredArchivedPhotos = useMemo(() => {
+        let photos = archivedPhotosByBucket;
+
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase().trim();
             photos = photos.filter(p =>
                 (p.fileName?.toLowerCase().includes(term)) ||
                 (p.photoCode?.toLowerCase().includes(term)) ||
-                (p.id?.toLowerCase().includes(term))
+                (p.id?.toLowerCase().includes(term)) ||
+                (p.rider?.toLowerCase().includes(term)) ||
+                (p.horse?.toLowerCase().includes(term))
             );
         }
-        return photos;
-    }, [allPhotos, searchTerm]);
+
+        const chip = archivedChips.find(c => c.id === activeChip);
+        if (!chip || activeChip === 'all') return photos;
+        return photos.filter(chip.filterFn);
+    }, [archivedPhotosByBucket, activeChip, archivedChips, searchTerm]);
 
     const tabCounts = useMemo(() => {
         return {
@@ -363,7 +337,7 @@ export const EventDetail: React.FC = () => {
     const folderCounts = useMemo(() => ({
         random: uploadPhotos.filter(p => p.batch === 'Random').length,
         misc: uploadPhotos.filter(p => p.batch === 'Misc').length,
-        uncategorised: uploadPhotos.filter(p => !p.batch || p.batch === '').length,
+        uncategorised: uploadPhotos.filter(p => !p.batch || p.batch === '' || p.batch === 'Uncategorised').length,
         duplicates: validDuplicateIds.size
     }), [uploadPhotos, validDuplicateIds]);
 
@@ -378,7 +352,7 @@ export const EventDetail: React.FC = () => {
                 photos = uploadPhotos.filter(p => p.batch === 'Misc');
                 break;
             case 'uncategorised':
-                photos = uploadPhotos.filter(p => !p.batch || p.batch === '');
+                photos = uploadPhotos.filter(p => !p.batch || p.batch === '' || p.batch === 'Uncategorised');
                 break;
             case 'duplicates':
                 // Show validated duplicates
@@ -469,23 +443,70 @@ export const EventDetail: React.FC = () => {
         return allChips;
     }, [folderPhotos, isDuplicatesFolder]);
 
-    // Get filtered photos based on active chip
-    const filteredFolderPhotos = useMemo(() => {
-        // Duplicates folder shows all duplicates (no chip filtering)
-        if (isDuplicatesFolder) return folderPhotos; // Return ALL duplicates, don't slice
+    // Search Options for Autocomplete
+    const searchOptions = useMemo(() => {
+        if (!allPhotos.length) return [];
+        const options: any[] = [];
+        const uniqueRiders = new Set<string>();
+        const uniqueHorses = new Set<string>();
 
+        allPhotos.forEach(p => {
+            if (p.rider && p.rider !== 'None' && !uniqueRiders.has(p.rider)) {
+                uniqueRiders.add(p.rider);
+                options.push({ label: p.rider, value: p.rider, type: 'rider', subtitle: p.horse });
+            }
+            if (p.horse && p.horse !== 'None' && !uniqueHorses.has(p.horse)) {
+                uniqueHorses.add(p.horse);
+                options.push({ label: p.horse, value: p.horse, type: 'horse', subtitle: p.rider });
+            }
+
+            // ADDED: Photo Search Functionality (Search by ID/Code)
+            if (p.photoCode) {
+                options.push({
+                    label: `#${p.photoCode}`,
+                    value: p.photoCode,
+                    type: 'photo',
+                    // Format: "IMG_2024.jpg • Rider Name"
+                    subtitle: `${p.fileName}${p.rider ? ` • ${p.rider}` : ''}`
+                });
+            }
+        });
+        return options;
+    }, [allPhotos]);
+
+    // Get filtered photos based on active chip AND search term
+    const filteredFolderPhotos = useMemo(() => {
+        // Base: Folder photos
+        let photos = folderPhotos;
+
+        // 1. Filter by Search Term
+        if (searchTerm) {
+            const lower = searchTerm.toLowerCase();
+            photos = photos.filter(p =>
+                (p.rider && p.rider.toLowerCase().includes(lower)) ||
+                (p.horse && p.horse.toLowerCase().includes(lower)) ||
+                (p.fileName && p.fileName.toLowerCase().includes(lower)) ||
+                (p.id && p.id.toLowerCase().includes(lower))
+            );
+        }
+
+        // Duplicates folder shows all duplicates (no chip filtering)
+        if (isDuplicatesFolder) return photos;
+
+        // 2. Filter by Chip
         const chip = folderChips.find(c => c.id === activeChip);
-        if (!chip || activeChip === 'all') return folderPhotos;
-        return folderPhotos.filter(chip.filterFn);
-    }, [folderPhotos, activeChip, folderChips, isDuplicatesFolder]);
+        if (!chip || activeChip === 'all') return photos;
+
+        return photos.filter(chip.filterFn);
+    }, [folderPhotos, activeChip, folderChips, isDuplicatesFolder, searchTerm]);
 
     // Get display photos based on current tab
     const displayedPhotos = useMemo(() => {
         if (activeTab === 'uploads') return filteredFolderPhotos;
         if (activeTab === 'published') return filteredPublishedPhotos;
-        if (activeTab === 'archive') return archivedPhotos;
+        if (activeTab === 'archive') return filteredArchivedPhotos;
         return [];
-    }, [activeTab, filteredFolderPhotos, filteredPublishedPhotos, archivedPhotos]);
+    }, [activeTab, filteredFolderPhotos, filteredPublishedPhotos, filteredArchivedPhotos]);
 
     // Group duplicates by duplicateGroupId (or URL if missing)
     const duplicateGroups = useMemo(() => {
@@ -510,6 +531,25 @@ export const EventDetail: React.FC = () => {
     React.useEffect(() => {
         setActiveChip('all');
     }, [activeFolder]);
+
+    // Event Info modal: ESC handling + scroll lock to match EditProfile modal behavior
+    React.useEffect(() => {
+        if (!showInfoModal) return;
+
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setShowInfoModal(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleEsc);
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+            document.body.style.overflow = 'unset';
+        };
+    }, [showInfoModal]);
 
     // Selection handlers
     const handleToggleSelect = (photo: Photo, multiSelect: boolean) => {
@@ -666,7 +706,7 @@ export const EventDetail: React.FC = () => {
             setTimeout(() => setToast(null), 3000);
         } else if (confirmModal.type === 'publish') {
             setToast({
-                msg: 'Published successfully',
+                msg: activeTab === 'archive' ? 'Republished successfully' : 'Published successfully',
                 type: TOAST_TOKENS.PUBLISH.type
             });
             setSelectedIds(new Set());
@@ -720,330 +760,384 @@ export const EventDetail: React.FC = () => {
     const renderContent = () => {
         return (
             <>
-                {/* Tabs Row */}
-                <div className={`pg-tabs-container ${isExpanded ? 'expanded-tabs' : ''} ${!headerVisible ? 'header-hidden' : ''}`}>
-                    <div className="container" style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
-                        <button
-                            className={activeTab === 'uploads' ? 'active' : ''}
-                            style={activeTab === 'uploads' ? activeTabStyle : tabStyle}
-                            onClick={() => setActiveTab('uploads')}
-                        >
-                            Uploads
-                            <span className="pg-tab-badge">{tabCounts.uploads}</span>
-                        </button>
-                        <button
-                            className={activeTab === 'published' ? 'active' : ''}
-                            style={activeTab === 'published' ? activeTabStyle : tabStyle}
-                            onClick={() => setActiveTab('published')}
-                        >
-                            Published
-                            <span className="pg-tab-badge">{tabCounts.published}</span>
-                        </button>
-                        <button
-                            className={activeTab === 'archive' ? 'active' : ''}
-                            style={activeTab === 'archive' ? activeTabStyle : tabStyle}
-                            onClick={() => setActiveTab('archive')}
-                        >
-                            Archive
-                            <span className="pg-tab-badge">{tabCounts.archive}</span>
-                        </button>
-
-                        {isExpanded && (
-                            <div className="pg-expanded-header-identity" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <img src={event.logo} alt="" style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover' }} />
-                                <span className="pg-expanded-title" title={event.title} style={{ fontSize: '0.95rem', fontWeight: 600, color: '#111', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {event.title}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
 
                 {/* Grey Content Section */}
                 <div
                     className={`pg-grey-section ${isExpanded ? 'expanded-view' : ''}`}
                     ref={scrollContainerRef}
                 >
+                    {/* Tabs Row (Inside scroll container for expanded autohide/stick behavior) */}
+                    <div className={`pg-tabs-container ${isExpanded ? 'expanded-tabs' : ''} ${!headerVisible ? 'header-hidden' : ''}`}>
+                        <div className="container" style={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                            <button
+                                className={activeTab === 'uploads' ? 'active' : ''}
+                                style={activeTab === 'uploads' ? activeTabStyle : tabStyle}
+                                onClick={() => setActiveTab('uploads')}
+                            >
+                                Uploads
+                                <span className="pg-tab-badge">{tabCounts.uploads}</span>
+                            </button>
+                            <button
+                                className={activeTab === 'published' ? 'active' : ''}
+                                style={activeTab === 'published' ? activeTabStyle : tabStyle}
+                                onClick={() => setActiveTab('published')}
+                            >
+                                Published
+                                <span className="pg-tab-badge">{tabCounts.published}</span>
+                            </button>
+                            <button
+                                className={activeTab === 'archive' ? 'active' : ''}
+                                style={activeTab === 'archive' ? activeTabStyle : tabStyle}
+                                onClick={() => setActiveTab('archive')}
+                            >
+                                Archive
+                                <span className="pg-tab-badge">{tabCounts.archive}</span>
+                            </button>
+
+                            {isExpanded && (
+                                <div className="pg-expanded-header-identity" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <img src={event.logo} alt="" style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover' }} />
+                                    <span className="pg-expanded-title" title={event.title} style={{ fontSize: '0.95rem', fontWeight: 600, color: '#111', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {event.title}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="pg-grey-section-inner">
                         <div className="container">
 
-                            {/* Chips Row (Uploads OR Published) */}
-                            {((activeTab === 'uploads' && !isDuplicatesFolder && folderChips.length > 0) || (activeTab === 'published' && publishedChips.length > 0)) && (
-                                <div className="pg-filter-chips-row">
-                                    {/* Scrollable Chips */}
-                                    <div className="pg-chips-scroll-container">
-                                        {(activeTab === 'uploads' ? folderChips : publishedChips).map((chip: any, index) => (
-                                            <FilterChip
-                                                key={chip.id}
-                                                label={(
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                        {chip.color && (
-                                                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: chip.color }} />
-                                                        )}
-                                                        {chip.label}
+                            {/* Filter Bar (On Grey Surface) */}
+                            <div className="pg-split-layout" style={{ display: 'flex', alignItems: 'flex-start', gap: 32 }}>
+
+                                {/* LEFT SIDEBAR: Tags (Conditional) */}
+                                {((activeTab === 'uploads' && !isDuplicatesFolder && (folderChips.length > 1 || searchTerm)) || (activeTab === 'published' && publishedChips.length > 0) || (activeTab === 'archive' && archivedChips.length > 0)) && (
+                                    <div className="pg-filter-sidebar pg-sticky-sidebar" style={{ width: 190, flexShrink: 0, paddingTop: 12 }}>
+                                        <div className="pg-chips-scroll-container" style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start', width: '100%', paddingRight: 8 }}>
+                                            {(activeTab === 'uploads' ? folderChips : activeTab === 'published' ? publishedChips : archivedChips).map((chip: any, index) => (
+                                                <FilterChip
+                                                    key={chip.id}
+                                                    label={(
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                            {chip.color && (
+                                                                <div style={{ width: 8, height: 8, borderRadius: '50%', background: chip.color }} />
+                                                            )}
+                                                            {chip.label}
+                                                        </div>
+                                                    )}
+                                                    isActive={activeChip === chip.id}
+                                                    onClick={() => setActiveChip(chip.id)}
+                                                    variant="filterCount"
+                                                    accent={chip.id === 'missing-tags' ? 'red' : undefined}
+                                                    count={chip.count}
+                                                    className={index === 0 && activeChip === 'all' ? '' : ''}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* RIGHT CONTENT COLUMN */}
+                                <div className="pg-main-content-col" style={{ flex: 1, minWidth: 0 }}>
+
+                                    {/* TOP: Search & Actions (Conditional matches sidebar) */}
+                                    {((activeTab === 'uploads' && !isDuplicatesFolder && (folderChips.length > 1 || searchTerm)) || (activeTab === 'published' && publishedChips.length > 0) || (activeTab === 'archive' && archivedChips.length > 0)) && (
+                                        <div className="search-actions-row pg-sticky-search" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, marginBottom: 12, background: 'rgba(243, 244, 246, 0.95)', backdropFilter: 'blur(10px)', paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid rgba(0,0,0,0.05)', marginLeft: -8, marginRight: -8, paddingLeft: 8, paddingRight: 8, borderRadius: '0 0 4px 4px' }}>
+                                            {/* Search */}
+                                            <div className="search-group" style={{ flex: 1, maxWidth: 600 }}>
+                                                <ScopedSearchBar
+                                                    placeholder="Search riders, horses, photo ID..."
+                                                    options={searchOptions}
+                                                    currentValue={searchTerm}
+                                                    onSelect={(val) => setSearchTerm(val === 'All' ? '' : val)}
+                                                    onSearchChange={(val) => setSearchTerm(val)}
+                                                    variant="v2"
+                                                />
+                                            </div>
+
+                                            {/* Actions Cluster */}
+                                            <div className="pg-events-filter-right" style={{ display: 'flex', alignItems: 'center' }}>
+                                                {selectedIds.size > 0 ? (
+                                                    // SELECTION MODE ACTIONS
+                                                    <div className="pg-selection-inline-actions" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <span className="pg-selection-status" style={{ marginRight: 16, fontSize: '0.9rem', color: '#111', fontWeight: 600 }}>
+                                                            {selectedIds.size} selected
+                                                        </span>
+
+                                                        {/* Edit Action */}
+                                                        <button className="pg-action-round-btn size-lg" onClick={() => setIsPanelOpen(true)} title="Edit selection">
+                                                            <Pencil size={18} />
+                                                        </button>
+
+                                                        {activeTab === 'uploads' || activeTab === 'archive' ? (
+                                                            <>
+                                                                <button className="pg-action-round-btn delete size-lg" onClick={handleDeleteSelection} title="Delete selection">
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                                <button className="pg-chip-btn primary size-lg" onClick={handlePublishSelection} style={{ marginLeft: 8 }}>
+                                                                    {activeTab === 'archive' ? 'Republish' : 'Publish'}
+                                                                </button>
+                                                            </>
+                                                        ) : activeTab === 'published' ? (
+                                                            <button
+                                                                className="pg-action-round-btn delete size-lg"
+                                                                onClick={handleUnpublishSelection}
+                                                                title="Unpublish"
+                                                            >
+                                                                <RotateCcw size={18} />
+                                                            </button>
+                                                        ) : null}
+
+                                                        {/* Single consistent separator */}
+                                                        <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.1)', margin: '0 8px 0 16px' }} />
+
+                                                        <button className="pg-chip-btn ghost" onClick={handleClearSelection} style={{ color: '#666' }}>
+                                                            Clear
+                                                        </button>
                                                     </div>
-                                                )}
-                                                isActive={activeChip === chip.id}
-                                                onClick={() => setActiveChip(chip.id)}
-                                                variant="filterCount"
-                                                accent={chip.id === 'missing-tags' ? 'red' : undefined}
-                                                count={chip.count}
-                                                className={index === 0 && activeChip === 'all' ? 'chip-all-black' : ''}
-                                            />
-                                        ))}
-                                    </div>
-
-                                    {/* Actions Cluster (Fixed Right) */}
-                                    <div className="pg-chip-actions-cluster">
-                                        {/* Select All (Always visible) */}
-                                        <button
-                                            className={`pg-chip-btn ${isAllSelected ? 'disabled' : ''}`}
-                                            onClick={handleSelectAll}
-                                            disabled={isAllSelected}
-                                            style={isAllSelected ? { opacity: 0.6, cursor: 'default' } : {}}
-                                        >
-                                            Select all
-                                        </button>
-
-                                        {selectedIds.size > 0 && (
-                                            <>
-                                                <span className="pg-selection-status" style={{ marginLeft: 8 }}>{selectedIds.size} selected</span>
-
-                                                {/* Clear Action */}
-                                                <button className="pg-chip-btn" onClick={handleClearSelection}>
-                                                    Clear
-                                                </button>
-
-                                                {/* Edit Action (Multi) */}
-                                                <button className="pg-action-round-btn size-lg" onClick={() => setIsPanelOpen(true)} title="Edit selection">
-                                                    <Pencil size={18} />
-                                                </button>
-
-                                                {/* Actions based on tab */}
-                                                {activeTab === 'uploads' ? (
+                                                ) : (
+                                                    // DEFAULT MODE ACTIONS
                                                     <>
-                                                        {/* Delete Action (Red Round) */}
-                                                        <button className="pg-action-round-btn delete size-lg" onClick={handleDeleteSelection} title="Delete selection">
-                                                            <Trash2 size={18} />
-                                                        </button>
+                                                        <div className="filter-results-count" style={{ marginRight: 16, height: 24, display: 'flex', alignItems: 'center', color: '#666', fontSize: '0.9rem', fontWeight: 500 }}>
+                                                            Showing {displayedPhotos.length} photos
+                                                        </div>
 
-                                                        {/* Publish Action (Primary Pill) */}
-                                                        <button className="pg-chip-btn primary size-lg" onClick={handlePublishSelection}>
-                                                            Publish
-                                                        </button>
-                                                    </>
-                                                ) : activeTab === 'published' ? (
-                                                    <>
-                                                        {/* Unpublish Action (Red Primary Pill) */}
-                                                        <button
-                                                            className="pg-chip-btn size-lg"
-                                                            onClick={handleUnpublishSelection}
-                                                            style={{ background: '#ef4444', color: '#fff', borderColor: 'transparent', boxShadow: '0 2px 6px rgba(239, 68, 68, 0.25)' }}
-                                                        >
-                                                            Unpublish
-                                                        </button>
-                                                    </>
-                                                ) : null}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Content Split: Grid/Groups + Inspector */}
-                            <div className="pg-content-split">
-                                <div className="pg-photos-grid" style={{ flex: 1 }}>
-                                    {activeTab === 'uploads' && isDuplicatesFolder ? (
-                                        // DUPLICATES VIEW (GROUPED)
-                                        <div className="pg-duplicates-list" style={{ paddingBottom: 100 }}>
-                                            {Array.from(duplicateGroups.entries()).map(([groupId, photos]) => {
-                                                const firstPhoto = photos[0];
-                                                const count = photos.length;
-
-                                                return (
-                                                    <div key={groupId} id={`dup-group-${groupId}`} className="pg-duplicate-group" style={{ marginBottom: 32, background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                                        <div className="pg-duplicate-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                                                            <div className="pg-dup-title" style={{ fontWeight: 600, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                                Duplicate: {firstPhoto.fileName} <span style={{ color: '#666', fontWeight: 400 }}>({count} instances)</span>
+                                                        <div className="pg-view-actions">
+                                                            <div className="pg-chip-actions-cluster">
+                                                                {isAllSelected ? (
+                                                                    <button className="pg-chip-btn ghost" onClick={() => setSelectedIds(new Set())}>
+                                                                        <X size={14} />
+                                                                        Clear
+                                                                    </button>
+                                                                ) : (
+                                                                    <button className="pg-chip-btn ghost" onClick={handleSelectAll}>
+                                                                        Select all
+                                                                    </button>
+                                                                )}
                                                             </div>
                                                         </div>
-                                                        <div className="pg-duplicate-row" style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8 }}>
-                                                            {photos.map((photo) => {
-                                                                const uiPhoto = mapToUiPhoto(photo);
-                                                                const isSelected = selectedIds.has(photo.id);
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
 
-                                                                return (
-                                                                    <div key={photo.id} style={{ width: 260, flexShrink: 0, position: 'relative' }}>
-                                                                        <div className={`pg-photo-card-wrapper ${isSelected ? 'selected' : ''}`}
-                                                                            onClick={(e) => handleToggleSelect(photo, e.shiftKey || e.metaKey || e.ctrlKey)}
-                                                                        >
-                                                                            <PhotoCard
-                                                                                photo={uiPhoto}
-                                                                                onClick={() => { }}
-                                                                                variant="pgDuplicate"
-                                                                                pgMeta={{
-                                                                                    fileName: photo.fileName,
-                                                                                    photoCode: photo.photoCode,
-                                                                                    uploadDate: photo.uploadDate,
-                                                                                    timestamp: photo.timestamp,
-                                                                                    storedLocation: photo.storedLocation
-                                                                                }}
-                                                                                onKeep={() => handleKeep(photo.id)}
-                                                                                onRemove={() => handleRemove(photo.id)}
-                                                                            />
-                                                                            {/* Selection Overlay with Checkbox */}
-                                                                            <div
-                                                                                className={`pg-selection-overlay ${isSelected ? 'visible' : ''}`}
-                                                                                onClick={(e) => { e.stopPropagation(); handleToggleSelect(photo, true); }}
-                                                                            >
-                                                                                <div className={`pg-new-checkbox ${isSelected ? 'checked' : ''}`}>
-                                                                                    {isSelected && <Check size={14} strokeWidth={3} />}
+
+                                    {/* Content Split: Grid/Groups + Inspector */}
+                                    <div className="pg-content-split">
+                                        <div className="pg-photos-grid" style={{ flex: 1 }}>
+                                            {activeTab === 'uploads' && isDuplicatesFolder ? (
+                                                // DUPLICATES VIEW (GROUPED)
+                                                <div className="pg-duplicates-list" style={{ paddingBottom: 100 }}>
+                                                    {Array.from(duplicateGroups.entries()).map(([groupId, photos]) => {
+                                                        const firstPhoto = photos[0];
+                                                        const count = photos.length;
+
+                                                        return (
+                                                            <div key={groupId} id={`dup-group-${groupId}`} className="pg-duplicate-group" style={{ marginBottom: 32, background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                                                                <div className="pg-duplicate-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                                                                    <div className="pg-dup-title" style={{ fontWeight: 600, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                                        Duplicate: {firstPhoto.fileName} <span style={{ color: '#666', fontWeight: 400 }}>({count} instances)</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="pg-duplicate-row" style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8 }}>
+                                                                    {photos.map((photo) => {
+                                                                        const uiPhoto = mapToUiPhoto(photo);
+                                                                        const isSelected = selectedIds.has(photo.id);
+
+                                                                        return (
+                                                                            <div key={photo.id} style={{ width: 260, flexShrink: 0, position: 'relative' }}>
+                                                                                <div className={`pg-photo-card-wrapper ${isSelected ? 'selected' : ''}`}
+                                                                                    onClick={(e) => handleToggleSelect(photo, e.shiftKey || e.metaKey || e.ctrlKey)}
+                                                                                >
+                                                                                    <PhotoCard
+                                                                                        photo={uiPhoto}
+                                                                                        onClick={() => { }}
+                                                                                        variant="pgDuplicate"
+                                                                                        pgMeta={{
+                                                                                            fileName: photo.fileName,
+                                                                                            photoCode: photo.photoCode,
+                                                                                            uploadDate: photo.uploadDate,
+                                                                                            timestamp: photo.timestamp,
+                                                                                            storedLocation: photo.storedLocation
+                                                                                        }}
+                                                                                        onKeep={() => handleKeep(photo.id)}
+                                                                                        onRemove={() => handleRemove(photo.id)}
+                                                                                    />
+                                                                                    {/* Selection Overlay with Checkbox */}
+                                                                                    <div
+                                                                                        className={`pg-selection-overlay ${isSelected ? 'visible' : ''}`}
+                                                                                        onClick={(e) => { e.stopPropagation(); handleToggleSelect(photo, true); }}
+                                                                                    >
+                                                                                        <div className={`pg-new-checkbox ${isSelected ? 'checked' : ''}`}>
+                                                                                            {isSelected && <Check size={14} strokeWidth={3} />}
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    {duplicateGroups.size === 0 && (
+                                                        <div className="pg-empty-state">No duplicates found.</div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <MasonryGrid isLoading={false}>
+                                                    {displayedPhotos.map(photo => {
+                                                        const uiPhoto = mapToUiPhoto(photo);
+                                                        const isSelected = selectedIds.has(photo.id);
+
+                                                        // Determine card variant
+                                                        let cardVariant: 'pgUpload' | 'pgDuplicate' | 'pgPublished' | 'pgArchived' | 'default' = 'default';
+                                                        if (activeTab === 'uploads') {
+                                                            cardVariant = isDuplicatesFolder ? 'pgDuplicate' : 'pgUpload';
+                                                        } else if (activeTab === 'published') {
+                                                            cardVariant = 'pgPublished';
+                                                        } else if (activeTab === 'archive') {
+                                                            cardVariant = 'pgArchived';
+                                                        }
+
+                                                        return (
+                                                            <div
+                                                                key={photo.id}
+                                                                id={`photo-${photo.id}`}
+                                                                className={`pg-photo-card-wrapper ${isSelected ? 'selected' : ''}`}
+                                                                onClick={(e) => handleToggleSelect(photo, e.shiftKey || e.metaKey || e.ctrlKey)}
+                                                            >
+                                                                <PhotoCard
+                                                                    photo={uiPhoto}
+                                                                    onClick={() => { }}
+                                                                    variant={cardVariant}
+                                                                    pgMeta={(activeTab === 'uploads' || activeTab === 'published' || activeTab === 'archive') ? {
+                                                                        fileName: photo.fileName,
+                                                                        photoCode: photo.photoCode,
+                                                                        uploadDate: photo.uploadDate,
+                                                                        timestamp: photo.timestamp,
+                                                                        priceStandard: isDuplicatesFolder ? undefined : photo.priceStandard,
+                                                                        priceHigh: isDuplicatesFolder ? undefined : photo.priceHigh,
+                                                                        storedLocation: photo.storedLocation,
+                                                                        soldCount: (activeTab === 'published' || activeTab === 'archive') ? photo.soldCount : 0,
+                                                                        totalBucketSales: (activeTab === 'published' && activePublishedFolder === 'selling_photos') ? publishedFolderCounts.totalSales : 0
+                                                                    } : undefined}
+                                                                    // Note: MasonryGrid view usually not for duplicates anymore
+                                                                    onKeep={isDuplicatesFolder ? () => handleKeep(photo.id) : undefined}
+                                                                    onRemove={() => {
+                                                                        if (isDuplicatesFolder) {
+                                                                            handleRemove(photo.id);
+                                                                        } else if (activeTab === 'published') {
+                                                                            setSelectedIds(new Set([photo.id]));
+                                                                            setConfirmModal({ type: 'unpublish', isOpen: true });
+                                                                        } else {
+                                                                            setSelectedIds(new Set([photo.id]));
+                                                                            setConfirmModal({ type: 'delete', isOpen: true });
+                                                                        }
+                                                                    }}
+                                                                    onManageDuplicate={() => handleManageDuplicate(photo.duplicateGroupId)}
+                                                                    onEdit={() => handleEditPhotoOverride(photo)}
+                                                                    onEditPrice={() => handleEditPrice(photo)}
+                                                                    onPreview={() => setPreviewPhoto(uiPhoto)}
+                                                                />
+
+                                                                {/* Selection Overlay */}
+                                                                {/* Selection Overlay with Checkbox */}
+                                                                <div
+                                                                    className={`pg-selection-overlay ${isSelected ? 'visible' : ''}`}
+                                                                    onClick={(e) => { e.stopPropagation(); handleToggleSelect(photo, true); }}
+                                                                >
+                                                                    <div className={`pg-new-checkbox ${isSelected ? 'checked' : ''}`}>
+                                                                        {isSelected && <Check size={14} strokeWidth={3} />}
                                                                     </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                            {duplicateGroups.size === 0 && (
-                                                <div className="pg-empty-state">No duplicates found.</div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </MasonryGrid>
+                                            )}
+                                            {activeTab === 'uploads' && !isDuplicatesFolder && displayedPhotos.length === 0 && (
+                                                <div className="pg-empty-state">
+                                                    No photos found {searchTerm ? `matching "${searchTerm}"` : 'in this folder'}.
+                                                </div>
                                             )}
                                         </div>
-                                    ) : (
-                                        <MasonryGrid isLoading={false}>
-                                            {displayedPhotos.map(photo => {
-                                                const uiPhoto = mapToUiPhoto(photo);
-                                                const isSelected = selectedIds.has(photo.id);
 
-                                                // Determine card variant
-                                                let cardVariant: 'pgUpload' | 'pgDuplicate' | 'pgPublished' | 'default' = 'default';
-                                                if (activeTab === 'uploads') {
-                                                    cardVariant = isDuplicatesFolder ? 'pgDuplicate' : 'pgUpload';
-                                                } else if (activeTab === 'published') {
-                                                    cardVariant = 'pgPublished';
-                                                }
+                                        {/* Selection Panel - Always mounted for animation */}
+                                        <PgSelectionPanel
+                                            isOpen={isPanelOpen}
+                                            selectedIds={selectedIds}
+                                            allPhotos={allPhotos}
+                                            activeTab={activePanelTab}
+                                            currentTab={activeTab === 'published' ? 'published' : (activeTab === 'archive' ? 'archive' : 'uploads')}
+                                            onClose={() => setIsPanelOpen(false)}
+                                        />
+                                    </div></div></div>
+                        </div >
+                    </div >
+                </div >
 
-                                                return (
-                                                    <div
-                                                        key={photo.id}
-                                                        id={`photo-${photo.id}`}
-                                                        className={`pg-photo-card-wrapper ${isSelected ? 'selected' : ''} ${highlightedPhotoId === photo.id ? 'highlight-ring' : ''}`}
-                                                        onClick={(e) => handleToggleSelect(photo, e.shiftKey || e.metaKey || e.ctrlKey)}
-                                                    >
-                                                        <PhotoCard
-                                                            photo={uiPhoto}
-                                                            onClick={() => { }}
-                                                            variant={cardVariant}
-                                                            pgMeta={(activeTab === 'uploads' || activeTab === 'published') ? {
-                                                                fileName: photo.fileName,
-                                                                photoCode: photo.photoCode,
-                                                                uploadDate: photo.uploadDate,
-                                                                timestamp: photo.timestamp,
-                                                                priceStandard: isDuplicatesFolder ? undefined : photo.priceStandard,
-                                                                priceHigh: isDuplicatesFolder ? undefined : photo.priceHigh,
-                                                                storedLocation: photo.storedLocation,
-                                                                soldCount: (activeTab === 'published') ? photo.soldCount : 0,
-                                                                totalBucketSales: (activeTab === 'published' && activePublishedFolder === 'selling_photos') ? publishedFolderCounts.totalSales : 0
-                                                            } : undefined}
-                                                            // Note: MasonryGrid view usually not for duplicates anymore
-                                                            onKeep={isDuplicatesFolder ? () => handleKeep(photo.id) : undefined}
-                                                            onRemove={() => {
-                                                                if (isDuplicatesFolder) {
-                                                                    handleRemove(photo.id);
-                                                                } else if (activeTab === 'published') {
-                                                                    setSelectedIds(new Set([photo.id]));
-                                                                    setConfirmModal({ type: 'unpublish', isOpen: true });
-                                                                } else {
-                                                                    setSelectedIds(new Set([photo.id]));
-                                                                    setConfirmModal({ type: 'delete', isOpen: true });
-                                                                }
-                                                            }}
-                                                            onManageDuplicate={() => handleManageDuplicate(photo.duplicateGroupId)}
-                                                            onEdit={() => handleEditPhotoOverride(photo)}
-                                                            onEditPrice={() => handleEditPrice(photo)}
-                                                            onPreview={() => setPreviewPhoto(uiPhoto)}
-                                                        />
-
-                                                        {/* Selection Overlay */}
-                                                        {/* Selection Overlay with Checkbox */}
-                                                        <div
-                                                            className={`pg-selection-overlay ${isSelected ? 'visible' : ''}`}
-                                                            onClick={(e) => { e.stopPropagation(); handleToggleSelect(photo, true); }}
-                                                        >
-                                                            <div className={`pg-new-checkbox ${isSelected ? 'checked' : ''}`}>
-                                                                {isSelected && <Check size={14} strokeWidth={3} />}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </MasonryGrid>
-                                    )}
-                                    {activeTab === 'uploads' && !isDuplicatesFolder && displayedPhotos.length === 0 && (
-                                        <div className="pg-empty-state">
-                                            No photos found {searchTerm ? `matching \"${searchTerm}\"` : 'in this folder'}.
-                                        </div>
-                                    )}
-                                </div>
-                                {/* Selection Panel - Always mounted for animation */}
-                                <PgSelectionPanel
-                                    isOpen={isPanelOpen}
-                                    selectedIds={selectedIds}
-                                    allPhotos={allPhotos}
-                                    activeTab={activePanelTab}
-                                    currentTab={activeTab === 'published' ? 'published' : 'uploads'}
-                                    onClose={() => setIsPanelOpen(false)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Bottom Action Bar (StickyActionBar) */}
-                        <StickyActionBar
-                            variant={activeTab}
-                            activeFolderId={activeTab === 'uploads' ? activeFolder : activePublishedFolder}
-                            onFolderChange={(id) => {
-                                if (activeTab === 'uploads') handleFolderChange(id);
-                                else setActivePublishedFolder(id);
-                            }}
-                            folders={activeTab === 'uploads' ? [
-                                { id: 'random', label: 'Random', count: folderCounts.random },
-                                { id: 'misc', label: 'Misc', count: folderCounts.misc },
-                                { id: 'uncategorised', label: 'Uncategorised', count: folderCounts.uncategorised },
-                                { id: 'duplicates', label: 'Duplicates', count: folderCounts.duplicates, isDuplicate: true },
-                            ] : activeTab === 'published' ? [
-                                {
-                                    id: 'selling_photos',
-                                    label: 'Selling',
-                                    count: publishedFolderCounts.selling_photos,
-                                    badgeLabel: `${publishedFolderCounts.selling_photos}/${publishedFolderCounts.totalSales}`,
-                                    title: 'Photos/total sales'
-                                },
-                                { id: 'unsold', label: 'Unsold', count: publishedFolderCounts.unsold },
-                            ] : []}
-                            searchTerm={searchTerm}
-                            onSearchChange={setSearchTerm}
-                            suggestions={searchSuggestions}
-                            onSuggestionSelect={handleSuggestionSelect}
-                            onUploadClick={() => navigate(`/pg/upload?eventId=${event.id}&from=event`)}
-                            onExpandToggle={() => setIsExpanded(!isExpanded)}
-                            isExpanded={isExpanded}
-                        />
-
-                    </div>
-                </div>
+                {/* Bottom Action Bar (StickyActionBar) */}
+                <StickyActionBar
+                    variant={activeTab}
+                    activeFolderId={activeTab === 'uploads' ? activeFolder : activePublishedFolder}
+                    onFolderChange={(id) => {
+                        if (activeTab === 'uploads') handleFolderChange(id);
+                        else setActivePublishedFolder(id);
+                    }}
+                    folders={activeTab === 'uploads' ? [
+                        { id: 'random', label: 'Random', count: folderCounts.random },
+                        { id: 'misc', label: 'Misc', count: folderCounts.misc },
+                        { id: 'uncategorised', label: 'Uncategorised', count: folderCounts.uncategorised },
+                        { id: 'duplicates', label: 'Duplicates', count: folderCounts.duplicates, isDuplicate: true },
+                    ] : (activeTab === 'published' || activeTab === 'archive') ? [
+                        {
+                            id: 'selling_photos',
+                            label: activeTab === 'archive' ? 'Sold' : 'Selling',
+                            count: activeTab === 'published' ? publishedFolderCounts.selling_photos : archivedFolderCounts.selling_photos,
+                            badgeLabel: activeTab === 'published'
+                                ? `${publishedFolderCounts.selling_photos}/${publishedFolderCounts.totalSales}`
+                                : `${archivedFolderCounts.selling_photos}/${archivedFolderCounts.totalSales}`,
+                            title: 'Photos/total sales'
+                        },
+                        {
+                            id: 'unsold',
+                            label: 'Unsold',
+                            count: activeTab === 'published' ? publishedFolderCounts.unsold : archivedFolderCounts.unsold
+                        },
+                    ] : []}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    onSelect={setSearchTerm}
+                    searchPlaceholder={activeTab === 'published' ? "Search photo ID or client email..." : "Search riders, horses, photo ID..."}
+                    searchOptions={searchOptions.map((opt: any) => ({
+                        id: opt.value,
+                        type: opt.type,
+                        title: opt.label,
+                        subtitle: opt.subtitle,
+                        groupLabel: opt.type === 'rider' ? 'Riders' : 'Horses'
+                    }))}
+                    onUploadClick={() => navigate(`${basePath}/upload?eventId=${event.id}&from=event`)}
+                    onExpandToggle={() => setIsExpanded(!isExpanded)}
+                    isExpanded={isExpanded}
+                />
             </>
         );
     };
+
+    const eventPhotographer = useMemo(() => {
+        if (!eventId) return null;
+        return PHOTOGRAPHERS.find(p => p.primaryEventId === eventId) || PHOTOGRAPHERS[0];
+    }, [eventId]);
 
     return (
         <div className={`pg-event-detail ${isExpanded ? 'is-expanded' : ''}`}>
             {!isExpanded && (
                 <Breadcrumbs
                     items={[
-                        { label: 'Events', onClick: () => navigate('/pg/events') },
+                        { label: 'Events', onClick: () => navigate(`${basePath}/events`) },
                         { label: event.title, active: true }
                     ]}
                 />
@@ -1054,17 +1148,77 @@ export const EventDetail: React.FC = () => {
                 <TitleHeader
                     className={`no-border pg-compact-header`}
                     variant="workspace"
-                    title={event.title}
+                    title={(
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            {event.title}
+                            <button
+                                onClick={() => setShowInfoModal(true)}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: 4,
+                                    cursor: 'pointer',
+                                    color: '#666',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    borderRadius: '50%',
+                                    transition: 'background 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                            >
+                                <Info size={18} />
+                            </button>
+                        </div>
+                    )}
                     topSubtitle={event.dateRange}
                     avatar={event.logo}
                     avatarShape="square"
-                    subtitle={(
-                        <span>
-                            {event.city} <span className="meta-bullet">•</span> {event.venueName} <span className="meta-bullet">•</span> {(event.disciplines || []).join(', ')}
-                        </span>
-                    )}
+                    // subtitle removed to save space
                     rightContent={(
                         <ActionCluster>
+                            {/* Stats Chips (Persistent in header) */}
+                            <div className="pg-stats-badges" style={{ gap: 8 }}>
+                                <div className="pg-badge-item published stacked">
+                                    <span className="label">Published</span>
+                                    <span className="count">{event.publishedCount ?? 0}</span>
+                                </div>
+                                <div className="pg-badge-item sales stacked">
+                                    <span className="label">Sales</span>
+                                    <span className="count">{event.soldCount ?? 0}/{(event.photosCount ?? 40)}</span>
+                                </div>
+                                {isAdmin ? (
+                                    <>
+                                        <div className="pg-badge-item earnings stacked">
+                                            <span className="label">PG Earnings</span>
+                                            <span className="value">SEK {((event.soldCount ?? 0) * 450).toLocaleString().replace(/,/g, ' ')}</span>
+                                        </div>
+                                        <div className="pg-badge-item earnings stacked" style={{ background: '#F5F3FF', color: '#5B21B6' }}>
+                                            <span className="label">Gallop Earnings</span>
+                                            <span className="value" style={{ color: '#7C3AED' }}>SEK {((event.soldCount ?? 0) * 4500).toLocaleString().replace(/,/g, ' ')}</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="pg-badge-item earnings stacked">
+                                        <span className="label">Earnings</span>
+                                        <span className="value">SEK {((event.soldCount ?? 0) * 450).toLocaleString().replace(/,/g, ' ')}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <ActionSeparator />
+
+                            {isAdmin && eventPhotographer && (
+                                <>
+                                    <InfoChip
+                                        label="Photographer"
+                                        name={`${eventPhotographer.firstName} ${eventPhotographer.lastName}`}
+                                        variant="photographer"
+                                        avatarUrl={`/images/${eventPhotographer.firstName} ${eventPhotographer.lastName}.jpg`}
+                                    />
+                                    <ActionSeparator />
+                                </>
+                            )}
                             <MoreMenu
                                 actions={[
                                     {
@@ -1095,29 +1249,24 @@ export const EventDetail: React.FC = () => {
             {/* Confirmation Modal */}
             {confirmModal.isOpen && (
                 <div className="pg-modal-overlay">
-                    <div className="pg-modal-card" style={{ maxWidth: 400, padding: 24 }}>
-                        <div style={{ display: 'flex', gap: 16 }}>
-                            <div style={{ minWidth: 40, height: 40, borderRadius: '50%', background: (confirmModal.type === 'delete' || confirmModal.type === 'unpublish') ? '#FEF2F2' : '#EFF6FF', color: (confirmModal.type === 'delete' || confirmModal.type === 'unpublish') ? '#DC2626' : '#1B3AEC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="pg-modal-card">
+                        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                            <div style={{ minWidth: 40, height: 40, borderRadius: '50%', background: (confirmModal.type === 'delete' || confirmModal.type === 'unpublish') ? '#FEF2F2' : '#EFF6FF', color: (confirmModal.type === 'delete' || confirmModal.type === 'unpublish') ? '#DC2626' : '#1B3AEC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                 <AlertCircle size={24} />
                             </div>
                             <div style={{ flex: 1 }}>
-                                <h3 style={{ marginTop: 0, fontSize: '1.125rem', fontWeight: 600, color: '#111', marginBottom: 8 }}>
+                                <h3 style={{ marginTop: 0, fontSize: '1.125rem', fontWeight: 700, color: '#111', marginBottom: 8 }}>
                                     {confirmModal.type === 'delete' ? `Delete photo${selectedIds.size > 1 ? 's' : ''}?` : (confirmModal.type === 'unpublish' ? `Unpublish photo${selectedIds.size > 1 ? 's' : ''}?` : 'Publish photos?')}
                                 </h3>
-                                <p style={{ margin: '0 0 24px', color: '#666', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                                    {confirmModal.type === 'delete'
-                                        ? `This will remove the photo${selectedIds.size > 1 ? 's' : ''} from this event. You can undo right after deleting.`
-                                        : confirmModal.type === 'unpublish'
-                                            ? `This will move the selected photo${selectedIds.size > 1 ? 's' : ''} to the Archive tab. You can undo this action.`
-                                            : (Array.from(selectedIds).some(id => validDuplicateIds.has(id))
-                                                ? `Warning: ${Array.from(selectedIds).filter(id => validDuplicateIds.has(id)).length} duplicates found. Fix duplicates before publishing.`
-                                                : 'This will move photos to Published.')}
+                                <p style={{ margin: '0 0 24px', color: '#666', fontSize: '0.9375rem', lineHeight: 1.5 }}>
+                                    {confirmModal.type === 'delete' ? 'This will remove the selected photo(s) from the event. This action cannot be undone.' : (confirmModal.type === 'unpublish' ? 'This will move photos to the Archive tab.' : (Array.from(selectedIds).some(id => validDuplicateIds.has(id))
+                                        ? `Warning: ${Array.from(selectedIds).filter(id => validDuplicateIds.has(id)).length} duplicates found. Fix duplicates before publishing.`
+                                        : 'This will move photos to Published.'))}
                                 </p>
-                                <div className="pg-modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                                    <button className="pg-action-btn secondary" onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}>Cancel</button>
+                                <div className="pg-modal-actions">
+                                    <button className="pg-modal-btn secondary" onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}>Cancel</button>
                                     <button
-                                        className="pg-action-btn primary"
-                                        style={(confirmModal.type === 'delete' || confirmModal.type === 'unpublish') ? { background: '#ef4444', border: 'none', boxShadow: 'none', color: '#fff' } : {}}
+                                        className={`pg-modal-btn ${confirmModal.type === 'delete' || confirmModal.type === 'unpublish' ? 'destructive' : 'primary'}`}
                                         onClick={handleConfirmAction}
                                         disabled={confirmModal.type === 'publish' && Array.from(selectedIds).some(id => validDuplicateIds.has(id))}
                                     >
@@ -1125,6 +1274,107 @@ export const EventDetail: React.FC = () => {
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+            {/* Event Info Modal (Read Only) - Reuses Edit Profile modal shell */}
+            {showInfoModal && (
+                <div className="auth-modal-overlay" onClick={() => setShowInfoModal(false)} style={{ zIndex: 2100, alignItems: 'center' }}>
+                    <div
+                        className="edit-profile-modal-container event-details-modal-container"
+                        onClick={e => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="event-details-title"
+                    >
+                        {/* Header */}
+                        <div className="modal-header-standard">
+                            <h2 id="event-details-title" className="edit-profile-title">Event details</h2>
+                            <button
+                                className="edit-profile-close"
+                                onClick={() => setShowInfoModal(false)}
+                                aria-label="Close modal"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Body (Scrollable) */}
+                        <div className="modal-body-standard">
+                            {/* Read Only Fields */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+                                {/* Identity */}
+                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                    <div style={{ width: 80, height: 80, flexShrink: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' }}>
+                                        <img src={event.logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8 }} />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: 8 }}>{event.title}</div>
+                                        <div style={{ fontSize: '0.95rem', color: '#666' }}>{event.dateRange}</div>
+                                    </div>
+                                </div>
+
+                                {/* Organiser (Text Only) */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.02em' }}>Organiser</label>
+                                    <div style={{ fontSize: '1rem', fontWeight: 500, color: '#111' }}>EquiSport Events AB</div>
+                                </div>
+
+                                {/* Location Grid */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.02em' }}>City</label>
+                                        <div style={{ fontSize: '1rem', color: '#111' }}>{event.city}</div>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.02em' }}>Venue</label>
+                                        <div style={{ fontSize: '1rem', color: '#111' }}>{event.venueName}</div>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.02em' }}>County</label>
+                                        <div style={{ fontSize: '1rem', color: '#111' }}>Stockholm County</div>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.02em' }}>Country</label>
+                                        <div style={{ fontSize: '1rem', color: '#111' }}>Sweden</div>
+                                    </div>
+                                </div>
+
+                                {/* Disciplines */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.02em' }}>Disciplines</label>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                        {(event.disciplines || []).map(d => (
+                                            <span key={d} style={{ fontSize: '0.85rem', padding: '6px 12px', background: '#f3f4f6', borderRadius: 20, color: '#374151', fontWeight: 500 }}>
+                                                {d}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Photographer */}
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.02em' }}>Photographer</label>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 20, padding: '4px 12px 4px 4px' }}>
+                                        <img src={`/images/John Doe.jpg`} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', background: '#e5e7eb' }} />
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#374151' }}>John Doe</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer - single primary Close action, right-aligned */}
+                        <div className="modal-footer-actions">
+                            <button
+                                className="edit-profile-btn-save"
+                                onClick={() => setShowInfoModal(false)}
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>

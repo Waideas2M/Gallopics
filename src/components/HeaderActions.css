@@ -30,6 +30,11 @@
     animation: dropdownFadeIn 0.15s ease;
 }
 
+.header-action-dropdown.is-portal {
+    right: auto;
+    z-index: 10000;
+}
+
 @keyframes dropdownFadeIn {
     from {
         opacity: 0;

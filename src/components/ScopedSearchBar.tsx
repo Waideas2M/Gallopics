@@ -14,7 +14,7 @@ import './ScopedSearchBar.css';
 export interface ScopedSearchOption {
     label: string;
     value: string;
-    type?: 'rider' | 'horse' | 'photo';
+    type?: 'rider' | 'horse' | 'photo' | 'email' | 'id';
     subtitle?: string;
     id?: string;
 }
@@ -148,7 +148,9 @@ export const ScopedSearchBar: React.FC<ScopedSearchBarProps> = ({
         switch (type) {
             case 'rider': return <RiderIcon size={16} />;
             case 'horse': return <HorseIcon size={16} />;
-            case 'photo': return <Image size={16} />;
+            case 'photo':
+            case 'id': return <Image size={16} />;
+            case 'email': return <Search size={16} />;
             default: return <Search size={16} />;
         }
     };

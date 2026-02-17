@@ -10,6 +10,7 @@ import { CheckoutPanel } from '../components/CheckoutPanel';
 import { photos as mockPhotos, COMPETITIONS } from '../data/mockData';
 import { PhotoCard } from '../components/PhotoCard';
 import './Cart.css';
+import { QUALITY_TIERS } from '../constants/qualityTiers';
 
 export function Cart() {
     const { cart, addToCart, removeFromCart, total, clearCart } = useCart();
@@ -27,14 +28,14 @@ export function Cart() {
     }, [toast]);
 
     const handleAddToCart = (photo: any) => {
-        // Default to high quality for quick add from recent
-        const quality = 'high';
-        const exists = cart.some(item => item.photoId === photo.id && item.quality === quality);
+        // Default to high quality tier
+        const tier = QUALITY_TIERS.find(t => t.id === 'high') || QUALITY_TIERS[1];
+        const exists = cart.some(item => item.photoId === photo.id && item.quality === tier.id);
 
         if (exists) {
             setToast({ message: 'Already in cart' });
         } else {
-            addToCart(photo, quality, 'High Quality', 999);
+            addToCart(photo, tier.id, tier.label, tier.price);
             setToast({ message: 'Added to cart' });
         }
     };

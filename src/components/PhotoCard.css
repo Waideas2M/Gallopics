@@ -511,6 +511,31 @@
     border-color: #a7f3d0;
 }
 
+/* PG Card Actions (Pencil, Unpublish, etc.) */
+.pg-card-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 30;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.photo-card:hover .pg-card-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.icon-btn-glass.delete-action:hover {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    border-color: #fecaca !important;
+}
+
 /* Single Bundle Dot */
 .bundle-dot-single {
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);

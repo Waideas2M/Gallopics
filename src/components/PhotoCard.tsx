@@ -3,13 +3,14 @@ import type { Photo } from '../types';
 import { Share2, Plus, MoreVertical, Check, Pencil, Trash2, RotateCcw } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { WatermarkedThumbnail } from './WatermarkedThumbnail';
+import { QUALITY_TIERS } from '../constants/qualityTiers';
 import './PhotoCard.css';
 
 interface PhotoCardProps {
     photo: Photo;
     onClick: (photo: Photo) => void;
     onAddToCart?: (photo: Photo) => void;
-    variant?: 'default' | 'pgUpload' | 'pgDuplicate' | 'pgPublished';
+    variant?: 'default' | 'pgUpload' | 'pgDuplicate' | 'pgPublished' | 'pgArchived';
     // Extended props for pgUpload variant
     pgMeta?: {
         fileName?: string;
@@ -18,6 +19,7 @@ interface PhotoCardProps {
         timestamp?: string;
         priceStandard?: number;
         priceHigh?: number;
+        priceCommercial?: number;
         soldCount?: number;
         totalBucketSales?: number;
         // For pgDuplicate variant
@@ -33,6 +35,9 @@ interface PhotoCardProps {
     onEdit?: (photo: Photo) => void;
     onPreview?: (photo: Photo) => void;
     onEditPrice?: (photo?: Photo) => void;
+    // Sales-only control flags
+    selectable?: boolean;
+    showEdit?: boolean;
 }
 
 export const PhotoCard: React.FC<PhotoCardProps> = ({
@@ -46,7 +51,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
     onManageDuplicate,
     onEdit,
     onPreview,
-    onEditPrice
+    onEditPrice,
+    selectable = true,
+    showEdit = true
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -57,15 +64,16 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 
     // 1. Variant Configuration (Tokenizing variants)
     const config = {
-        isPG: ['pgUpload', 'pgDuplicate', 'pgPublished'].includes(variant),
-        showDots: ['pgUpload', 'pgPublished'].includes(variant),
+        isPG: ['pgUpload', 'pgDuplicate', 'pgPublished', 'pgArchived'].includes(variant),
+        showDots: ['pgUpload', 'pgPublished', 'pgArchived'].includes(variant),
         showDuplicateMeta: variant === 'pgDuplicate',
         actionIcon: variant === 'pgPublished' ? <RotateCcw size={18} /> : <Trash2 size={18} />,
         actionTitle: variant === 'pgPublished' ? "Unpublish photo" : "Delete photo",
         containerClass: [
-            ['pgUpload', 'pgDuplicate', 'pgPublished'].includes(variant) ? 'variant-pg-upload' : '',
+            ['pgUpload', 'pgDuplicate', 'pgPublished', 'pgArchived'].includes(variant) ? 'variant-pg-upload' : '',
             variant === 'pgDuplicate' ? 'variant-pg-duplicate' : '',
-            variant === 'pgPublished' ? 'variant-pg-published' : ''
+            variant === 'pgPublished' ? 'variant-pg-published' : '',
+            variant === 'pgArchived' ? 'variant-pg-published variant-pg-archived' : ''
         ].filter(Boolean).join(' ')
     };
 
@@ -80,7 +88,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
         if (isAdded) {
             removeFromCartByPhotoId(photo.id);
         } else {
-            addToCart(photo, 'high', 'High Quality', 999);
+            // Default to high quality tier
+            const tier = QUALITY_TIERS.find(t => t.id === 'high') || QUALITY_TIERS[1];
+            addToCart(photo, tier.id, tier.label, tier.price);
         }
 
         if (!isAdded && onAddToCart) {
@@ -125,16 +135,16 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
         if (config.showDuplicateMeta) {
             return (
                 <div className="card-content pg-upload-meta pg-duplicate-meta">
-                    <div className="pg-meta-row pg-meta-filename">{pgMeta.fileName || 'Untitled'}</div>
-                    <div className="pg-meta-row pg-meta-id">{pgMeta.photoCode || 'Processing...'}</div>
-                    <div className="pg-meta-row pg-meta-datetime">
-                        {pgMeta.uploadDate} · {pgMeta.timestamp || '—'}
+                    <div className="pg-meta-row pg-meta-filename" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: 8 }}>
+                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {pgMeta.fileName || 'Untitled'}
+                        </span>
+                        {pgMeta.storedLocation && (
+                            <span className="pg-meta-location-tag" style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', flexShrink: 0 }}>
+                                {pgMeta.storedLocation}
+                            </span>
+                        )}
                     </div>
-                    {pgMeta.storedLocation && (
-                        <div className="pg-meta-row pg-meta-also-in" style={{ color: '#000', fontWeight: 500 }}>
-                            Stored in: {pgMeta.storedLocation}
-                        </div>
-                    )}
                 </div>
             );
         }
@@ -142,21 +152,20 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
         // Uploads & Published show FileName + Bundle Dots + Sold Badge
         const web = pgMeta.priceStandard || 0;
         const high = pgMeta.priceHigh || 0;
+        const commercial = (pgMeta as any).priceCommercial || 0;
         const soldCount = pgMeta.soldCount || 0;
         const totalBucketSales = pgMeta.totalBucketSales || 0;
 
         let activeBundle = 'custom';
         let bundleColor = '#9ca3af'; // default grey
 
-        if (web === 99 && high === 199) {
-            activeBundle = 'basic';
-            bundleColor = '#9ca3af';
-        } else if (web === 299 && high === 499) {
-            activeBundle = 'standard';
-            bundleColor = '#f97316';
-        } else if (web === 499 && high === 999) {
-            activeBundle = 'premium';
-            bundleColor = '#a855f7';
+        // Harmonized check: If prices match the canonical tiers (499/999/1500)
+        if (web === 499 && high === 999 && commercial === 1500) {
+            activeBundle = 'canonical';
+            bundleColor = '#a855f7'; // purple
+        } else if (web > 0 || high > 0) {
+            activeBundle = 'custom';
+            bundleColor = '#1B3AEC'; // blue
         }
 
         return (
@@ -182,7 +191,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
                             <div
                                 className="bundle-dot-single"
                                 onClick={(e) => { e.stopPropagation(); onEditPrice?.(photo); }}
-                                title={`${activeBundle.charAt(0).toUpperCase() + activeBundle.slice(1)}: Web ${web} / High ${high}`}
+                                title={`${activeBundle.charAt(0).toUpperCase() + activeBundle.slice(1)}: Web ${web} / High ${high} / Commercial ${commercial}`}
                                 style={{
                                     width: 8,
                                     height: 8,
@@ -199,7 +208,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
     };
 
     return (
-        <div className={`photo-card ${config.containerClass}`} onClick={() => onClick(photo)} tabIndex={0}>
+        <div className={`photo-card ${config.containerClass} ${selectable ? 'selectable' : ''}`} onClick={() => onClick(photo)} tabIndex={0}>
             <div className="card-image-wrapper" style={{ aspectRatio: `${photo.width}/${photo.height}` }} onClick={(e) => {
                 if (onPreview) {
                     e.stopPropagation();
@@ -215,7 +224,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
                 />
 
                 {/* Duplicate Badge / Manage */}
-                {['default', 'pgUpload', 'pgPublished'].includes(variant) && photo.isDuplicate && (
+                {['default', 'pgUpload', 'pgPublished', 'pgArchived'].includes(variant) && photo.isDuplicate && (
                     <div
                         className="duplicate-badge"
                         onMouseEnter={() => setDupHover(true)}
@@ -254,11 +263,13 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
                 )}
 
                 {/* Edit & Delete/Unpublish Actions (Stacked Top-Right for PG) */}
-                {(variant === 'pgUpload' || variant === 'pgPublished') && (
-                    <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', gap: 8, zIndex: 20, opacity: 0, transition: 'opacity 0.2s' }} className="pg-card-actions">
-                        <button className="icon-btn-glass" onClick={(e) => { e.stopPropagation(); onEdit?.(photo); }} title="Edit details">
-                            <Pencil size={18} />
-                        </button>
+                {(variant === 'pgUpload' || variant === 'pgPublished' || variant === 'pgArchived') && (
+                    <div className="pg-card-actions">
+                        {showEdit && (
+                            <button className="icon-btn-glass" onClick={(e) => { e.stopPropagation(); onEdit?.(photo); }} title="Edit details">
+                                <Pencil size={18} />
+                            </button>
+                        )}
                         <button
                             className="icon-btn-glass delete-action"
                             onClick={(e) => { e.stopPropagation(); onRemove?.(); }}
@@ -266,14 +277,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
                         >
                             {config.actionIcon}
                         </button>
-                        <style>{`
-                            .photo-card:hover .pg-card-actions { opacity: 1 !important; }
-                            .icon-btn-glass.delete-action:hover {
-                                background: #fee2e2 !important;
-                                color: #ef4444 !important;
-                                border-color: #fecaca !important;
-                            }
-                        `}</style>
                     </div>
                 )}
 

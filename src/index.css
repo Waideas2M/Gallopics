@@ -65,6 +65,8 @@
 
   --container-padding: 40px;
   /* Aligned with Hero Card padding for premium look */
+
+  --modal-padding: var(--spacing-lg, 24px);
 }
 
 @media (max-width: 768px) {

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutGrid, CreditCard, Settings, DollarSign, FileText, ChevronLeft, ChevronRight, Palette } from 'lucide-react';
+import { LayoutGrid, CreditCard, Settings, DollarSign, FileText, ChevronLeft, ChevronRight, Palette, Users } from 'lucide-react';
 import { Header } from '../../components/Header';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { Footer } from '../../components/Footer';
+import { useWorkspace } from '../../context/WorkspaceContext';
 import './PhotographerLayout.css';
 
 export const PhotographerLayout: React.FC = () => {
+    const { basePath, isAdmin } = useWorkspace();
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
@@ -27,45 +29,56 @@ export const PhotographerLayout: React.FC = () => {
                     </div>
 
                     <nav className="pg-nav">
-                        <NavLink to="/pg/events" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Events" : ""}>
-                            <LayoutGrid size={20} />
-                            <span>Events</span>
-                        </NavLink>
-                        <button
-                            type="button"
-                            className="pg-nav-item"
-                            title={isCollapsed ? "Sold photos" : ""}
-                            onClick={(e) => e.preventDefault()}
-                            aria-label="Sales"
-                            aria-disabled="true"
-                        >
-                            <DollarSign size={20} />
-                            <span>Sales</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="pg-nav-item"
-                            title={isCollapsed ? "Receipts" : ""}
-                            onClick={(e) => e.preventDefault()}
-                            aria-label="Receipts"
-                            aria-disabled="true"
-                        >
-                            <FileText size={20} />
-                            <span>Receipts</span>
-                        </button>
+                        <div className="pg-nav-section">
+                            {!isCollapsed && <div className="pg-nav-label">Main</div>}
+
+                            {/* Events */}
+                            <NavLink to={`${basePath}/events`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Events" : ""}>
+                                <LayoutGrid size={20} />
+                                <span>Events</span>
+                            </NavLink>
+
+                            {/* Photographers (Admin Only) */}
+                            {isAdmin && (
+                                <NavLink to={`${basePath}/photographers`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Photographers" : ""}>
+                                    <Users size={20} />
+                                    <span>Photographers</span>
+                                </NavLink>
+                            )}
+                        </div>
+
+                        <div className="pg-nav-section">
+                            {!isCollapsed && <div className="pg-nav-label">Business</div>}
+                            <NavLink to={`${basePath}/sold`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Sales" : ""}>
+                                <DollarSign size={20} />
+                                <span>Sales</span>
+                            </NavLink>
+                            <NavLink to={`${basePath}/receipts`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Receipts" : ""}>
+                                <FileText size={20} />
+                                <span>Receipts</span>
+                            </NavLink>
+                        </div>
+
                         <div className="pg-nav-divider" />
-                        <NavLink to="/pg/billing" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Billing details" : ""}>
-                            <CreditCard size={20} />
-                            <span>Billing details</span>
-                        </NavLink>
-                        <NavLink to="/pg/settings" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Settings" : ""}>
-                            <Settings size={20} />
-                            <span>Settings</span>
-                        </NavLink>
-                        <NavLink to="/pg/tokens" className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Tokens" : ""}>
-                            <Palette size={20} />
-                            <span>Tokens</span>
-                        </NavLink>
+
+                        <div className="pg-nav-section">
+                            {!isCollapsed && <div className="pg-nav-label">Account</div>}
+                            <NavLink to={`${basePath}/billing`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Billing details" : ""}>
+                                <CreditCard size={20} />
+                                <span>Billing details</span>
+                            </NavLink>
+                            <NavLink to={`${basePath}/settings`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Settings" : ""}>
+                                <Settings size={20} />
+                                <span>Settings</span>
+                            </NavLink>
+                            <NavLink to={`${basePath}/tokens`} className={({ isActive }) => `pg-nav-item ${isActive ? 'active' : ''}`} title={isCollapsed ? "Tokens" : ""}>
+                                <Palette size={20} />
+                                <span>Tokens</span>
+                            </NavLink>
+                        </div>
+
+                        {/* Safe space at bottom of list */}
+                        <div className="pg-nav-spacer" />
                     </nav>
 
                     <div className="pg-sidebar-footer">

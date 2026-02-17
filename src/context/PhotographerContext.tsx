@@ -24,6 +24,8 @@ export interface PgEvent {
     venueName: string;
     disciplines: string[];
     city: string;
+    assignedPhotographers?: { id: string; name: string; avatar: string }[];
+    applicationsWelcomed?: boolean;
 }
 
 export interface Photo {
@@ -56,6 +58,7 @@ export interface Photo {
     storedLocation?: 'Random' | 'Misc' | 'Uncategorised' | 'Published'; // Where this instance lives
     priceStandard?: number; // e.g. 499
     priceHigh?: number; // e.g. 999
+    priceCommercial?: number; // e.g. 1500
 }
 
 export interface UploadFile {
@@ -103,6 +106,7 @@ interface PhotographerContextType {
     setCurrentUploadEventId: (eventId: string | null) => void; // New export
     startUpload: (files: File[], metadata?: { classId?: string }) => void; // Updated sig
     clearUploadSession: (eventId: string) => void;
+    removeUploadFile: (eventId: string, fileId: string) => void;
 
     // Highlights
     highlights: string[];
@@ -111,7 +115,7 @@ interface PhotographerContextType {
     toggleAvailableToHire: (val: boolean) => void;
 }
 
-import { mockEvents, type EventData } from '../data/mockEvents';
+import { allMockEvents, type EventData } from '../data/mockEvents';
 import { photos as basePhotos, RIDERS, HORSES, RIDER_PRIMARY_HORSE, PHOTOGRAPHERS } from '../data/mockData';
 
 // Mapped Data based on shared mockEvents
@@ -136,14 +140,58 @@ const mapToPgEvent = (e: EventData, isMyEvent: boolean): PgEvent => {
         venueName: e.name.includes('Gothenburg') ? 'Scandinavium' : e.name.includes('Falsterbo') ? 'Falsterbo Arena' : 'Main Arena', // Simple mock mapping or use actual data if available
         disciplines: [e.discipline],
         city: e.city,
+        assignedPhotographers: e.photographer ? [e.photographer] : [],
+        applicationsWelcomed: true, // Defaulting to true for mock data
     };
 };
 
 const MY_EVENT_IDS = ['c1', 'c2', 'c3', 'c4', 'c5'];
 
-const MOCK_EVENTS: PgEvent[] = mockEvents.map(e => {
+const MOCK_EVENTS: PgEvent[] = allMockEvents.map((e) => {
     const isMine = MY_EVENT_IDS.includes(e.id);
     const mapped = mapToPgEvent(e, isMine);
+
+    // Apply Admin flow logic based on status
+    const isUpcoming = mapped.status === 'upcoming';
+
+    if (isUpcoming) {
+        if (e.id === 'c10') {
+            // "Last 3rd card from the below" (of the original 7)
+            // One pg assigned, status OPEN (more than one can apply)
+            mapped.assignedPhotographers = [{
+                id: PHOTOGRAPHERS[1].id,
+                name: `${PHOTOGRAPHERS[1].firstName} ${PHOTOGRAPHERS[1].lastName}`,
+                avatar: `/images/${PHOTOGRAPHERS[1].firstName} ${PHOTOGRAPHERS[1].lastName}.jpg`
+            }];
+            mapped.applicationsWelcomed = true;
+        } else if (e.id === 'd1' || e.id === 'd2') {
+            // Last two
+            mapped.applicationsWelcomed = false;
+            if (!mapped.assignedPhotographers || mapped.assignedPhotographers.length === 0) {
+                mapped.assignedPhotographers = [{
+                    id: PHOTOGRAPHERS[0].id,
+                    name: `${PHOTOGRAPHERS[0].firstName} ${PHOTOGRAPHERS[0].lastName}`,
+                    avatar: `/images/${PHOTOGRAPHERS[0].firstName} ${PHOTOGRAPHERS[0].lastName}.jpg`
+                }];
+            }
+        } else {
+            // c6, c7, c8, c9
+            mapped.assignedPhotographers = [];
+            mapped.applicationsWelcomed = true;
+        }
+    } else {
+        // Live, Past, Archived: Always Assigned & App status OFF
+        mapped.applicationsWelcomed = false;
+        // assignedPhotographers logic already handles assigning a photographer if present in mockData
+        if (!mapped.assignedPhotographers || mapped.assignedPhotographers.length === 0) {
+            // Fallback: assign the first photographer if none exists
+            mapped.assignedPhotographers = [{
+                id: PHOTOGRAPHERS[0].id,
+                name: `${PHOTOGRAPHERS[0].firstName} ${PHOTOGRAPHERS[0].lastName}`,
+                avatar: `/images/${PHOTOGRAPHERS[0].firstName} ${PHOTOGRAPHERS[0].lastName}.jpg`
+            }];
+        }
+    }
 
     // User request: Let the first one (c1) have no cover.
     if (e.id === 'c1') {
@@ -187,13 +235,19 @@ const generateMockPhotos = (eventId: string, count: number): Photo[] => {
         let status: Photo['status'] = 'uploadedUnpublished'; // Default for "Uploads" tab
         let soldCount = 0;
 
-        if (rand > 0.6) { // 40% are published now
+        if (rand > 0.65) { // 35% are published now
             status = 'published';
             // Randomly assign soldCount (Mostly 0, some 1, a few 2)
             const sellRand = Math.random();
             if (sellRand > 0.8) soldCount = 1;      // 20% of published have 1 sale
             if (sellRand > 0.95) soldCount = 2;     // 5% of published have 2 sales
-        } else if (rand > 0.45) { // ~15% need review
+        } else if (rand > 0.50) { // 15% are archived (Increased density)
+            status = 'archived';
+            // Archived photos can have sales history too
+            const sellRand = Math.random();
+            if (sellRand > 0.4) soldCount = randomInt(2, 6); // 60% of archived have 2-5 sales
+        }
+        else if (rand > 0.45) { // 10% need review
             status = 'needsReview';
         }
 
@@ -211,14 +265,20 @@ const generateMockPhotos = (eventId: string, count: number): Photo[] => {
 
         // Randomize price bundles for Published filtering coverage
         const bundleRand = Math.random();
-        let priceStandard = 299;
-        let priceHigh = 499; // Standard
+        let priceStandard = 499;
+        let priceHigh = 999;
+        let priceCommercial = 1500;
+
         if (bundleRand < 0.33) {
-            priceStandard = 99;
-            priceHigh = 199; // Basic
-        } else if (bundleRand > 0.66) {
+            // Basic (previously lower, now harmonized)
             priceStandard = 499;
-            priceHigh = 999; // Premium
+            priceHigh = 999;
+            priceCommercial = 1500;
+        } else if (bundleRand < 0.66) {
+            // Standard
+            priceStandard = 499;
+            priceHigh = 999;
+            priceCommercial = 1500;
         }
 
         const isDuplicate = false;
@@ -249,7 +309,8 @@ const generateMockPhotos = (eventId: string, count: number): Photo[] => {
             isDuplicate: isDuplicate,
             storedLocation: status === 'published' ? 'Published' : (batch || 'Uncategorised') as any,
             priceStandard: priceStandard,
-            priceHigh: priceHigh
+            priceHigh: priceHigh,
+            priceCommercial: priceCommercial
         };
     });
 };
@@ -579,6 +640,29 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
         });
     };
 
+    const removeUploadFile = (eventId: string, fileId: string) => {
+        setUploadSessions(prev => {
+            const session = prev[eventId];
+            if (!session) return prev;
+
+            const updatedFiles = session.files.filter(f => f.id !== fileId);
+
+            // If no files left, maybe clear session or keep empty? Keeping empty allows drop zone to appear.
+            // But if empty, UploadPage shows empty state which is good.
+
+            return {
+                ...prev,
+                [eventId]: {
+                    ...session,
+                    files: updatedFiles,
+                    // If no files left, status could be 'completed' or reset? 
+                    // Let's keep it as is, or set to 'uploading' if active?
+                    // Actually if empty, it doesn't matter much.
+                }
+            };
+        });
+    };
+
     const startUpload = (files: File[], metadata?: { classId?: string }) => {
         if (!currentUploadEventId) return;
         const eventId = currentUploadEventId;
@@ -702,6 +786,7 @@ export const PhotographerProvider: React.FC<{ children: ReactNode }> = ({ childr
             setCurrentUploadEventId,
             startUpload,
             clearUploadSession,
+            removeUploadFile,
             // Highlights
             highlights,
             updateHighlights,

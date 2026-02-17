@@ -15,14 +15,9 @@ import './ImageProfile.css';
 import { WatermarkedPhotoPreview } from '../components/WatermarkedPhotoPreview';
 import { ContactSupportModal } from '../components/ContactSupportModal';
 
-const getPrice = (quality: string) => {
-    switch (quality) {
-        case 'web': return 499;
-        case 'high': return 999;
-        case 'original': return 1499;
-        default: return 999;
-    }
-};
+import { QUALITY_TIERS, getPriceByTierId } from '../constants/qualityTiers';
+
+const getPrice = (quality: string) => getPriceByTierId(quality);
 
 export function ImageProfile() {
     const { id } = useParams();
@@ -128,20 +123,16 @@ export function ImageProfile() {
 
     // Quality Selector Options
     const qualityOptions = useMemo(() => {
-        return [
-            {
-                label: 'Web Quality',
-                value: 'web',
-                subtext: detectedPortrait ? 'Portrait: 720×1080' : 'Landscape: 1080×720',
-                description: 'Best for social media and screen use.'
-            },
-            {
-                label: 'High Quality',
-                value: 'high',
-                subtext: detectedPortrait ? 'Portrait: 4000×6000' : 'Landscape: 6000×4000',
-                description: 'Best for printing and large displays.'
-            }
-        ];
+        return QUALITY_TIERS.map(tier => ({
+            label: tier.label,
+            value: tier.id,
+            subtext: tier.id === 'web'
+                ? (detectedPortrait ? 'Portrait: 720×1080' : 'Landscape: 1080×720')
+                : (tier.id === 'high' || tier.id === 'commercial'
+                    ? (detectedPortrait ? 'Portrait: 4000×6000' : 'Landscape: 6000×4000')
+                    : ''),
+            description: tier.description
+        }));
     }, [detectedPortrait]);
 
     return (

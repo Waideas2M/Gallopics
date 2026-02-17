@@ -13,7 +13,7 @@ interface PgSelectionPanelProps {
     allPhotos: Photo[];
     onClose: () => void;
     activeTab?: 'tags' | 'price';
-    currentTab?: 'uploads' | 'published';
+    currentTab?: 'uploads' | 'published' | 'archive';
     onShowToast?: (msg: string, type: 'success' | 'moved' | 'warning' | 'danger', onUndo?: () => void) => void;
 }
 
@@ -21,9 +21,9 @@ const CLASSES = ['1.20m Jumping', '1.30m Grand Prix', '1.10m Young Horses', 'Dre
 const BATCHES = ['Random', 'Misc', 'Uncategorised'];
 
 const BUNDLES = {
-    basic: { web: 99, high: 199, label: 'Basic' },
-    standard: { web: 299, high: 499, label: 'Standard' },
-    premium: { web: 499, high: 999, label: 'Premium' }
+    basic: { web: 499, high: 999, commercial: 1500, label: 'Basic' },
+    standard: { web: 499, high: 999, commercial: 1500, label: 'Standard' },
+    premium: { web: 499, high: 999, commercial: 1500, label: 'Premium' }
 };
 
 export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
@@ -60,6 +60,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
     const [priceBundle, setPriceBundle] = useState<'basic' | 'standard' | 'premium' | 'custom'>('standard');
     const [customPriceWeb, setCustomPriceWeb] = useState<string>('');
     const [customPriceHigh, setCustomPriceHigh] = useState<string>('');
+    const [customPriceCommercial, setCustomPriceCommercial] = useState<string>('');
 
     // Panel Tab State
     const [panelTab, setPanelTab] = useState<'tags' | 'price'>('tags');
@@ -71,7 +72,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
     const [originalState, setOriginalState] = useState<{
         rider: string, horse: string, cls: string,
         isGeneric: boolean, title: string, description: string,
-        priceWeb: number, priceHigh: number
+        priceWeb: number, priceHigh: number, priceCommercial: number
     } | null>(null);
 
     // Modal State
@@ -118,12 +119,15 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
         if (priceBundle === 'custom') {
             return {
                 web: Number(customPriceWeb) || 0,
-                high: Number(customPriceHigh) || 0
+                high: Number(customPriceHigh) || 0,
+                commercial: Number(customPriceCommercial) || 0
             };
         } else {
+            const b = BUNDLES[priceBundle];
             return {
-                web: BUNDLES[priceBundle].web,
-                high: BUNDLES[priceBundle].high
+                web: b.web,
+                high: b.high,
+                commercial: b.commercial
             };
         }
     };
@@ -144,13 +148,14 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
             const displayTitle = /^Photo \d+$/.test(p.title || '') ? '' : (p.title || '');
 
             // Price State (Multi: take first)
-            const pWeb = p.priceStandard || 299;
-            const pHigh = p.priceHigh || 499;
+            const pWeb = p.priceStandard || 499;
+            const pHigh = p.priceHigh || 999;
+            const pComm = p.priceCommercial || 1500;
 
             let bundle: 'basic' | 'standard' | 'premium' | 'custom' = 'custom';
-            if (pWeb === BUNDLES.basic.web && pHigh === BUNDLES.basic.high) bundle = 'basic';
-            else if (pWeb === BUNDLES.standard.web && pHigh === BUNDLES.standard.high) bundle = 'standard';
-            else if (pWeb === BUNDLES.premium.web && pHigh === BUNDLES.premium.high) bundle = 'premium';
+            if (pWeb === BUNDLES.basic.web && pHigh === BUNDLES.basic.high && pComm === BUNDLES.basic.commercial) bundle = 'basic';
+            else if (pWeb === BUNDLES.standard.web && pHigh === BUNDLES.standard.high && pComm === BUNDLES.standard.commercial) bundle = 'standard';
+            else if (pWeb === BUNDLES.premium.web && pHigh === BUNDLES.premium.high && pComm === BUNDLES.premium.commercial) bundle = 'premium';
 
             // Special case logic for Multi selection:
             if (selectedPhotos.length > 1) {
@@ -166,14 +171,16 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                 if (bundle === 'custom') {
                     setCustomPriceWeb(pWeb.toString());
                     setCustomPriceHigh(pHigh.toString());
+                    setCustomPriceCommercial(pComm.toString());
                 } else {
                     setCustomPriceWeb('');
                     setCustomPriceHigh('');
+                    setCustomPriceCommercial('');
                 }
 
                 setOriginalState({
                     rider: '', horse: '', cls: '', isGeneric: false, title: '', description: '',
-                    priceWeb: pWeb, priceHigh: pHigh
+                    priceWeb: pWeb, priceHigh: pHigh, priceCommercial: pComm
                 });
                 setViewMode('edit');
             } else {
@@ -190,9 +197,11 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                 if (bundle === 'custom') {
                     setCustomPriceWeb(pWeb.toString());
                     setCustomPriceHigh(pHigh.toString());
+                    setCustomPriceCommercial(pComm.toString());
                 } else {
                     setCustomPriceWeb('');
                     setCustomPriceHigh('');
+                    setCustomPriceCommercial('');
                 }
 
                 setOriginalState({
@@ -200,7 +209,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                     horse: p.horse || (inMissingBucket ? 'None' : ''),
                     cls: p.className || (inMissingBucket ? 'None' : ''),
                     isGeneric: p.isGeneric || false, title: displayTitle, description: p.description || '',
-                    priceWeb: pWeb, priceHigh: pHigh
+                    priceWeb: pWeb, priceHigh: pHigh, priceCommercial: pComm
                 });
 
                 if ((p.isGeneric) && (displayTitle || p.description)) {
@@ -219,20 +228,31 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
         if (!originalState) return false;
 
         // Price check
-        const current = getEffectivePrice();
-        if (current.web !== originalState.priceWeb || current.high !== originalState.priceHigh) return true;
+        const currentPrice = getEffectivePrice();
+        const priceDirty = currentPrice.web !== originalState.priceWeb ||
+            currentPrice.high !== originalState.priceHigh ||
+            currentPrice.commercial !== originalState.priceCommercial;
+
+        // Tags and Mode check
+        let tagsDirty = false;
+        let modeDirty = false;
 
         if (isSingle) {
-            if (rider !== originalState.rider || horse !== originalState.horse || cls !== originalState.cls) return true;
-            if (isGeneric !== originalState.isGeneric) return true;
-            if (isGeneric) {
-                if (title !== originalState.title || description !== originalState.description) return true;
+            tagsDirty = rider !== originalState.rider || horse !== originalState.horse || cls !== originalState.cls;
+            modeDirty = isGeneric !== originalState.isGeneric;
+            if (isGeneric) { // If currently generic, check title/description
+                tagsDirty = tagsDirty || title !== originalState.title || description !== originalState.description;
             }
-            return false;
+        } else {
+            // For multi-selection, we rely on the 'touched' state for tags.
+            // If any tag field was edited, 'touched' would be true.
+            // If the current values are different from the original (which would be empty for multi-edit), it's dirty.
+            // This is a simplified check for multi-select tags.
+            tagsDirty = touched && (!!rider || !!horse || !!cls);
         }
 
-        return touched;
-    }, [rider, horse, cls, isGeneric, title, description, priceBundle, customPriceWeb, customPriceHigh, originalState, isSingle, touched]);
+        return tagsDirty || modeDirty || priceDirty;
+    }, [rider, horse, cls, isGeneric, title, description, priceBundle, customPriceWeb, customPriceHigh, customPriceCommercial, originalState, isSingle, touched, description]);
 
     const canReset = useMemo(() => {
         return (!!rider && rider !== 'None') || (!!horse && horse !== 'None') || (!!cls && cls !== 'None') || isGeneric || !!title || !!description;
@@ -249,11 +269,8 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
 
         if (field === 'customPriceWeb') {
             setCustomPriceWeb(value);
-            // Implicit switch if editing (though UI hides inputs unless custom selected)
-            setPriceBundle('custom');
-        }
-        if (field === 'customPriceHigh') {
             setCustomPriceHigh(value);
+            setCustomPriceCommercial(value);
             setPriceBundle('custom');
         }
     };
@@ -357,7 +374,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
             id: p.id,
             rider: p.rider, horse: p.horse, className: p.className,
             isGeneric: p.isGeneric, title: p.title, description: (p as any).description,
-            priceStandard: p.priceStandard, priceHigh: p.priceHigh
+            priceStandard: p.priceStandard, priceHigh: p.priceHigh, priceCommercial: p.priceCommercial
         }));
 
         const updates: Partial<Photo> & { description?: string, isGeneric?: boolean } = {};
@@ -382,6 +399,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
         const finalPrice = getEffectivePrice();
         updates.priceStandard = finalPrice.web;
         updates.priceHigh = finalPrice.high;
+        updates.priceCommercial = finalPrice.commercial;
 
         updatePhotoMetadata(ids, updates);
 
@@ -395,14 +413,15 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                     title: meta.title || '',
                     description: meta.description || '',
                     priceStandard: meta.priceStandard,
-                    priceHigh: meta.priceHigh
+                    priceHigh: meta.priceHigh,
+                    priceCommercial: meta.priceCommercial
                 });
             });
         });
 
         setOriginalState({
             rider, horse, cls, isGeneric, title, description,
-            priceWeb: finalPrice.web, priceHigh: finalPrice.high
+            priceWeb: finalPrice.web, priceHigh: finalPrice.high, priceCommercial: finalPrice.commercial
         });
         setTouched(false);
 
@@ -423,19 +442,22 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
             // Re-calc bundle from original state
             const pWeb = originalState.priceWeb;
             const pHigh = originalState.priceHigh;
+            const pComm = originalState.priceCommercial;
 
             let bundle: 'basic' | 'standard' | 'premium' | 'custom' = 'custom';
-            if (pWeb === BUNDLES.basic.web && pHigh === BUNDLES.basic.high) bundle = 'basic';
-            else if (pWeb === BUNDLES.standard.web && pHigh === BUNDLES.standard.high) bundle = 'standard';
-            else if (pWeb === BUNDLES.premium.web && pHigh === BUNDLES.premium.high) bundle = 'premium';
+            if (pWeb === BUNDLES.basic.web && pHigh === BUNDLES.basic.high && pComm === BUNDLES.basic.commercial) bundle = 'basic';
+            else if (pWeb === BUNDLES.standard.web && pHigh === BUNDLES.standard.high && pComm === BUNDLES.standard.commercial) bundle = 'standard';
+            else if (pWeb === BUNDLES.premium.web && pHigh === BUNDLES.premium.high && pComm === BUNDLES.premium.commercial) bundle = 'premium';
 
             setPriceBundle(bundle);
             if (bundle === 'custom') {
                 setCustomPriceWeb(pWeb.toString());
                 setCustomPriceHigh(pHigh.toString());
+                setCustomPriceCommercial(pComm.toString());
             } else {
                 setCustomPriceWeb('');
                 setCustomPriceHigh('');
+                setCustomPriceCommercial('');
             }
             // Ensure inputs are reset if we were in custom mode editing but then cancelled to a bundle?
             // "If user typed custom values, switching away... preserve custom values internally... switching back restores".
@@ -693,9 +715,18 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                 </div>
                                             )}
 
+                                            {/* OR Separator */}
+                                            {isSingle && !isGeneric && (
+                                                <div className="pg-tags-or-separator" style={{ display: 'flex', alignItems: 'center', margin: '16px 0', gap: 12 }}>
+                                                    <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
+                                                    <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>OR</span>
+                                                    <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
+                                                </div>
+                                            )}
+
                                             {/* Generic Option Checks */}
                                             {isSingle && (
-                                                <div className="pg-form-group" style={{ marginTop: isGeneric ? 0 : 24 }}>
+                                                <div className="pg-form-group" style={{ marginTop: isGeneric ? 0 : 16 }}>
                                                     <div
                                                         className="pg-scan-checkbox-row"
                                                         onClick={toggleGeneric}
@@ -792,7 +823,13 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                 standard: { dot: '#f97316', bg: '#ffedd5', border: '#fed7aa' },
                                                 premium: { dot: '#a855f7', bg: '#f3e8ff', border: '#e9d5ff' }
                                             };
-                                            const c = colors[key] || colors.basic;
+                                            const c = (colors as any)[key] || colors.basic;
+
+                                            const info = {
+                                                basic: { subtitle: "Web quality", support: "Best for social media and screen use.", primaryPrice: b.web, others: `High ${b.high} / Comm. ${b.commercial}` },
+                                                standard: { subtitle: "High quality", support: "Best for printing and large displays.", primaryPrice: b.high, others: `Web ${b.web} / Comm. ${b.commercial}` },
+                                                premium: { subtitle: "Commercial use", support: "Best for printing and large displays.", primaryPrice: b.commercial, others: `Web ${b.web} / High ${b.high}` }
+                                            }[key];
 
                                             return (
                                                 <div
@@ -806,7 +843,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                         borderRadius: 8,
                                                         background: isSelected ? c.bg : '#fff',
                                                         cursor: 'pointer',
-                                                        display: 'flex', alignItems: 'center', gap: 12
+                                                        display: 'flex', alignItems: 'flex-start', gap: 12
                                                     }}
                                                 >
                                                     {/* Left Accent Bar */}
@@ -815,13 +852,19 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                         width: 16, height: 16, borderRadius: '50%',
                                                         border: `1px solid ${isSelected ? '#1B3AEC' : '#d1d5db'}`,
                                                         background: '#fff',
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                        marginTop: 2,
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        flexShrink: 0
                                                     }}>
                                                         {isSelected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1B3AEC' }} />}
                                                     </div>
-                                                    <div>
-                                                        <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111' }}>{b.label}</div>
-                                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>Web {b.web} / High {b.high} SEK</div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
+                                                            <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111' }}>{b.label}</div>
+                                                            <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#111' }}>{info.primaryPrice} SEK</div>
+                                                        </div>
+                                                        <div style={{ fontSize: '0.75rem', fontWeight: 500, color: '#444', marginBottom: 2 }}>{info.subtitle}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#666', lineHeight: 1.4 }}>{info.support}</div>
                                                     </div>
                                                 </div>
                                             );
@@ -831,54 +874,45 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                             onClick={() => handleBundleSelect('custom')}
                                             style={{
                                                 padding: 12,
-                                                border: `1px solid ${priceBundle === 'custom' ? '#1B3AEC' : '#e5e7eb'}`,
+                                                border: `1px solid ${priceBundle === 'custom' ? '#facc15' : '#e5e7eb'}`,
                                                 borderRadius: 8,
-                                                background: priceBundle === 'custom' ? '#eff6ff' : '#fff',
+                                                background: priceBundle === 'custom' ? '#fef9c3' : '#fff',
                                                 cursor: 'pointer'
                                             }}
                                         >
                                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                                                 <div style={{
                                                     width: 16, height: 16, borderRadius: '50%',
-                                                    border: `1px solid ${priceBundle === 'custom' ? '#1B3AEC' : '#d1d5db'}`,
+                                                    border: `1px solid ${priceBundle === 'custom' ? '#facc15' : '#d1d5db'}`,
                                                     background: '#fff',
                                                     marginTop: 2,
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                 }}>
-                                                    {priceBundle === 'custom' && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1B3AEC' }} />}
+                                                    {priceBundle === 'custom' && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#facc15' }} />}
                                                 </div>
                                                 <div style={{ flex: 1 }}>
                                                     <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111' }}>Custom</div>
                                                     {priceBundle !== 'custom' && (
-                                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>Set your own Web and High prices</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#666' }}>Set your own price for all levels</div>
                                                     )}
                                                 </div>
                                             </div>
                                             {/* Inputs for Custom */}
                                             {priceBundle === 'custom' && (
                                                 <div className="pg-form-group" style={{ margin: '12px 0 0 28px' }}>
-                                                    <div style={{ display: 'flex', gap: 12 }}>
-                                                        <div style={{ flex: 1 }}>
-                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 4 }}>Web (SEK)</div>
-                                                            <input
-                                                                className="pg-panel-input"
-                                                                type="number"
-                                                                value={customPriceWeb}
-                                                                onChange={(e) => handleChange('customPriceWeb', e.target.value)}
-                                                                placeholder="0"
-                                                            />
-                                                        </div>
-                                                        <div style={{ flex: 1 }}>
-                                                            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 4 }}>High Res (SEK)</div>
-                                                            <input
-                                                                className="pg-panel-input"
-                                                                type="number"
-                                                                value={customPriceHigh}
-                                                                onChange={(e) => handleChange('customPriceHigh', e.target.value)}
-                                                                placeholder="0"
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 4 }}>Price (SEK)</div>
+                                                    <input
+                                                        className="pg-panel-input"
+                                                        type="text"
+                                                        inputMode="numeric"
+                                                        value={customPriceWeb}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value.replace(/[^0-9]/g, '');
+                                                            handleChange('customPriceWeb', val);
+                                                        }}
+                                                        placeholder="0"
+                                                        style={{ width: '50%' }}
+                                                    />
                                                 </div>
                                             )}
                                         </div>
@@ -897,31 +931,31 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                 <div className={`pg-panel-footer ${isDirty ? 'dirty-state' : ''}`}>
                     {isDirty ? (
                         <>
-                            <button className="pg-action-btn secondary" onClick={handleCancel}>
+                            <button className="pg-panel-btn secondary" onClick={handleCancel}>
                                 <Slash size={16} /> Cancel
                             </button>
-                            <button className="pg-action-btn primary" onClick={handleSave}>
+                            <button className="pg-panel-btn primary" onClick={handleSave}>
                                 <Save size={16} /> Save changes
                             </button>
                         </>
                     ) : (
                         <>
                             {currentTab === 'published' ? (
-                                <button className="pg-action-btn primary" onClick={handleUnpublish} style={{ background: '#ef4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)' }}>
+                                <button className="pg-panel-btn destructive" onClick={handleUnpublish}>
                                     Unpublish
                                 </button>
                             ) : (
-                                <button className="pg-action-btn primary" onClick={handlePublish}>
+                                <button className="pg-panel-btn primary" onClick={handlePublish}>
                                     {isArchived ? "Republish" : "Publish"}
                                 </button>
                             )}
                             <div style={{ display: 'flex', gap: 8 }}>
                                 {currentTab !== 'published' && (
-                                    <button className="pg-action-btn icon-only secondary delete-action" title="Delete" onClick={handleDeleteInit}>
+                                    <button className="pg-panel-btn icon-only secondary delete-action" title="Delete" onClick={handleDeleteInit}>
                                         <Trash2 size={18} />
                                     </button>
                                 )}
-                                <button className="pg-action-btn icon-only secondary" title="Move to..." onClick={handleMoveInit}>
+                                <button className="pg-panel-btn icon-only secondary" title="Move to..." onClick={handleMoveInit}>
                                     <MoreVertical size={18} />
                                 </button>
                             </div>
@@ -933,14 +967,13 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                 {isMoveModalOpen && (
                     <div className="pg-modal-overlay">
                         <div className="pg-modal-card">
-                            <h3>Move to other batch</h3>
-                            {/* ... */}
-                            <div className="pg-modal-body">
+                            <h3 style={{ marginTop: 0, fontSize: '1.125rem', fontWeight: 700, color: '#111', marginBottom: 16 }}>Move to other folder</h3>
+                            <div className="pg-modal-body" style={{ marginBottom: 24 }}>
                                 {!isCreatingBatch ? (
                                     <>
-                                        <Label text="Batch" />
+                                        <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#666', marginBottom: 8 }}>Select Folder</div>
                                         <div className="pg-custom-select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                                            <span>{targetBatch || "Select batch..."}</span>
+                                            <span>{targetBatch || "Select folder..."}</span>
                                             <ChevronDown size={16} color="#666" />
                                             {isDropdownOpen && (
                                                 <div className="pg-custom-select-list" onClick={(e) => e.stopPropagation()}>
@@ -958,7 +991,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                                 }}
                                                             >
                                                                 {b}
-                                                                {isDisabled && <span style={{ fontSize: '0.75rem', color: '#999' }}>Current batch</span>}
+                                                                {isDisabled && <span style={{ fontSize: '0.75rem', color: '#999' }}>Current folder</span>}
                                                             </div>
                                                         );
                                                     })}
@@ -971,7 +1004,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                         }}
                                                     >
                                                         <Plus size={14} style={{ marginRight: 6 }} />
-                                                        Create new batch...
+                                                        Create new folder...
                                                     </div>
                                                 </div>
                                             )}
@@ -979,7 +1012,7 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                     </>
                                 ) : (
                                     <div className="pg-form-group">
-                                        <Label text="New Batch Name" />
+                                        <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#666', marginBottom: 8 }}>New Folder Name</div>
                                         <div style={{ display: 'flex', gap: 8 }}>
                                             <input
                                                 className="pg-panel-input"
@@ -988,15 +1021,15 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                                 onChange={(e) => setNewBatchName(e.target.value)}
                                                 autoFocus
                                             />
-                                            <button className="pg-action-btn secondary icon-only" onClick={() => setIsCreatingBatch(false)}><X size={16} /></button>
+                                            <button className="pg-panel-btn secondary icon-only" onClick={() => setIsCreatingBatch(false)}><X size={16} /></button>
                                         </div>
                                     </div>
                                 )}
                             </div>
                             <div className="pg-modal-actions">
-                                <button className="pg-action-btn secondary" onClick={() => setIsMoveModalOpen(false)}>Cancel</button>
+                                <button className="pg-modal-btn secondary" onClick={() => setIsMoveModalOpen(false)}>Cancel</button>
                                 <button
-                                    className="pg-action-btn primary"
+                                    className="pg-modal-btn primary"
                                     onClick={handleMoveConfirm}
                                     disabled={!isCreatingBatch ? !targetBatch : !newBatchName}
                                 >
@@ -1010,73 +1043,61 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                 {/* Unified Confirmation Modal */}
                 {confirmModal.isOpen && (
                     <div className="pg-modal-overlay">
-                        <div className="pg-modal-card" style={{ width: 340, padding: 24 }}>
+                        <div className="pg-modal-card">
                             {/* ... */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                                {confirmModal.type === 'delete' ? (
-                                    <AlertCircle size={24} color="#ef4444" />
-                                ) : (
-                                    <AlertCircle size={24} color="#f59e0b" />
-                                )}
-                                <h3 style={{ margin: 0, fontSize: '1.125rem' }}>
-                                    {confirmModal.type === 'delete' && 'Delete photo?'}
-                                    {confirmModal.type === 'refresh' && 'Refresh tags?'}
-                                    {confirmModal.type === 'close' && 'Discard changes?'}
-                                    {confirmModal.type === 'publish' && (isArchived ? 'Republish photo?' : 'Publish photo?')}
-                                    {confirmModal.type === 'unpublish' && 'Unpublish photo?'}
-                                </h3>
-                            </div>
-                            <div className="pg-modal-body" style={{ fontSize: '0.9375rem', color: '#666', marginBottom: 24, lineHeight: 1.5 }}>
-                                {confirmModal.type === 'delete' && 'This will remove the photo from this event. You can undo right after deleting.'}
-                                {confirmModal.type === 'refresh' && 'This will revert tags to organiser data and remove your custom title/description.'}
-                                {confirmModal.type === 'close' && 'You have unsaved changes in your selection. Are you sure you want to discard them?'}
-                                {confirmModal.type === 'publish' && 'This will move the photo to Published and make it available for buyers.'}
-                                {confirmModal.type === 'unpublish' && 'This will move the photo to the Archive tab. You can undo this action.'}
+                            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                                <div style={{ minWidth: 40, height: 40, borderRadius: '50%', background: (confirmModal.type === 'delete' || confirmModal.type === 'close' || confirmModal.type === 'unpublish') ? '#FEF2F2' : '#FFFBEB', color: (confirmModal.type === 'delete' || confirmModal.type === 'close' || confirmModal.type === 'unpublish') ? '#DC2626' : '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <AlertCircle size={24} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <h3 style={{ marginTop: 0, fontSize: '1.125rem', fontWeight: 700, color: '#111', marginBottom: 8 }}>
+                                        {confirmModal.type === 'delete' && 'Delete photo?'}
+                                        {confirmModal.type === 'refresh' && 'Refresh tags?'}
+                                        {confirmModal.type === 'close' && 'Discard changes?'}
+                                        {confirmModal.type === 'publish' && (isArchived ? 'Republish photo?' : 'Publish photo?')}
+                                        {confirmModal.type === 'unpublish' && 'Unpublish photo?'}
+                                    </h3>
+                                    <p style={{ margin: '0 0 24px', color: '#666', fontSize: '0.9375rem', lineHeight: 1.5 }}>
+                                        {confirmModal.type === 'delete' && 'This will remove the photo from this event. You can undo right after deleting.'}
+                                        {confirmModal.type === 'refresh' && 'This will revert tags to organiser data and remove your custom title/description.'}
+                                        {confirmModal.type === 'close' && 'You have unsaved changes in your selection. Are you sure you want to discard them?'}
+                                        {confirmModal.type === 'publish' && 'This will move the photo to Published and make it available for buyers.'}
+                                        {confirmModal.type === 'unpublish' && 'This will move the photo to the Archive tab. You can undo this action.'}
+                                    </p>
+                                </div>
                             </div>
                             <div className="pg-modal-actions">
-                                <button className="pg-action-btn secondary" onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}>
+                                <button className="pg-modal-btn secondary" onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}>
                                     Cancel
                                 </button>
                                 {confirmModal.type === 'delete' && (
-                                    <button
-                                        className="pg-action-btn primary"
-                                        style={{ background: '#ef4444', border: 'none', boxShadow: 'none' }}
-                                        onClick={confirmDelete}
-                                    >
+                                    <button className="pg-modal-btn destructive" onClick={confirmDelete}>
                                         Delete
                                     </button>
                                 )}
                                 {confirmModal.type === 'refresh' && (
                                     <button
-                                        className="pg-action-btn primary"
+                                        className="pg-modal-btn primary"
                                         onClick={confirmRefresh}
                                     >
                                         Refresh
                                     </button>
                                 )}
                                 {confirmModal.type === 'close' && (
-                                    <button
-                                        className="pg-action-btn primary"
-                                        style={{ background: '#ef4444', border: 'none', boxShadow: 'none' }}
-                                        onClick={confirmCloseDiscard}
-                                    >
+                                    <button className="pg-modal-btn destructive" onClick={confirmCloseDiscard}>
                                         Discard
                                     </button>
                                 )}
                                 {confirmModal.type === 'publish' && (
                                     <button
-                                        className="pg-action-btn primary"
+                                        className="pg-modal-btn primary"
                                         onClick={confirmPublish}
                                     >
                                         {isArchived ? "Republish" : "Publish"}
                                     </button>
                                 )}
                                 {confirmModal.type === 'unpublish' && (
-                                    <button
-                                        className="pg-action-btn primary"
-                                        style={{ background: '#ef4444', border: 'none', boxShadow: 'none' }}
-                                        onClick={confirmUnpublish}
-                                    >
+                                    <button className="pg-modal-btn destructive" onClick={confirmUnpublish}>
                                         Unpublish
                                     </button>
                                 )}
@@ -1119,11 +1140,15 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
                                 <div style={{ fontSize: '0.875rem', color: '#666', lineHeight: 1.5, display: 'flex', flexDirection: 'column', gap: 12 }}>
                                     <div>
                                         <div style={{ fontWeight: 500, color: '#111' }}>Web quality</div>
-                                        <div>Best for social media and screen use.</div>
+                                        <div>Best for screen and social media.</div>
                                     </div>
                                     <div>
-                                        <div style={{ fontWeight: 500, color: '#111' }}>High resolution</div>
-                                        <div>Best for printing and large displays.</div>
+                                        <div style={{ fontWeight: 500, color: '#111' }}>High quality</div>
+                                        <div>Best for print and large displays.</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: 500, color: '#111' }}>Commercial use</div>
+                                        <div>Best for print and large displays.</div>
                                     </div>
                                     <div style={{ fontSize: '0.8125rem', color: '#999', marginTop: 4 }}>
                                         Gallopics automatically delivers the right resolution—no extra prep needed.
@@ -1133,9 +1158,9 @@ export const PgSelectionPanel: React.FC<PgSelectionPanelProps> = ({
 
                             <div style={{ borderBottom: '1px solid #f1f2f4', marginBottom: 24 }} />
 
-                            {/* Revenue Split */}
+                            {/* Earnings Split */}
                             <div style={{ marginBottom: 24 }}>
-                                <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#111', marginBottom: 12 }}>Revenue split</div>
+                                <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#111', marginBottom: 12 }}>Earnings split</div>
                                 <div style={{ fontSize: '0.875rem', color: '#666', lineHeight: 1.5 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                                         <span>Photographer</span>

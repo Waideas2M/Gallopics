@@ -7,6 +7,7 @@ interface UserProfile {
     city: string;
     avatarUrl?: string | null;
     hasCompletedOnboarding?: boolean;
+    role?: 'pg' | 'admin';
 }
 
 interface AuthContextType {
@@ -25,7 +26,17 @@ export const PROTOTYPE_USER = {
     displayName: 'Klara Fors',
     country: 'Sweden',
     city: 'Stockholm',
-    avatarUrl: '/images/Klara Fors.jpg'
+    avatarUrl: '/images/Klara Fors.jpg',
+    role: 'pg' as const
+};
+
+export const ADMIN_USER = {
+    id: 'ida-lindemann',
+    displayName: 'Ida Lindemann',
+    country: 'Germany',
+    city: 'Admin',
+    avatarUrl: '/images/ida.jpg',
+    role: 'admin' as const
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

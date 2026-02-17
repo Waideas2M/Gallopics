@@ -1,412 +1,798 @@
-/* Fullscreen Modal Page Wrapper */
+/* Main Wrapper */
 .pg-upload-page {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--color-bg, #f3f4f6);
+    background: #f8fafc;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Header */
+/* Header - Slim & Transparent Blur */
 .pg-upload-header {
-    height: 64px;
-    background: white;
-    border-bottom: 1px solid var(--color-border);
+    height: 72px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 40px;
     flex-shrink: 0;
+    z-index: 10;
 }
 
 .pg-upload-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
-    color: var(--color-text-primary);
-    margin: 0;
+    color: #0f172a;
 }
 
 .pg-upload-close {
-    background: transparent;
+    background: #f1f5f9;
     border: none;
     cursor: pointer;
-    padding: 8px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-secondary);
-    transition: background 0.2s;
+    color: #64748b;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pg-upload-close:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--color-text-primary);
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: rotate(90deg);
 }
 
-/* Main Container - Two Column Grid - Standard Sidebar Layout */
-/* Main Container - Two Column Grid - Standard Sidebar Layout */
+/* Container Layout */
 .pg-upload-container {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 440px;
-    /* Matches PhotoDetail: Flexible Main + 440px Sidebar */
-    gap: 48px;
-    overflow: hidden;
-    padding: 32px 64px;
-    max-width: 1200px;
-    /* MATCHED: PhotoDetail.css line 21 */
-    margin: 0 auto;
-    height: calc(100vh - 64px);
-    min-height: 0;
+    grid-template-columns: 360px 1fr;
+    gap: 0;
+    height: calc(100vh - 72px);
 }
 
-/* Main Content Area (Left Column) */
+/* Sidebar Styling */
 .pg-upload-main {
-    background: transparent;
-    padding: 0;
-    overflow-y: hidden;
+    background: white;
+    padding: 32px;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     gap: 32px;
-    /* More air between card and dropzone */
-    height: 100%;
+    overflow-y: auto;
+    z-index: 5;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02);
 }
 
-/* Card Styling (Shared) */
-.pg-upload-card,
-.pg-upload-queue {
-    background: white;
-    border-radius: 24px;
-    /* Matches PhotoDetail.css line 19/94 */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--color-border);
-    padding: 32px;
-    /* Match airy sidebar padding */
+.pg-upload-card {
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
-}
-
-/* Flexible Dropzone Card */
-.pg-upload-card.dropzone-card {
-    flex: 1;
-    min-height: 0;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Form Layouts within Cards */
-.pg-form-row {
-    display: flex;
-    flex-direction: column;
-    /* Stacked for full width */
     gap: 20px;
-    /* Balanced gap */
-    width: 100%;
 }
 
-/* Form Elements - Premium Aesthetic */
+.pg-upload-eyebrow {
+    font-size: 0.625rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+/* Truncation for ModernDropdown in Sidebar */
+.pg-upload-main .modern-dropdown .trigger-label {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+/* Form Styling */
 .pg-form-field {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    width: 100%;
+    gap: 10px;
 }
 
 .pg-field-label {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--color-text-primary);
-    /* Match .detail-quality-selector label */
+    color: #334155;
+    margin-left: 2px;
 }
 
-/* Unified Input Style - 48px (Matches inspiration dropdown) */
-.pg-input,
-.pg-batch-input,
-.pg-price-input {
-    width: 100%;
-    height: 48px;
-    /* MATCHED: PhotoDetail.css line 127 */
-    padding: 0 20px;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: var(--radius-md, 12px);
-    font-size: 0.95rem;
-    color: var(--color-text-primary);
-    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+.pg-field-footnote {
+    font-size: 0.725rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    margin-top: 10px;
+    margin-left: 2px;
 }
 
-.pg-input:focus,
-.pg-batch-input:focus,
-.pg-price-input:focus {
-    outline: none;
-    background: #fff;
-    border-color: var(--color-brand-primary);
-    box-shadow: 0 0 0 3px var(--color-brand-tint);
-}
-
-/* Override ModernDropdown within Upload Page - 48px Style */
-.pg-upload-main .modern-dropdown .dropdown-trigger {
-    height: 48px !important;
-    min-height: 48px !important;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 12px;
-    box-shadow: none;
-    padding: 0 20px;
-    font-size: 0.95rem;
+/* Batch Chips Alignment */
+.pg-batch-pills-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* Fix for icons inside dropdown trigger to align properly */
-.pg-upload-main .modern-dropdown .trigger-content {
-    display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
-.pg-upload-main .modern-dropdown .trigger-label {
-    margin: 0;
-    line-height: 1;
-}
-
-.pg-upload-main .modern-dropdown .dropdown-trigger:hover {
-    background: #f0f1f3;
-}
-
-.pg-upload-main .modern-dropdown.open .dropdown-trigger {
-    background: #fff;
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
-}
-
-/* Override CreatableCombobox within Upload Page - Match Premium 48px Style */
-.pg-upload-main .creatable-combobox .combobox-input {
-    height: 48px !important;
-    min-height: 48px !important;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 12px;
-    box-shadow: none;
-    padding: 0 40px 0 20px;
-    font-size: 0.95rem;
-}
-
-.pg-upload-main .creatable-combobox .combobox-input:focus {
-    background: #fff;
-    border-color: var(--color-brand-primary);
-    box-shadow: 0 0 0 3px var(--color-brand-tint);
-}
-
-.pg-upload-main .creatable-combobox .combobox-trigger {
-    right: 12px;
-}
-
-
-.pg-field-hint {
-    font-size: 0.75rem;
-    color: var(--color-text-tertiary);
-    margin-top: 4px;
-}
-
-/* Card Divider - Subtle separator within unified card */
-.pg-card-divider {
-    height: 1px;
-    background: var(--color-border);
-    margin: 24px 0;
-}
-
-/* Drop Zone Card Styling - Flexible */
-.pg-drop-zone {
-    width: 100%;
-    height: 100%;
-    min-height: 180px;
-    border: 2px dashed #e2e4e7;
-    border-radius: 12px;
-    background: #fafafa;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
+.pg-batch-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    /* Pill shape */
+    font-size: 0.8125rem;
+    font-weight: 500;
+    background: #f1f5f9;
+    border: 1px solid transparent;
+    color: #475569;
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.pg-drop-zone:hover {
-    background: #f4f5f7;
-    border-color: #d0d3d6;
-}
-
-.pg-drop-zone.is-dragging {
-    border-color: #000;
-    background: #f9f9fb;
-    transform: scale(1.005);
-}
-
-.drop-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    pointer-events: none;
-}
-
-.drop-content-wrapper button {
-    pointer-events: auto;
-}
-
-.drop-icon-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text-primary);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-}
-
-.drop-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0;
-}
-
-.drop-text {
-    font-size: 0.8125rem;
-    color: var(--color-text-secondary);
-    margin: 0;
-}
-
-/* Status Banner (Compact) */
-.pg-upload-status {
-    width: 100%;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 12px;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-}
-
-/* Queue Sidebar specific overrides */
-.pg-upload-queue {
-    border-left: 1px solid #e5e5e5;
-    /* In case border is wanted */
-    padding: 0;
-    background: white;
-    height: 100%;
-    max-height: 100%;
-}
-
-.queue-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    background: white;
-}
-
-.queue-title {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.queue-list {
-    padding: 16px 32px 32px;
-    background: white;
-    flex: 1;
-    overflow-y: auto;
-}
-
-/* Simplified Queue Empty State - Subtle text only */
-.queue-empty-simple {
-    padding: 32px 16px;
-    text-align: center;
-}
-
-.queue-empty-text {
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-    font-weight: 400;
-}
-
-.queue-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 8px;
-    margin-bottom: 8px;
     transition: all 0.2s;
 }
 
-.queue-item:hover {
-    border-color: #e5e5e5;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+.pg-batch-pill:hover {
+    background: #e2e8f0;
+    color: #0f172a;
 }
 
-.queue-info {
+.pg-batch-pill.active {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pg-batch-pill.new-batch-pill {
+    background: transparent;
+    border: 1px dashed #cbd5e1;
+    color: #64748b;
+}
+
+.pg-batch-pill.new-batch-pill:hover {
+    border-color: var(--color-brand-primary);
+    color: var(--color-brand-primary);
+    background: var(--color-brand-tint, rgba(59, 130, 246, 0.05));
+}
+
+/* Stage Area - Uploading Canvas */
+.pg-upload-card.dropzone-card {
+    background: transparent;
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+/* Drop Zone - High Impact */
+.pg-drop-zone {
+    width: 100%;
+    min-height: 240px;
+    background: white;
+    border: 2px dashed #e2e8f0;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.pg-drop-zone:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.06);
+}
+
+.pg-drop-zone.is-dragging {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    border-style: solid;
+    transform: scale(1.02);
+}
+
+.drop-icon-circle {
+    width: 64px;
+    height: 64px;
+    background: #eff6ff;
+    color: #3b82f6;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.pg-drop-zone:hover .drop-icon-circle {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.drop-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+}
+
+.drop-text {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 24px 0;
+}
+
+.drop-hint {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Sidebar Drop Zone Variant */
+.sidebar-dropzone-wrapper {
+    margin-top: auto;
+    /* Push it down if space allows */
+}
+
+.pg-drop-zone.sidebar-variant {
+    min-height: 200px;
+    /* Increased for 'one step bigger' feel */
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 24px;
+    padding: 32px;
+}
+
+.pg-drop-zone.sidebar-variant:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.drop-title-sm {
+    font-size: 1.125rem;
+    /* One step bigger */
+    font-weight: 700;
+    color: #334155;
+    margin-top: 16px;
+}
+
+.drop-text-xs {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.drop-footer-note {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+/* Main Stage Area */
+.pg-upload-stage {
     flex: 1;
-    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    background: transparent;
+}
+
+.pg-stage-scroll-area {
+    height: 100%;
+    padding: 40px 60px;
+    overflow-y: auto;
+}
+
+/* Grid Queue - Modern Standard */
+.pg-upload-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.pg-upload-queue-column {
+    margin-top: 8px;
+}
+
+
+/* 5-Column Photo Grid */
+.queue-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 columns as requested */
+    gap: 20px;
+    padding-bottom: 140px;
+}
+
+.queue-item {
+    position: relative;
+    aspect-ratio: 1;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+}
+
+.queue-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.queue-thumb {
+    width: 100%;
+    height: 100%;
+}
+
+.queue-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Overlay Info */
+/* Overlay Info */
+.queue-info {
+    position: absolute;
+    inset: 0;
+    /* More subtle gradient for readability without being too heavy */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
+    opacity: 1;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    /* Let clicks pass through if needed */
+}
+
+.queue-item:has(.queue-check) .queue-info {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 100%);
 }
 
 .queue-filename {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--color-text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 6px;
 }
 
-/* Gradient Progress Bar */
 .queue-progress {
     height: 4px;
-    background: #f0f0f0;
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 4px;
     overflow: hidden;
+    backdrop-filter: blur(4px);
 }
 
 .queue-bar {
     height: 100%;
-    background: linear-gradient(90deg, #8b5cf6, #f97316);
-    transition: width 0.3s ease;
+    background: #3b82f6;
+    /* Modern Blue */
+    transition: width 0.3s;
 }
 
-.queue-bar.completed {
-    background: #10b981;
+/* Theme Aligned Check Mark */
+.queue-check-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    transition: opacity 0.2s;
 }
 
-/* Status Button Overrides */
-.btn-status-cancel {
-    border-color: #000 !important;
-    color: #000 !important;
+.queue-item:hover .queue-check-wrapper {
+    opacity: 0;
+    /* Hide check on hover to show delete */
 }
 
-.btn-status-view {
-    background: #000 !important;
+.queue-check {
+    color: #1b3aec;
+    /* Brand Blue */
+}
+
+/* Delete Button */
+.queue-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #ef4444;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.queue-item:hover .queue-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.queue-delete-btn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    transform: scale(1.1);
+}
+
+/* Empty State */
+.pg-queue-empty-state {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.empty-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    background: #f1f5f9;
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: #cbd5e1;
+}
+
+.pg-queue-empty-state h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.pg-queue-empty-state p {
+    font-size: 0.875rem;
+    max-width: 320px;
+    line-height: 1.6;
+}
+
+/* Floating Action Pill - Theme Aligned (Light Variant) */
+.pg-upload-bottom-bar-wrapper {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: center;
+    z-index: 50;
+    pointer-events: none;
+    transform: none;
+    /* Reset specific transform */
+}
+
+.pg-upload-bottom-bar {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 8px 8px 8px 24px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+    pointer-events: auto;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pg-upload-bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pg-upload-bottom-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #444;
+    /* Matched to StickyActionBar content color */
+}
+
+.pg-upload-bottom-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.pg-upload-clear-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    /* Slate-500 for better visibility on white */
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.pg-upload-clear-btn:hover {
+    color: #0f172a;
+}
+
+.pg-upload-done-btn {
+    background: #1b3aec;
+    /* Brand Blue */
+    color: white;
+    padding: 12px 36px;
+    border-radius: 999px;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(27, 58, 236, 0.3);
+}
+
+.pg-upload-done-btn:hover {
+    background: #2563eb;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 8px 20px rgba(27, 58, 236, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .queue-list {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1000px) {
+    .pg-upload-container {
+        grid-template-columns: 1fr;
+    }
+
+    .pg-upload-main {
+        display: none;
+        /* Mobile logic can be added later */
+    }
+
+    .pg-upload-bottom-bar-wrapper {
+        transform: translateX(-50%);
+        bottom: 24px;
+    }
+
+    .queue-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Batch Editor - Premium Pill UI */
+.pg-batch-inline-editor {
+    margin-top: 12px;
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    animation: slideDown 0.3s ease-out;
+}
+
+.pg-batch-editor-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pg-batch-input {
+    flex: 1;
+    height: 40px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px !important;
+    /* Perfect Pill */
+    padding: 0 16px !important;
+    font-size: 0.8125rem !important;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.pg-batch-input:focus {
+    border-color: #1b3aec;
+    box-shadow: 0 0 0 3px rgba(27, 58, 236, 0.1);
+}
+
+.pg-batch-inline-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.pg-batch-icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #64748b;
+    padding: 0;
+}
+
+.pg-batch-icon-btn.confirm:hover {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.pg-batch-icon-btn.cancel:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #ef4444;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Shared Action Buttons */
+.pg-modal-btn {
+    height: 42px !important;
+    padding: 0 24px !important;
+    border-radius: 999px !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1) !important;
+    border: none !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    font-family: inherit !important;
+    position: relative !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: 100px !important;
+}
+
+.pg-modal-btn.primary {
+    background: #1B3AEC !important;
     color: #fff !important;
+    box-shadow: 0 4px 12px rgba(27, 58, 236, 0.25) !important;
+}
+
+.pg-modal-btn.primary:hover {
+    background: #152dc4 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(27, 58, 236, 0.35) !important;
+}
+
+.pg-modal-btn.secondary {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    box-shadow: none !important;
+}
+
+.pg-modal-btn.secondary:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #1e293b !important;
+}
+
+/* Modal Overlay */
+.pg-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+}
+
+.pg-modal-card {
+    background: #fff !important;
+    width: 400px !important;
+    max-width: 90vw !important;
+    padding: 24px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1) !important;
+    animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    position: relative !important;
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.pg-modal-body {
+    margin-bottom: 24px;
+}
+
+.pg-modal-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 24px !important;
+}
+
+.pg-modal-btn.destructive {
+    background: #ef4444 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
+    border: none !important;
+}
+
+.pg-modal-btn.destructive:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35) !important;
 }

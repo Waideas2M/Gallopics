@@ -3,6 +3,8 @@ import { X, Camera, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './AuthModal.css'; // Keep for shared input styles
 import './EditProfileModal.css'; // New layout styles
+import './Modal.css';
+import { ModernDropdown } from './ModernDropdown';
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -21,6 +23,26 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
     const [phoneNumber, setPhoneNumber] = useState('');
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+    // Options
+    const countryOptions = [
+        { label: 'Sweden', value: 'Sweden', icon: '🇸🇪' },
+        { label: 'Norway', value: 'Norway', icon: '🇳🇴' },
+        { label: 'Denmark', value: 'Denmark', icon: '🇩🇰' },
+        { label: 'Finland', value: 'Finland', icon: '🇫🇮' },
+        { label: 'United States', value: 'United States', icon: '🇺🇸' },
+        { label: 'United Kingdom', value: 'United Kingdom', icon: '🇬🇧' },
+        { label: 'Germany', value: 'Germany', icon: '🇩🇪' },
+    ];
+
+    const phoneCodeOptions = [
+        { label: '+46', value: '+46' },
+        { label: '+45', value: '+45' },
+        { label: '+47', value: '+47' },
+        { label: '+358', value: '+358' },
+        { label: '+1', value: '+1' },
+        { label: '+44', value: '+44' },
+    ];
 
     // Initialize/Reset state when modal opens
     useEffect(() => {
@@ -87,7 +109,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                 aria-modal="true"
             >
                 {/* 1. Header (Sticky) */}
-                <div className="edit-profile-header">
+                <div className="modal-header-standard">
                     <h2 className="edit-profile-title">Edit Profile</h2>
                     <button className="edit-profile-close" onClick={onClose} aria-label="Close modal">
                         <X size={20} />
@@ -95,7 +117,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                 </div>
 
                 {/* 2. Body (Scrollable) */}
-                <div className="edit-profile-body">
+                <div className="modal-body-standard">
 
                     {/* A) Avatar Section */}
                     <div className="edit-profile-avatar-row">
@@ -138,58 +160,51 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                             {errors.displayName && <span className="auth-error-msg">{errors.displayName}</span>}
                         </div>
 
-                        {/* Country (Left) */}
-                        <div>
-                            <label className="edit-profile-label">Country</label>
-                            <select
-                                className={`auth-select ${errors.country ? 'error' : ''}`}
-                                value={country}
-                                onChange={(e) => setCountry(e.target.value)}
-                            >
-                                <option value="Sweden">Sweden</option>
-                                <option value="Norway">Norway</option>
-                                <option value="Denmark">Denmark</option>
-                                <option value="Finland">Finland</option>
-                                <option value="United States">United States</option>
-                                <option value="United Kingdom">United Kingdom</option>
-                                <option value="Germany">Germany</option>
-                            </select>
-                        </div>
-
-                        {/* City (Right) */}
-                        <div>
-                            <label className="edit-profile-label">City</label>
-                            <input
-                                type="text"
-                                className={`auth-input ${errors.city ? 'error' : ''}`}
-                                value={city}
-                                onChange={(e) => {
-                                    setCity(e.target.value);
-                                    if (errors.city) setErrors({ ...errors, city: '' });
-                                }}
-                                placeholder="e.g. Stockholm"
-                            />
-                            {errors.city && <span className="auth-error-msg">{errors.city}</span>}
-                        </div>
-
-                        {/* Mobile Number (Full Width) */}
-                        <div className="edit-profile-full-width">
-                            <label className="edit-profile-label">Mobile Number (Optional)</label>
-                            <div style={{ display: 'flex', gap: '12px' }}>
+                        {/* Location Row (2 col) */}
+                        <div className="edit-profile-full-width edit-profile-row-2col">
+                            <div>
+                                <label className="edit-profile-label">Country</label>
+                                <ModernDropdown
+                                    value={country}
+                                    options={countryOptions}
+                                    onChange={setCountry}
+                                />
+                            </div>
+                            <div>
+                                <label className="edit-profile-label">City</label>
                                 <input
                                     type="text"
-                                    className="auth-input"
-                                    value={phoneCode}
-                                    onChange={(e) => setPhoneCode(e.target.value)}
-                                    style={{ width: '80px', textAlign: 'center', background: '#f9f9f9', color: '#111' }}
+                                    className={`auth-input ${errors.city ? 'error' : ''}`}
+                                    value={city}
+                                    onChange={(e) => {
+                                        setCity(e.target.value);
+                                        if (errors.city) setErrors({ ...errors, city: '' });
+                                    }}
+                                    placeholder="e.g. Stockholm"
                                 />
+                                {errors.city && <span className="auth-error-msg">{errors.city}</span>}
+                            </div>
+                        </div>
+
+                        {/* Mobile Number Row (2 col) */}
+                        <div className="edit-profile-full-width edit-profile-row-2col" style={{ gridTemplateColumns: '100px 1fr' }}>
+                            <div>
+                                <label className="edit-profile-label">Code</label>
+                                <ModernDropdown
+                                    value={phoneCode}
+                                    options={phoneCodeOptions}
+                                    onChange={setPhoneCode}
+                                />
+                            </div>
+                            <div>
+                                <label className="edit-profile-label">Mobile Number (Optional)</label>
                                 <input
                                     type="tel"
                                     className="auth-input"
                                     placeholder="70 123 45 67"
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
-                                    style={{ flex: 1 }}
+                                    style={{ width: '100%' }}
                                 />
                             </div>
                         </div>
@@ -198,7 +213,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                 </div>
 
                 {/* 3. Footer (Sticky) */}
-                <div className="edit-profile-footer">
+                <div className="modal-footer-actions">
                     <button className="edit-profile-btn-cancel" onClick={onClose}>
                         Cancel
                     </button>

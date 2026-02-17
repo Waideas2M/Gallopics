@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Share2, MoreHorizontal } from 'lucide-react';
 import './HeaderActions.css';
 
@@ -14,26 +15,60 @@ interface MoreMenuProps {
 
 export const MoreMenu: React.FC<MoreMenuProps> = ({ actions }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [coords, setCoords] = useState({ top: 0, left: 0 });
+    const triggerRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const updateCoords = () => {
+        if (triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setCoords({
+                top: rect.bottom + window.scrollY + 8,
+                left: rect.right + window.scrollX - 200 // Menu width is 200px
+            });
+        }
+    };
+
+    useLayoutEffect(() => {
+        if (isOpen) {
+            updateCoords();
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            if (
+                triggerRef.current && !triggerRef.current.contains(target) &&
+                menuRef.current && !menuRef.current.contains(target)
+            ) {
                 setIsOpen(false);
             }
         };
 
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setIsOpen(false);
+        };
+
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEscape);
+            window.addEventListener('resize', updateCoords);
+            window.addEventListener('scroll', updateCoords, true);
         }
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscape);
+            window.removeEventListener('resize', updateCoords);
+            window.removeEventListener('scroll', updateCoords, true);
         };
     }, [isOpen]);
 
     return (
-        <div className="header-action-more-wrapper" ref={menuRef}>
+        <div className="header-action-more-wrapper">
             <button
+                ref={triggerRef}
                 className={`share-icon-btn ${isOpen ? 'active' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
                 title="More actions"
@@ -41,8 +76,18 @@ export const MoreMenu: React.FC<MoreMenuProps> = ({ actions }) => {
                 <MoreHorizontal size={20} />
             </button>
 
-            {isOpen && (
-                <div className="header-action-dropdown">
+            {isOpen && createPortal(
+                <div
+                    className="header-action-dropdown is-portal"
+                    ref={menuRef}
+                    style={{
+                        position: 'absolute',
+                        top: coords.top,
+                        left: coords.left,
+                        zIndex: 10000,
+                        margin: 0 // Clear any default margins
+                    }}
+                >
                     {actions.map((action, index) => (
                         <button
                             key={index}
@@ -55,7 +100,8 @@ export const MoreMenu: React.FC<MoreMenuProps> = ({ actions }) => {
                             {action.label}
                         </button>
                     ))}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

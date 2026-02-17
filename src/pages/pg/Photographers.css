@@ -1,0 +1,344 @@
+/* Photographers.css - Admin Photographers Page Styles */
+
+/* Reuse container styles */
+.pg-photographers-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Filter Bar Layout */
+.pg-photographers-page .filter-container {
+    display: flex;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+/* Grey Section Spacing - Match Guest Flow Header Gap (32px) */
+/* Reset parent padding to avoid double spacing */
+.pg-grey-section {
+    padding-top: 0 !important;
+}
+
+.pg-grey-section-inner {
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+.pg-photographers-page .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+}
+
+.pg-photographers-page .search-group {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+.pg-photographers-page .filter-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto !important;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* Table Styles - Matching Sales Grid */
+.pg-photographers-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: fixed;
+}
+
+.pg-photographers-table th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    /* Matched Sales Grid */
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pg-photographers-table td {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pg-photographers-table tr:hover td {
+    background: #fff;
+    /* Keep white on hover for cleaner look */
+}
+
+.pg-photographers-table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Column Widths */
+.col-chevron {
+    width: 48px;
+    text-align: center;
+    padding: 0 !important;
+}
+
+.col-name {
+    width: 30%;
+}
+
+.col-events {
+    width: 10%;
+    text-align: right;
+}
+
+.col-revenue {
+    width: 15%;
+    text-align: right;
+}
+
+.col-published {
+    width: 10%;
+    text-align: right;
+}
+
+.col-sold {
+    width: 10%;
+    text-align: right;
+}
+
+.col-status {
+    width: 120px;
+    text-align: center;
+}
+
+.col-actions {
+    width: 80px;
+    text-align: right;
+}
+
+/* Text Alignment Helpers */
+.text-right {
+    text-align: right;
+}
+
+/* Sub-table (Expanded Row) - DIRECT CHILD ONLY */
+.pg-sub-table-row>td {
+    background: #f8fafc;
+    padding: 0 !important;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* Reduced outer padding (TIGHTER based on review) */
+.pg-sub-table-container {
+    padding: 8px 24px 8px 64px;
+    /* Tighter vertical padding */
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+.pg-sub-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.pg-sub-table th {
+    background: #f1f5f9;
+    padding: 12px 20px;
+    /* Header Left Padding = 20px */
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+}
+
+.pg-sub-table td {
+    padding: 16px 20px;
+    /* Cell Left Padding = 20px to ALIGN with Header */
+    font-size: 0.8125rem;
+    color: #475569;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fff;
+    line-height: 1.6;
+}
+
+.pg-sub-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* User Avatar & Name Stack */
+.pg-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.pg-user-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #cbd5e1;
+    border: 1px solid #e2e8f0;
+}
+
+.pg-user-info-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    overflow: hidden;
+    line-height: 1.2;
+}
+
+.pg-user-link {
+    color: #0f172a;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.3;
+}
+
+.pg-user-link:hover {
+    color: #1B3AEC;
+    text-decoration: underline;
+}
+
+.pg-user-city {
+    font-size: 0.8125rem;
+    color: #64748b;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.pg-user-email {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.3;
+}
+
+/* Status Badge - Refined Green */
+.pg-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.pg-status-badge.available {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.pg-status-badge.unavailable {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+/* Action Buttons - SCORCHED EARTH RESET */
+.pg-action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: transparent !important;
+    /* Force transparent */
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #475569 !important;
+    /* Base visible color (Slate 600) */
+    opacity: 1 !important;
+    position: relative;
+    padding: 0;
+}
+
+/* Ensure SVG inherits color clearly */
+.pg-action-btn svg {
+    display: block;
+    stroke-width: 2px;
+}
+
+/* Expand Button */
+.pg-action-btn.expand {
+    color: #334155 !important;
+    /* Dark Slate 700 */
+}
+
+.pg-action-btn.expand:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    /* Slate 900 */
+}
+
+/* Delete Button - Circular Style like Sales Page */
+.pg-action-btn.delete {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #f1f5f9 !important;
+    background: #fff !important;
+    color: #64748b !important;
+    /* Visible grey */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+}
+
+.pg-action-btn.delete:hover {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    border-color: #fecaca !important;
+}
+
+/* Ensure SVG inside is centered and sized correctly */
+.pg-action-btn.delete svg {
+    width: 16px;
+    height: 16px;
+}

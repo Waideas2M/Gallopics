@@ -1,0 +1,568 @@
+/* SoldPhotos.css - Scoped styles for the Sales page */
+
+.pg-trend-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.pg-trend-header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.pg-trend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Removed pg-trend-header-left and right to use pg-trend-row */
+
+.pg-trend-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111;
+    margin-right: 12px;
+}
+
+.pg-trend-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.pg-trend-chart {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    padding-bottom: 24px;
+    /* Space for labels */
+    position: relative;
+    border-bottom: none;
+}
+
+.pg-chart-bar-wrapper {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+}
+
+.pg-chart-bar-total {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.pg-chart-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    cursor: default;
+}
+
+.pg-chart-bar:hover {
+    transform: scaleX(1.1);
+    z-index: 2;
+}
+
+.pg-bar-segment {
+    width: 100%;
+    transition: height 0.3s ease;
+}
+
+.pg-chart-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    position: absolute;
+    bottom: -24px;
+    white-space: nowrap;
+}
+
+/* Legend */
+.pg-trend-legend {
+    display: flex;
+    gap: 16px;
+}
+
+.pg-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.pg-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+/* Modern Stat Compact Pills */
+.pg-trend-stats-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-trend-stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #f8fafc;
+    border-radius: 99px;
+    border: 1px solid #f1f5f9;
+    white-space: nowrap;
+}
+
+.pg-trend-stat-pill .label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.pg-trend-stat-pill .value {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #111;
+}
+
+/* Tooltip */
+.pg-chart-tooltip {
+    position: absolute;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f1f5f9;
+    z-index: 100;
+    pointer-events: none;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tooltip-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #111;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8125rem;
+}
+
+.tooltip-row .label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+}
+
+.tooltip-row .value {
+    font-weight: 600;
+    color: #111;
+}
+
+.tooltip-footer {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* Filter Bar Layout Refinement */
+.pg-sold-photos .filter-container {
+    display: flex;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.pg-sold-photos .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+}
+
+.pg-sold-photos .search-group {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+.pg-sold-photos .pg-sales-filter-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto !important;
+    white-space: nowrap;
+}
+
+/* View Switcher */
+.pg-view-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pg-view-separator {
+    width: 1px;
+    height: 24px;
+    background: #e2e8f0;
+}
+
+.pg-view-switcher {
+    display: flex;
+    background: #f1f5f9;
+    padding: 2px;
+    border-radius: 8px;
+}
+
+.pg-view-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pg-view-btn.active {
+    background: #fff;
+    color: #111;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid View Table */
+.pg-grid-view-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.pg-sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: fixed;
+    /* Essential for fluid horizontal truncation */
+}
+
+.pg-sales-table th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Specific column sizing for fluid layout */
+.pg-sales-table th:nth-child(1) {
+    width: 72px;
+}
+
+/* Photo */
+.pg-sales-table th:nth-child(2) {
+    width: 15%;
+}
+
+/* Photo ID */
+.pg-sales-table th:nth-child(3) {
+    width: 12%;
+}
+
+/* Date/Time */
+.pg-sales-table th:nth-child(4) {
+    width: 15%;
+}
+
+/* Event */
+.pg-sales-table th:nth-child(5) {
+    width: 18%;
+}
+
+/* Client Info */
+.pg-sales-table th:nth-child(6) {
+    width: 12%;
+}
+
+/* Bundle */
+.pg-sales-table th:nth-child(7) {
+    width: 80px;
+}
+
+/* Count */
+.pg-sales-table th:nth-child(8) {
+    width: 15%;
+}
+
+/* Download Link */
+.pg-sales-table th:nth-child(9) {
+    width: 100px;
+}
+
+/* Actions */
+
+.pg-sales-table td {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pg-sales-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pg-sales-table tr:hover td {
+    background: #f8fafc;
+}
+
+.pg-table-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pg-bundle-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.pg-bundle-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Scoped Table Links & Actions */
+.pg-sold-photos .pg-download-link {
+    color: #1B3AEC;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pg-sold-photos .truncate-cell-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+}
+
+.pg-sold-photos .pg-table-event-link {
+    color: #1B3AEC;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.pg-sold-photos .pg-table-event-link:hover {
+    text-decoration: underline;
+}
+
+.pg-sold-photos .pg-table-action-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #f1f5f9;
+    background: #fff;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pg-sold-photos .pg-table-action-icon.delete-action:hover {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    border-color: #fecaca !important;
+}
+
+/* Scoped Overrides for PhotoCard */
+.pg-sold-photos .pg-selection-overlay {
+    display: none !important;
+}
+
+/* Sold Count Badge */
+.pg-sold-badge {
+    padding: 2px 6px;
+    background: #ecfdf5;
+    /* Subtle green bg */
+    border: 1px solid #d1fae5;
+    color: #059669;
+    /* Green text */
+    font-size: 0.6875rem;
+    font-weight: 700;
+    border-radius: 4px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.pg-sold-badge:hover {
+    background: #d1fae5;
+    border-color: #a7f3d0;
+}
+
+.pg-photo-card-wrapper {
+    cursor: pointer;
+}
+
+/* Separator Style */
+.pg-section-separator {
+    width: 100%;
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 0 0 32px 0;
+    display: block;
+}
+
+/* Grey Section Spacing - Match Guest Flow Header Gap (32px) */
+/* Reset parent padding to avoid double spacing */
+.pg-grey-section {
+    padding-top: 0 !important;
+}
+
+.pg-grey-section-inner {
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+/* Badges Area (Shared with PG Flow/Event Detail) */
+.pg-stats-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pg-badge-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pg-badge-item.published {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.pg-badge-item.published .label {
+    opacity: 0.7;
+}
+
+.pg-badge-item.published .count,
+.pg-badge-item.published .value {
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.pg-badge-item.sales {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.pg-badge-item.sales .label {
+    opacity: 0.8;
+}
+
+.pg-badge-item.earnings {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.pg-badge-item.earnings .label {
+    opacity: 0.8;
+}
+
+.pg-badge-item.earnings .value {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+/* Stacked Variant Styles */
+.pg-badge-item.stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    padding: 6px 14px;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.pg-badge-item.stacked .label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0;
+    text-transform: none;
+    letter-spacing: normal;
+    opacity: 0.8;
+}
+
+.pg-badge-item.stacked .count,
+.pg-badge-item.stacked .value {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.2;
+}

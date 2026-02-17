@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { usePhotographer } from '../../context/PhotographerContext';
-import { UploadCloud, CheckCircle, X } from 'lucide-react';
-import { Button } from '../../components/Button';
+import { UploadCloud, CheckCircle, X, Check, AlertCircle, Trash2 } from 'lucide-react';
 import { ModernDropdown } from '../../components/ModernDropdown';
-import { CreatableCombobox } from '../../components/CreatableCombobox';
+import { useWorkspace } from '../../context/WorkspaceContext';
 import './UploadPage.css';
 
 export const UploadPage: React.FC = () => {
@@ -15,15 +14,19 @@ export const UploadPage: React.FC = () => {
         startUpload,
         uploadSessions,
         clearUploadSession,
+        removeUploadFile,
         setCurrentUploadEventId
     } = usePhotographer();
+    const { basePath } = useWorkspace();
 
     // Local State
     const urlEventId = searchParams.get('eventId');
     const [selectedEventId, setSelectedEventId] = useState<string>(urlEventId || '');
-    const [selectedBatch, setSelectedBatch] = useState<string>('');
-    const [existingBatches, setExistingBatches] = useState(['random', 'day 3', 'misc', 'others']);
+    const [selectedBatch, setSelectedBatch] = useState<string>('Random');
+    const [existingBatches, setExistingBatches] = useState(['Random', 'Misc', 'Uncategorised']);
+    const [isCreatingBatch, setIsCreatingBatch] = useState(false);
     const [isDragActive, setIsDragActive] = useState(false);
+    const [confirmClearOpen, setConfirmClearOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Initial Event Selection Logic
@@ -48,8 +51,13 @@ export const UploadPage: React.FC = () => {
     const files = session?.files || [];
     const hasFiles = files.length > 0;
 
-    // Options for Dropdowns
-    const eventOptions = events.map(e => ({ label: e.title, value: e.id }));
+
+
+    // Options for Dropdowns (compact event names only)
+    const eventOptions = events.map(e => ({
+        label: e.title,
+        value: e.id
+    }));
 
     // Handlers
     const handleClose = () => {
@@ -58,16 +66,16 @@ export const UploadPage: React.FC = () => {
 
         if (from === 'event' && urlEventId) {
             // Explicitly go back to the event we came from
-            navigate(`/pg/events/${urlEventId}`);
+            navigate(`${basePath}/events/${urlEventId}`);
         } else if (from === 'sidebar') {
             // Usually means we came from "anywhere", so events list is a safe home
-            navigate('/pg/events');
+            navigate(`${basePath}/events`);
         } else if (window.history.length > 1) {
             // General fallback: standard back button behavior
             navigate(-1);
         } else {
             // Emergency fallback: events list
-            navigate('/pg/events');
+            navigate(`${basePath}/events`);
         }
     };
 
@@ -96,12 +104,22 @@ export const UploadPage: React.FC = () => {
 
     const handleFiles = (newFiles: File[]) => {
         const validFiles = newFiles.filter(f => f.type.startsWith('image/'));
-        if (validFiles.length > 0) {
-            // Pass the selected batch as classId metadata
-            startUpload(validFiles, { classId: selectedBatch || undefined });
-        } else {
+
+        if (validFiles.length === 0) {
             alert('Please upload image files only.');
+            return;
         }
+
+        const MAX_FILES_PER_UPLOAD = 20;
+        let filesToUpload = validFiles;
+
+        if (validFiles.length > MAX_FILES_PER_UPLOAD) {
+            filesToUpload = validFiles.slice(0, MAX_FILES_PER_UPLOAD);
+            alert(`You can upload up to ${MAX_FILES_PER_UPLOAD} photos at a time. We'll use the first ${MAX_FILES_PER_UPLOAD} files from your selection.`);
+        }
+
+        // Pass the selected batch as classId metadata
+        startUpload(filesToUpload, { classId: selectedBatch || undefined });
     };
 
     const handleBatchChange = (val: string) => {
@@ -114,57 +132,122 @@ export const UploadPage: React.FC = () => {
 
     const handleClearAll = () => {
         if (selectedEventId && hasFiles) {
-            if (confirm("Clear all items from the current queue?")) {
-                clearUploadSession(selectedEventId);
-            }
+            setConfirmClearOpen(true);
         }
     };
 
-    const handleViewPhotos = () => selectedEventId && navigate(`/pg/events/${selectedEventId}`);
+    const handleConfirmClear = () => {
+        if (selectedEventId) {
+            clearUploadSession(selectedEventId);
+            setConfirmClearOpen(false);
+        }
+    };
+
+    const handleViewPhotos = () => selectedEventId && navigate(`${basePath}/events/${selectedEventId}`);
 
     return (
         <div className="pg-upload-page">
             {/* Header */}
-            <div className="pg-upload-header">
-                <h1 className="pg-upload-title">Upload photos</h1>
-                <button className="pg-upload-close" onClick={handleClose}>
+            <header className="pg-upload-header">
+                <div className="pg-upload-title">Upload photos</div>
+                <button className="pg-upload-close" onClick={handleClose} aria-label="Close upload">
                     <X size={20} />
                 </button>
-            </div>
+            </header>
 
-            {/* Main Content Area - 2 Columns */}
             <div className="pg-upload-container">
-                {/* Left Column - Forms & Drop Zone */}
-                <main className="pg-upload-main">
-
-                    {/* Simplified Card: Event & Batch Only */}
+                {/* Sidebar - Configuration & Drop Zone */}
+                <aside className="pg-upload-main">
                     <div className="pg-upload-card">
-                        <div className="pg-form-row">
-                            <div className="pg-form-field">
-                                <label className="pg-field-label">Event*</label>
-                                <ModernDropdown
-                                    value={selectedEventId}
-                                    options={eventOptions}
-                                    onChange={(val) => setSelectedEventId(val)}
-                                    placeholder="Select event"
-                                />
+                        <div className="pg-upload-eyebrow">Event Details</div>
+
+                        <div className="pg-form-field">
+                            <label className="pg-field-label">Target Event</label>
+                            <ModernDropdown
+                                value={selectedEventId}
+                                options={eventOptions}
+                                onChange={(val) => setSelectedEventId(val)}
+                                placeholder="Select event"
+                                showSearch
+                                searchPlaceholder="Search events..."
+                                variant="pill"
+                            />
+                        </div>
+
+                        <div className="pg-form-field">
+                            <label className="pg-field-label">Batch</label>
+                            <div className="pg-batch-pills-row">
+                                {existingBatches.slice(0, 5).map(batch => (
+                                    <button
+                                        key={batch}
+                                        type="button"
+                                        className={`pg-batch-pill ${selectedBatch === batch ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setSelectedBatch(batch);
+                                            setIsCreatingBatch(false);
+                                        }}
+                                    >
+                                        {batch}
+                                    </button>
+                                ))}
+                                <button
+                                    type="button"
+                                    className={`pg-batch-pill new-batch-pill ${isCreatingBatch ? 'active' : ''}`}
+                                    onClick={() => setIsCreatingBatch(true)}
+                                >
+                                    + Add New
+                                </button>
                             </div>
-                            <div className="pg-form-field">
-                                <label className="pg-field-label">Batch (optional)</label>
-                                <CreatableCombobox
-                                    value={selectedBatch}
-                                    options={existingBatches}
-                                    onChange={handleBatchChange}
-                                    placeholder="Choose or create batch…"
-                                />
+
+                            <div className="pg-field-footnote">
+                                Use batches to organize your uploads, such as by prize giving, specific rider sets, or by classes and disciplines.
                             </div>
+
+                            {isCreatingBatch && (
+                                <div className="pg-batch-inline-editor">
+                                    <div className="pg-batch-editor-content">
+                                        <input
+                                            type="text"
+                                            className="pg-batch-input"
+                                            value={selectedBatch}
+                                            autoFocus
+                                            onChange={(e) => handleBatchChange(e.target.value)}
+                                            placeholder="E.g. Prize giving"
+                                        />
+                                        <div className="pg-batch-inline-actions">
+                                            <button
+                                                type="button"
+                                                className="pg-batch-icon-btn confirm"
+                                                onClick={() => {
+                                                    if (selectedBatch.trim()) {
+                                                        handleBatchChange(selectedBatch.trim());
+                                                        setIsCreatingBatch(false);
+                                                    } else {
+                                                        setIsCreatingBatch(false);
+                                                    }
+                                                }}
+                                            >
+                                                <Check size={14} strokeWidth={3} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="pg-batch-icon-btn cancel"
+                                                onClick={() => setIsCreatingBatch(false)}
+                                            >
+                                                <X size={14} strokeWidth={3} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* Card C: Drop Zone - Flex Fills Remaining Space */}
-                    <div className="pg-upload-card dropzone-card">
+                    {/* Sidebar Drop Zone */}
+                    <div className="pg-upload-card sidebar-dropzone-wrapper">
+                        <div className="pg-upload-eyebrow">Add Photos</div>
                         <div
-                            className={`pg-drop-zone ${isDragActive ? 'is-dragging' : ''}`}
+                            className={`pg-drop-zone sidebar-variant ${isDragActive ? 'is-dragging' : ''}`}
                             onDragEnter={handleDrag}
                             onDragLeave={handleDrag}
                             onDragOver={handleDrag}
@@ -181,69 +264,123 @@ export const UploadPage: React.FC = () => {
                             />
                             <div className="drop-content-wrapper">
                                 <div className="drop-icon-circle">
-                                    <UploadCloud size={28} />
+                                    <UploadCloud size={24} />
                                 </div>
-                                <h2 className="drop-title">Drag & drop photos here</h2>
-                                <p className="drop-text">Supported formats: JPG, PNG</p>
-                                <Button variant="primary" size="medium" onClick={(e) => {
-                                    e.stopPropagation();
-                                    fileInputRef.current?.click();
-                                }}>
-                                    Browse files
-                                </Button>
+                                <div className="drop-title-sm">Click or Drag photos</div>
+                                <div className="drop-footer-note">Maximum 20 photos per upload</div>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Upload Status */}
-                    {hasFiles && (
-                        <div className="pg-upload-status">
-                            <span className="status-count">{files.length} photos ready</span>
-                            <div className="status-actions">
-                                <Button className="btn-status-cancel" variant="secondary" size="medium" onClick={handleClearAll}>
-                                    Cancel
-                                </Button>
-                                <Button className="btn-status-view" variant="primary" size="medium" onClick={handleViewPhotos}>
-                                    View photos
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </main>
-
-                {/* Right Sidebar - Queue Card */}
-                <aside className="pg-upload-queue">
-                    <div className="queue-header">
-                        <span className="queue-title">
-                            In queue ({files.filter(f => f.status === 'completed').length}/{files.length})
-                        </span>
-                    </div>
-                    <div className="queue-list">
-                        {files.length === 0 ? (
-                            <div className="queue-empty-simple">
-                                <span className="queue-empty-text">No files in queue</span>
-                            </div>
-                        ) : (
-                            files.map((item) => (
-                                <div key={item.id} className="queue-item">
-                                    <div className="queue-info">
-                                        <div className="queue-filename">{item.file.name}</div>
-                                        <div className="queue-progress">
-                                            <div
-                                                className={`queue-bar ${item.status === 'completed' ? 'completed' : ''}`}
-                                                style={{ width: `${item.progress}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                    {item.status === 'completed' && (
-                                        <CheckCircle size={16} className="queue-check" />
-                                    )}
-                                </div>
-                            ))
-                        )}
                     </div>
                 </aside>
-            </div>
-        </div>
+
+                {/* Main Stage - Queue Grid Only */}
+                <main className="pg-upload-stage">
+                    <div className="pg-stage-scroll-area">
+                        {hasFiles ? (
+                            <div className="pg-upload-queue-column">
+                                <div className="queue-list">
+                                    {files.map((item) => (
+                                        <div key={item.id} className="queue-item">
+                                            <div className="queue-thumb">
+                                                <img
+                                                    src={URL.createObjectURL(item.file)}
+                                                    alt={item.file.name}
+                                                />
+                                            </div>
+                                            <div className="queue-info">
+                                                <div className="queue-filename">{item.file.name}</div>
+                                                <div className="queue-progress">
+                                                    <div
+                                                        className="queue-bar"
+                                                        style={{ width: `${item.progress}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {item.status === 'completed' && (
+                                                <div className="queue-check-wrapper">
+                                                    <CheckCircle size={20} className="queue-check" />
+                                                </div>
+                                            )}
+
+                                            <button
+                                                className="queue-delete-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (selectedEventId) removeUploadFile(selectedEventId, item.id);
+                                                }}
+                                                title="Remove photo"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="pg-queue-empty-state">
+                                <div className="empty-icon-wrapper">
+                                    <UploadCloud size={48} />
+                                </div>
+                                <h3>Your queue is empty</h3>
+                                <p>Select an event and batch, then drag photos into the sidebar to start uploading.</p>
+                            </div>
+                        )}
+                    </div>
+                </main>
+            </div >
+
+            {/* Floating Action Pill */}
+            {
+                hasFiles && (
+                    <div className="pg-upload-bottom-bar-wrapper">
+                        <div className="pg-upload-bottom-bar">
+                            <div className="pg-upload-bottom-left">
+                                <span className="pg-upload-bottom-label">
+                                    {files.length} Item{files.length === 1 ? '' : 's'}
+                                </span>
+                            </div>
+                            <div className="pg-upload-bottom-actions">
+                                <button className="pg-upload-clear-btn" onClick={handleClearAll}>
+                                    Clear all
+                                </button>
+                                <button
+                                    className="pg-upload-done-btn"
+                                    onClick={handleViewPhotos}
+                                >
+                                    Done
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+            {/* Clear Confirmation Modal */}
+            {
+                confirmClearOpen && (
+                    <div className="pg-modal-overlay">
+                        <div className="pg-modal-card">
+                            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                                <div style={{ minWidth: 40, height: 40, borderRadius: '50%', background: '#FEF2F2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <AlertCircle size={24} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <h3 style={{ marginTop: 0, fontSize: '1.125rem', fontWeight: 700, color: '#111', marginBottom: 8 }}>
+                                        Clear all items?
+                                    </h3>
+                                    <p style={{ margin: '0 0 24px', color: '#666', fontSize: '0.9375rem', lineHeight: 1.5 }}>
+                                        This will remove all photos from the current queue. This action cannot be undone.
+                                    </p>
+                                    <div className="pg-modal-actions">
+                                        <button className="pg-modal-btn secondary" onClick={() => setConfirmClearOpen(false)}>Cancel</button>
+                                        <button className="pg-modal-btn destructive" onClick={handleConfirmClear}>Clear All</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };
+

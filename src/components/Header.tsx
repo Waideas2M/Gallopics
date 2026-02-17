@@ -144,7 +144,7 @@ export const Header: React.FC = () => {
                                             <button
                                                 className="icon-btn workspace-btn"
                                                 aria-label="Workspace"
-                                                onClick={() => navigate('/pg')}
+                                                onClick={() => navigate(user?.role === 'admin' ? '/admin' : '/pg')}
                                                 title="Go to My Studio"
                                             >
                                                 <Camera size={20} />
@@ -170,14 +170,14 @@ export const Header: React.FC = () => {
                                             </div>
                                             <div className="user-details">
                                                 <span className="user-name">{user?.displayName || 'Klara Fors'}</span>
-                                                <span className="user-meta">{user?.city || 'Stockholm'}</span>
+                                                <span className="user-meta">{user?.role === 'admin' ? 'Admin' : (user?.city || 'Stockholm')}</span>
                                             </div>
                                         </button>
 
                                         {isUserMenuOpen && (
                                             <div className="user-menu-dropdown">
                                                 <button className="user-menu-item" onClick={() => { setIsEditProfileModalOpen(true); setIsUserMenuOpen(false); }}>Edit contact</button>
-                                                <button className="user-menu-item" onClick={() => { navigate(`/photographer/${user?.id || 'klara-fors'}`); setIsUserMenuOpen(false); }}>My public profile</button>
+                                                <button className="user-menu-item" onClick={() => { navigate(user?.role === 'admin' ? '/admin/events' : `/photographer/${user?.id || 'klara-fors'}`); setIsUserMenuOpen(false); }}>{user?.role === 'admin' ? 'Admin dashboard' : 'My public profile'}</button>
                                                 <div style={{ height: '1px', background: '#eee', margin: '4px 0' }} />
                                                 <button className="user-menu-item danger" onClick={() => { logout(); setIsUserMenuOpen(false); navigate('/'); }}>Log out</button>
                                             </div>

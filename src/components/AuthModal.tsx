@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Camera, Lock, Monitor, Link, Check } from 'lucide-react';
-import { useAuth, PROTOTYPE_USER } from '../context/AuthContext';
+import { useAuth, PROTOTYPE_USER, ADMIN_USER } from '../context/AuthContext';
 import './AuthModal.css';
 
 const PROTOTYPE_MODE = true;
@@ -24,6 +24,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [copied, setCopied] = useState(false);
     const isMobile = windowWidth < 768;
+
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     // Window Resize Effect
     useEffect(() => {
@@ -170,9 +173,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
 
                 <div className="auth-modal-footer">
-                    <p style={{ fontSize: '0.75rem', color: '#666', lineHeight: '1.4', margin: 0 }}>
+                    <p style={{ fontSize: '0.75rem', color: '#666', lineHeight: '1.4', margin: '0 0 12px 0' }}>
                         By continuing, you agree to our <a href="#" style={{ color: '#1B3AEC', textDecoration: 'underline' }}>Terms</a> and <a href="#" style={{ color: '#1B3AEC', textDecoration: 'underline' }}>Privacy Policy</a>.
                     </p>
+                    <div style={{ paddingTop: '12px', borderTop: '1px solid #f0f0f0', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        <button
+                            onClick={() => {
+                                login({ ...ADMIN_USER, hasCompletedOnboarding: true });
+                                onClose();
+                                navigate('/admin/events');
+                            }}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#64748b',
+                                fontSize: '0.75rem',
+                                textDecoration: 'underline',
+                                cursor: 'pointer',
+                                padding: 0
+                            }}
+                        >
+                            I am Admin
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

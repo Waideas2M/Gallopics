@@ -26,7 +26,6 @@ export const CopyrightBar: React.FC<CopyrightBarProps> = ({ minimal = false, sid
             <div className="copyright-links-row">
                 <a href="#" className="copyright-link" onClick={(e) => e.preventDefault()}>Terms of service</a>
                 <a href="#" className="copyright-link" onClick={(e) => e.preventDefault()}>Privacy policy</a>
-                <a href="#" className="copyright-link" onClick={(e) => e.preventDefault()}>Cookie policy</a>
             </div>
         </div>
     );
