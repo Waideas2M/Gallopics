@@ -19,6 +19,9 @@ const RiderProfile       = lazy(() => import('./pages/RiderProfile').then(m => (
 const HorseProfile       = lazy(() => import('./pages/HorseProfile').then(m => ({ default: m.HorseProfile })));
 const ImageProfile       = lazy(() => import('./pages/ImageProfile').then(m => ({ default: m.ImageProfile })));
 const Cart               = lazy(() => import('./pages/Cart').then(m => ({ default: m.Cart })));
+const FAQPage            = lazy(() => import('./pages/FAQPage').then(m => ({ default: m.FAQPage })));
+const PrivacyPage        = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const TermsPage          = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
 
 // Photographer workspace — lazy loaded
 const EventsList         = lazy(() => import('./pages/pg/EventsList').then(m => ({ default: m.EventsList })));
@@ -57,6 +60,9 @@ function App() {
                   <Route path="/horse/:horseId" element={<HorseProfile />} />
                   <Route path="/photo/:id" element={<ImageProfile />} />
                   <Route path="/cart" element={<Cart />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
                   <Route path="/photographerprofile" element={<PhotographerProfile />} />
 
                   {/* Photographer Workspace (Layout-wrapped) */}
