@@ -5,11 +5,12 @@ interface FooterProps {
     minimal?: boolean;
     sidebar?: boolean;
     isAdmin?: boolean;
+    noLinks?: boolean;
 }
 
-export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false, isAdmin = false }) => {
+export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false, isAdmin = false, noLinks = false }) => {
     if (minimal) {
-        return <CopyrightBar minimal={true} sidebar={sidebar} isAdmin={isAdmin} />;
+        return <CopyrightBar minimal={true} sidebar={sidebar} isAdmin={isAdmin} noLinks={noLinks} />;
     }
 
     return (
@@ -28,7 +29,7 @@ export const Footer: React.FC<FooterProps> = ({ minimal = false, sidebar = false
                         {/* Right Column: Compact Actions (Desktop: Row, Mobile: Stacked) */}
                         <div className="flex items-center gap-6 flex-none max-md:flex-col max-md:gap-6 max-md:w-full md:flex-row">
                             <div className="flex items-center gap-3 max-md:justify-center max-md:w-full md:pt-0">
-                                <a href="#" className="text-[var(--color-text-secondary)] no-underline text-[0.875rem] font-medium transition-[color] duration-150 ease-in-out hover:text-white max-md:hidden" onClick={(e) => e.preventDefault()}>FAQs</a>
+                                <a href="/faq" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] no-underline text-[0.875rem] font-medium transition-[color] duration-150 ease-in-out hover:text-white max-md:hidden">FAQs</a>
                                 <span className="text-[0.4rem] text-[var(--color-text-primary)] max-md:hidden">•</span>
                                 <a href="#" className="text-[var(--color-text-secondary)] no-underline text-[0.875rem] font-medium transition-[color] duration-150 ease-in-out hover:text-white max-md:hidden" onClick={(e) => e.preventDefault()}>Photographers login</a>
                             </div>
