@@ -1,19 +1,10 @@
 # Gallopics — Frontend Migration Plan
 
-## Branch: `V2` — Info Pages (deployed)
+## V2 — Handover brief (2026-03-27)
 
-**Netlify site:** gallopics.netlify.app
-**Netlify site ID:** `812ed9fc-6652-4fdb-b403-9cbaecd62c18`
-**Last deploy:** 2026-03-27 — commit `d5217b8`
+**Branch:** `V2` | **Deployed:** gallopics.netlify.app | **Site ID:** `812ed9fc-6652-4fdb-b403-9cbaecd62c18`
 
-### What's in V2
-- Added `/faq`, `/privacy`, `/terms` pages with sticky TOC sidebar and section numbering
-- Added `InfoPageLayout` wrapper with `ContactSupportModal` integration
-- Added `PageHeader` component used by info pages
-- Added `FacebookIcon` and `TikTokIcon` — fixed FB icon in Footer
-- Added `noLinks` prop to `Footer` / `CopyrightBar` for info page footer variant
-- Added `.info-page` scoped styles + `info-section` / `info-box` CSS classes in `index.css`
-- Content audited against source PDF — all 3 pages match source document
+Added `/faq`, `/privacy`, and `/terms` info pages. Each page has a sticky TOC sidebar, numbered sections, and a shared card layout. Pages are content-audited against the source PDF. Footer on these pages shows copyright only (no links). Facebook icon in the main footer fixed. All changes are scoped — no existing pages or logic touched.
 
 ---
 

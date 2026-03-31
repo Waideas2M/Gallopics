@@ -8,9 +8,10 @@ interface PgEventCardProps {
     event: PgEvent;
     onCoverChange: (eventId: string) => void;
     onEdit?: (event: PgEvent) => void;
+    fromTab?: string;
 }
 
-export const PgEventCard: React.FC<PgEventCardProps> = ({ event, onCoverChange, onEdit }) => {
+export const PgEventCard: React.FC<PgEventCardProps> = ({ event, onCoverChange, onEdit, fromTab }) => {
     const { basePath } = useWorkspace();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -19,7 +20,7 @@ export const PgEventCard: React.FC<PgEventCardProps> = ({ event, onCoverChange, 
     return (
         <div
             className="relative flex flex-col cursor-pointer transition-[translate,box-shadow] duration-300 ease-[cubic-bezier(0.2,0,0.2,1)] mt-4 hover:-translate-y-1 group"
-            onClick={() => navigate(`${basePath}/events/${event.id}`)}
+            onClick={() => navigate(`${basePath}/events/${event.id}`, { state: { fromTab: fromTab ?? 'my' } })}
         >
             {/* Folder Tab pseudo-element simulation */}
             <div className="absolute -top-3 left-0 w-[110px] h-[13px] bg-[var(--color-brand-tint)] rounded-[96px_144px_0_0] border border-black/[0.08] border-b-0 z-0 transition-all duration-300" />
@@ -89,7 +90,7 @@ export const PgEventCard: React.FC<PgEventCardProps> = ({ event, onCoverChange, 
                                     className="dropdown-menu absolute top-[calc(100%+8px)] right-0 w-max min-w-[180px] z-[1000]"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <button className="dropdown-item" onClick={() => { setIsMenuOpen(false); navigate(`${basePath}/events/${event.id}`); }}>
+                                    <button className="dropdown-item" onClick={() => { setIsMenuOpen(false); navigate(`${basePath}/events/${event.id}`, { state: { fromTab: fromTab ?? 'my' } }); }}>
                                         <ImageIcon size={14} />
                                         Manage photos
                                     </button>

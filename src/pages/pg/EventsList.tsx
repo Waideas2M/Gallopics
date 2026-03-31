@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { X, Search, RotateCcw, MoreHorizontal, Edit2, Archive, Trash2, CheckCircle, AlertCircle, CalendarX2, CalendarPlus } from 'lucide-react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 
@@ -20,7 +20,11 @@ export const EventsList: React.FC = () => {
     const { isAdmin } = useWorkspace();
     const { events } = usePhotographer();
     const navigate = useNavigate();
-    const [view, setView] = useState<'my' | 'upcoming' | 'live' | 'past' | 'archived'>(isAdmin ? 'live' : 'my');
+    const location = useLocation();
+    const initialTab = (location.state as any)?.tab;
+    const [view, setView] = useState<'my' | 'upcoming' | 'live' | 'past' | 'archived'>(
+        initialTab ?? (isAdmin ? 'live' : 'my')
+    );
     const [county, setCounty] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -76,7 +80,7 @@ export const EventsList: React.FC = () => {
 
     const handleNavigateToEvent = (eventId: string) => {
         const basePath = isAdmin ? '/admin' : '/pg';
-        navigate(`${basePath}/events/${eventId}`);
+        navigate(`${basePath}/events/${eventId}`, { state: { fromTab: view } });
     };
 
     const activeList = (() => {
@@ -442,6 +446,7 @@ export const EventsList: React.FC = () => {
                             <PgEventCard
                                 key={event.id}
                                 event={event}
+                                fromTab={view}
                                 onCoverChange={handleCoverChange}
                                 onEdit={(ev) => {
                                     setEventToEdit(ev);
