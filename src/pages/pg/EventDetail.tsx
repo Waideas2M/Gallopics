@@ -9,7 +9,7 @@ import { PgToast } from './PgToast';
 import { TOAST_TOKENS } from '../../context/ToastTokens';
 import { TitleHeader } from '../../components/TitleHeader';
 import { useWorkspace } from '../../context/WorkspaceContext';
-import { X, Check, Trash2, Pencil, AlertCircle, RotateCcw, Info, ImageOff, Globe, Archive } from 'lucide-react';
+import { X, Check, Trash2, Pencil, AlertCircle, RotateCcw, Info, ImageOff, Globe, Archive, ArrowLeft } from 'lucide-react';
 import { ScopedSearchBar } from '../../components/ScopedSearchBar';
 import { ActionCluster, MoreMenu, ActionSeparator } from '../../components/HeaderActions';
 import { InfoChip } from '../../components/InfoChip';
@@ -29,6 +29,7 @@ export const EventDetail: React.FC = () => {
     const navigate = useNavigate();
 
     const location = useLocation();
+    const fromTab = (location.state as any)?.fromTab;
     const { basePath, isAdmin } = useWorkspace();
     const { getEvent, getPhotosByEvent, resolveDuplicate } = usePhotographer();
 
@@ -1108,6 +1109,13 @@ export const EventDetail: React.FC = () => {
                     variant="workspace"
                     title={(
                         <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => navigate(`${basePath}/events`, { state: { tab: fromTab } })}
+                                className="p-1 flex items-center rounded-full transition-[background] duration-200 text-[var(--color-text-secondary)] hover:bg-black/5"
+                                title="Back to events"
+                            >
+                                <ArrowLeft size={18} />
+                            </button>
                             {event.title}
                             <button
                                 onClick={() => setShowInfoModal(true)}
