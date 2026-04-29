@@ -22,6 +22,7 @@ const Cart               = lazy(() => import('./pages/Cart').then(m => ({ defaul
 const FAQPage            = lazy(() => import('./pages/FAQPage').then(m => ({ default: m.FAQPage })));
 const PrivacyPage        = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
 const TermsPage          = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
+const ComingSoonPage     = lazy(() => import('./pages/ComingSoonPage').then(m => ({ default: m.ComingSoonPage })));
 
 // Photographer workspace — lazy loaded
 const EventsList         = lazy(() => import('./pages/pg/EventsList').then(m => ({ default: m.EventsList })));
@@ -63,6 +64,7 @@ function App() {
                   <Route path="/faq" element={<FAQPage />} />
                   <Route path="/privacy" element={<PrivacyPage />} />
                   <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/comingsoon" element={<ComingSoonPage />} />
                   <Route path="/photographerprofile" element={<PhotographerProfile />} />
 
                   {/* Photographer Workspace (Layout-wrapped) */}
