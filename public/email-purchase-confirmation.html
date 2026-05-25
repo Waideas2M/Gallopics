@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Your Gallopics Photos Are Ready</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ECEEF2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+    .preview-shell {
+      min-height: 100vh;
+      padding: 48px 20px 80px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .btn-dl { transition: background 0.15s; }
+    .btn-dl:hover { background: #152dbb !important; }
+    .btn-all { transition: background 0.15s; }
+    .btn-all:hover { background: #152dbb !important; }
+  </style>
+</head>
+<body>
+<div class="preview-shell">
+
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"
+  style="width:600px;max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;
+         box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+
+
+  <!-- ▌HEADER — white bg, blue logo ▐ -->
+  <tr>
+    <td style="background:#ffffff;padding:32px 48px;text-align:center;">
+      <!-- Blue logo (all #1B3AEC, no orange) -->
+      <svg width="160" height="30" viewBox="0 0 396 75" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gallopics">
+        <path d="M62.7321 65.4741L65.1612 69.656C59.3459 73.043 52.586 75.0002 45.3789 75.0002C38.1748 75.0002 31.4129 73.0511 25.5925 69.6542L30.4578 61.2939C34.8475 63.8557 39.9369 65.324 45.3789 65.324C50.8178 65.324 55.909 63.8515 60.3035 61.2921L62.7321 65.4741ZM16.639 22.5424H9.66234V47.8426H16.639V57.5188H0V12.8662H16.639V22.5424ZM45.3789 12.8662C57.6595 12.8665 67.5632 22.8908 67.5633 35.1922C67.5632 47.4937 57.6595 57.5186 45.3789 57.5188C33.0981 57.5188 23.194 47.4939 23.194 35.1922C23.1941 22.8906 33.0981 12.8662 45.3789 12.8662ZM90.7502 57.5188H74.1112V47.8426H81.0878V22.5424H74.1112V12.8662H90.7502V57.5188ZM45.3789 22.5424C38.4917 22.5424 32.8564 28.1772 32.8563 35.1922C32.8564 42.2073 38.4916 47.8426 45.3789 47.8426C52.266 47.8424 57.9009 42.2071 57.9009 35.1922C57.9008 28.1773 52.266 22.5427 45.3789 22.5424Z" fill="#1B3AEC"/>
+        <path d="M67.568 4.87944C67.568 2.18471 65.4001 0.000132047 62.7262 0C60.0521 0 57.8838 2.18463 57.8838 4.87944C57.8838 7.57422 60.0521 9.75888 62.7262 9.75888C65.4001 9.75875 67.5679 7.57414 67.568 4.87944Z" fill="#1B3AEC"/>
+        <path d="M139.525 18.75C141.385 18.75 143.086 18.9427 144.628 19.3281C146.186 19.7135 147.594 20.2495 148.851 20.9365C150.107 21.6068 151.154 22.3442 151.992 23.1484C152.847 23.9527 153.274 24.3545 153.274 24.3545L147.945 30.1104C147.935 30.101 147.642 29.8247 147.065 29.2812C146.496 28.7116 145.843 28.2253 145.105 27.8232C144.385 27.4044 143.564 27.086 142.643 26.8682C141.721 26.6336 140.724 26.5166 139.651 26.5166C136.602 26.5166 134.046 27.5301 131.985 29.5576C129.941 31.5851 128.919 34.2912 128.919 37.6758C128.919 40.9767 129.941 43.6578 131.985 45.7188C134.046 47.763 136.644 48.7852 139.777 48.7852C142.693 48.7851 144.989 48.0726 146.664 46.6484C148.313 45.2606 149.283 43.4508 149.58 41.2197H139.174V35.0117H157.472V38.3291C157.472 43.8083 155.804 48.1655 152.47 51.3994C149.152 54.6332 144.812 56.25 139.45 56.25C134.139 56.2165 129.69 54.4233 126.104 50.8711C122.535 47.3021 120.751 42.8452 120.751 37.5C120.751 32.0543 122.535 27.5725 126.104 24.0537C129.69 20.5183 134.164 18.7501 139.525 18.75ZM265.639 18.75C270.85 18.75 275.273 20.5182 278.909 24.0537C282.545 27.5724 284.363 32.0458 284.363 37.4746C284.363 42.8868 282.554 47.3696 278.935 50.9219C275.315 54.4741 270.883 56.25 265.639 56.25C260.377 56.25 255.937 54.4991 252.317 50.9971C248.715 47.4783 246.914 42.9706 246.914 37.4746C246.914 31.9787 248.724 27.4881 252.343 24.0029C255.962 20.501 260.394 18.75 265.639 18.75ZM352.054 18.75C353.813 18.75 355.48 18.9591 357.055 19.3779C358.63 19.7968 360.071 20.3837 361.378 21.1377C362.685 21.8917 363.758 22.6713 364.596 23.4756C365.433 24.2796 365.853 24.6816 365.853 24.6816L360.348 30.6133C360.345 30.6107 360.085 30.3345 359.568 29.7842C359.049 29.2312 358.421 28.7278 357.684 28.2754C356.946 27.823 356.117 27.4634 355.195 27.1953C354.29 26.9272 353.285 26.793 352.179 26.793C349.213 26.7931 346.733 27.7817 344.739 29.7588C342.745 31.7192 341.748 34.2911 341.748 37.4746C341.748 40.6247 342.729 43.1974 344.689 45.1914C346.65 47.1851 349.13 48.1816 352.129 48.1816C353.285 48.1816 354.357 48.0397 355.346 47.7549C356.334 47.4533 357.239 47.0342 358.061 46.498C358.898 45.962 359.56 45.4008 360.046 44.8145C360.539 44.239 360.791 43.9454 360.8 43.9346L366.53 49.6143C366.527 49.6176 366.1 50.0875 365.249 51.0225C364.395 51.9607 363.28 52.8402 361.906 53.6611C360.532 54.4654 359.015 55.0935 357.356 55.5459C355.698 56.015 353.922 56.25 352.028 56.25C346.549 56.25 342.041 54.4904 338.506 50.9717C334.987 47.4362 333.229 42.9456 333.229 37.5C333.229 32.004 335.013 27.5049 338.582 24.0029C342.151 20.5011 346.642 18.75 352.054 18.75ZM381.942 18.75C384.02 18.75 385.847 19.0185 387.422 19.5547C389.014 20.0909 390.388 20.8868 391.544 21.9424C392.717 22.9811 393.58 24.0371 394.133 25.1094C394.702 26.1814 394.987 26.7178 394.987 26.7178L388.15 29.4316C388.144 29.4214 387.968 29.1364 387.623 28.5771C387.288 27.9907 386.835 27.446 386.266 26.9434C385.713 26.424 385.067 26.0384 384.33 25.7871C383.593 25.5191 382.755 25.3857 381.816 25.3857C380.426 25.3858 379.286 25.6869 378.398 26.29C377.527 26.8932 377.092 27.7143 377.092 28.7529C377.092 29.7079 377.544 30.5212 378.448 31.1914C379.37 31.8616 381.523 32.6997 384.908 33.7051C388.745 34.8277 391.51 36.3353 393.202 38.2285C394.911 40.1052 395.767 42.3845 395.767 45.0654C395.767 48.4668 394.485 51.1815 391.921 53.209C389.357 55.2364 386.039 56.25 381.968 56.25C379.605 56.25 377.527 55.923 375.734 55.2695C373.941 54.616 372.433 53.6946 371.21 52.5049C369.987 51.3152 369.065 50.0331 368.445 48.6592C367.849 47.3011 367.548 46.6141 367.541 46.5986L374.604 43.8594C374.611 43.8757 374.804 44.2942 375.182 45.1152C375.567 45.953 376.086 46.7077 376.739 47.3779C377.409 48.0481 378.206 48.5756 379.127 48.9609C380.049 49.3296 381.088 49.5137 382.244 49.5137C383.853 49.5136 385.142 49.1367 386.114 48.3828C387.086 47.6288 387.572 46.6066 387.572 45.3164C387.572 44.06 386.952 43.0547 385.713 42.3008C384.49 41.53 382.403 40.7006 379.454 39.8125C375.785 38.6898 373.112 37.2649 371.437 35.5391C369.778 33.8132 368.948 31.6767 368.948 29.1299C368.948 26.114 370.146 23.634 372.542 21.6904C374.938 19.73 378.072 18.75 381.942 18.75ZM191.828 55.4961H182.855L180.413 48.5342H167.649L165.187 55.4961H156.565L170.414 19.5049H178.005L191.828 55.4961ZM203.245 47.7803H218.577V55.4961H194.851V19.5049H203.245V47.7803ZM230.772 47.7803H246.104V55.4961H222.378V19.5049H230.772V47.7803ZM303.4 19.5049C307.271 19.505 310.387 20.6355 312.75 22.8975C315.113 25.1427 316.294 28.2257 316.294 32.1465C316.294 36.0003 315.07 39.0247 312.624 41.2197C310.194 43.398 307.103 44.4873 303.35 44.4873H297.217V55.4961H288.822V19.5049H303.4ZM328.747 55.4961H320.277V19.5049H328.747V55.4961ZM265.639 26.793C262.673 26.793 260.201 27.7979 258.224 29.8086C256.263 31.8193 255.283 34.3749 255.283 37.4746C255.283 40.5912 256.263 43.1639 258.224 45.1914C260.184 47.2021 262.648 48.207 265.613 48.207C268.596 48.207 271.068 47.1935 273.028 45.166C274.989 43.1386 275.969 40.5744 275.969 37.4746C275.969 34.3581 274.98 31.8025 273.003 29.8086C271.043 27.798 268.588 26.793 265.639 26.793ZM173.028 33.3281L169.694 42.7529H178.386L175.089 33.3535L174.109 30.1611H174.009L173.028 33.3281ZM297.217 37.5254H302.596C304.221 37.5254 305.528 37.065 306.517 36.1436C307.505 35.2052 308 33.9059 308 32.2471C308 30.5884 307.497 29.2812 306.491 28.3262C305.486 27.3713 304.179 26.8936 302.57 26.8936H297.217V37.5254Z" fill="#1B3AEC"/>
+      </svg>
+    </td>
+  </tr>
+
+
+  <!-- ▌HERO — confirmed + headline + order ref ▐ -->
+  <tr>
+    <td style="background:#F9FAFB;padding:48px 52px 40px;text-align:center;">
+
+      <h1 style="margin:0 0 12px;font-size:30px;font-weight:700;color:#040136;
+                 line-height:1.2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        Your photos are ready
+      </h1>
+
+      <p style="margin:0 auto 28px;font-size:15px;line-height:1.65;color:#666666;
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;max-width:360px;">
+        Your purchase is confirmed.
+      </p>
+
+      <span style="display:inline-block;background:#ECEEF6;border:1px solid #D0D6F0;
+                   border-radius:7px;padding:8px 20px;font-size:13px;color:#666;
+                   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        Order&nbsp;<strong style="color:#040136;">{{ORDER_ID}}</strong>
+        &nbsp;&middot;&nbsp;
+        <strong style="color:#040136;">{{PHOTO_COUNT}}</strong>&nbsp;photos
+      </span>
+    </td>
+  </tr>
+
+
+  <!-- ▌MESSAGE ▐ -->
+  <tr>
+    <td style="background:#F9FAFB;padding:40px 52px;border-bottom:1px solid #E5E7EB;">
+      <h2 style="margin:0 0 14px;font-size:20px;font-weight:700;color:#040136;
+                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        Hi {{FIRST_NAME}},
+      </h2>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#444444;
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        Thank you for your purchase. Your photos are now available at full resolution &mdash;
+        print-ready quality, exactly as captured by
+        <strong style="color:#040136;">{{PHOTOGRAPHER_NAME}}</strong>.
+      </p>
+      <p style="margin:0;font-size:15px;line-height:1.7;color:#444444;
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        We hope these bring you as much joy as the moment itself did.
+      </p>
+    </td>
+  </tr>
+
+
+  <!-- ▌DOWNLOADS LABEL ▐ -->
+  <tr>
+    <td style="background:#ffffff;padding:32px 52px 16px;">
+      <p style="margin:0;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+                color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-weight:700;">
+        Your Downloads
+      </p>
+    </td>
+  </tr>
+
+
+  <!-- ▌PHOTO CARDS ▐ -->
+  <tr>
+    <td style="background:#ffffff;padding:0 52px 44px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+        <tr>
+
+          <!-- Card 1 — warm golden hour mock photo -->
+          <td style="width:48%;vertical-align:top;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+              style="width:100%;border-radius:10px;overflow:hidden;border:1px solid #E5E7EB;">
+
+              <!-- Thumbnail -->
+              <tr>
+                <td style="height:200px;position:relative;background:#E8EAED;
+                           text-align:center;vertical-align:middle;">
+                  <!-- Image placeholder icon -->
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">
+                    <rect x="3" y="3" width="18" height="18" rx="2" fill="#C8CDD8"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="#F0F2F5"/>
+                    <path d="M3 16l5-5 4 4 3-3 6 6" stroke="#F0F2F5" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  </svg>
+                </td>
+              </tr>
+
+              <!-- Meta -->
+              <tr>
+                <td style="background:#F9FAFB;padding:13px 14px 14px;border-top:1px solid #EEEEEE;">
+                  <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#111111;
+                            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+                    Photo #GP-48291
+                  </p>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+                                 padding:2px 0;width:42%;">Event</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+                                 padding:2px 0;font-weight:700;text-align:right;">Sweden Intl Horse Show</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Club</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">Stockholms Ryttarf&ouml;rening</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Class</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">1.20m</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Time</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">12 Jun 2026 &bull; 14:24</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Venue</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">Main Arena, Stockholm</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Orientation</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">Landscape</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Resolution</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">4032 &times; 3024</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Download -->
+              <tr>
+                <td style="background:#F9FAFB;padding:10px 14px 14px;">
+                  <a href="{{DOWNLOAD_URL_1}}" class="btn-dl"
+                     style="display:block;background:#1B3AEC;color:#ffffff;text-decoration:none;
+                            text-align:center;padding:10px;border-radius:7px;font-size:13px;
+                            font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+                    &#8595;&nbsp; Download Photo
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+
+          <td style="width:4%;"></td>
+
+          <!-- Card 2 — cool morning/arena mock photo -->
+          <td style="width:48%;vertical-align:top;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+              style="width:100%;border-radius:10px;overflow:hidden;border:1px solid #E5E7EB;">
+
+              <!-- Thumbnail -->
+              <tr>
+                <td style="height:200px;position:relative;background:#E8EAED;
+                           text-align:center;vertical-align:middle;">
+                  <!-- Image placeholder icon -->
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">
+                    <rect x="3" y="3" width="18" height="18" rx="2" fill="#C8CDD8"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="#F0F2F5"/>
+                    <path d="M3 16l5-5 4 4 3-3 6 6" stroke="#F0F2F5" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  </svg>
+                </td>
+              </tr>
+
+              <!-- Meta -->
+              <tr>
+                <td style="background:#F9FAFB;padding:13px 14px 14px;border-top:1px solid #EEEEEE;">
+                  <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#111111;
+                            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+                    Photo #GP-48294
+                  </p>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+                                 padding:2px 0;width:42%;">Event</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+                                 padding:2px 0;font-weight:700;text-align:right;">Sweden Intl Horse Show</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Club</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">Stockholms Ryttarf&ouml;rening</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Class</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">1.20m</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Time</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">12 Jun 2026 &bull; 14:32</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Venue</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">Main Arena, Stockholm</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Orientation</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">Landscape</td>
+                    </tr>
+                    <tr>
+                      <td style="font-size:12px;color:#AAAAAA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;">Resolution</td>
+                      <td style="font-size:12px;color:#333333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;padding:2px 0;text-align:right;">4032 &times; 3024</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Download -->
+              <tr>
+                <td style="background:#F9FAFB;padding:10px 14px 14px;">
+                  <a href="{{DOWNLOAD_URL_2}}" class="btn-dl"
+                     style="display:block;background:#1B3AEC;color:#ffffff;text-decoration:none;
+                            text-align:center;padding:10px;border-radius:7px;font-size:13px;
+                            font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+                    &#8595;&nbsp; Download Photo
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+
+
+
+  <!-- ▌FOOTER — matches site footer ▐ -->
+  <tr>
+    <td style="background:#1a1a1a;padding:36px 40px 28px;">
+
+      <!-- Logo + tagline -->
+      <svg width="140" height="26" viewBox="0 0 396 75" fill="none" xmlns="http://www.w3.org/2000/svg"
+        style="display:block;margin-bottom:12px;">
+        <path d="M62.7321 65.4741L65.1612 69.656C59.3459 73.043 52.586 75.0002 45.3789 75.0002C38.1748 75.0002 31.4129 73.0511 25.5925 69.6542L30.4578 61.2939C34.8475 63.8557 39.9369 65.324 45.3789 65.324C50.8178 65.324 55.909 63.8515 60.3035 61.2921L62.7321 65.4741ZM16.639 22.5424H9.66234V47.8426H16.639V57.5188H0V12.8662H16.639V22.5424ZM45.3789 12.8662C57.6595 12.8665 67.5632 22.8908 67.5633 35.1922C67.5632 47.4937 57.6595 57.5186 45.3789 57.5188C33.0981 57.5188 23.194 47.4939 23.194 35.1922C23.1941 22.8906 33.0981 12.8662 45.3789 12.8662ZM90.7502 57.5188H74.1112V47.8426H81.0878V22.5424H74.1112V12.8662H90.7502V57.5188ZM45.3789 22.5424C38.4917 22.5424 32.8564 28.1772 32.8563 35.1922C32.8564 42.2073 38.4916 47.8426 45.3789 47.8426C52.266 47.8424 57.9009 42.2071 57.9009 35.1922C57.9008 28.1773 52.266 22.5427 45.3789 22.5424Z" fill="white"/>
+        <path d="M67.568 4.87944C67.568 2.18471 65.4001 0.000132047 62.7262 0C60.0521 0 57.8838 2.18463 57.8838 4.87944C57.8838 7.57422 60.0521 9.75888 62.7262 9.75888C65.4001 9.75875 67.5679 7.57414 67.568 4.87944Z" fill="white"/>
+        <path d="M139.525 18.75C141.385 18.75 143.086 18.9427 144.628 19.3281C146.186 19.7135 147.594 20.2495 148.851 20.9365C150.107 21.6068 151.154 22.3442 151.992 23.1484C152.847 23.9527 153.274 24.3545 153.274 24.3545L147.945 30.1104C147.935 30.101 147.642 29.8247 147.065 29.2812C146.496 28.7116 145.843 28.2253 145.105 27.8232C144.385 27.4044 143.564 27.086 142.643 26.8682C141.721 26.6336 140.724 26.5166 139.651 26.5166C136.602 26.5166 134.046 27.5301 131.985 29.5576C129.941 31.5851 128.919 34.2912 128.919 37.6758C128.919 40.9767 129.941 43.6578 131.985 45.7188C134.046 47.763 136.644 48.7852 139.777 48.7852C142.693 48.7851 144.989 48.0726 146.664 46.6484C148.313 45.2606 149.283 43.4508 149.58 41.2197H139.174V35.0117H157.472V38.3291C157.472 43.8083 155.804 48.1655 152.47 51.3994C149.152 54.6332 144.812 56.25 139.45 56.25C134.139 56.2165 129.69 54.4233 126.104 50.8711C122.535 47.3021 120.751 42.8452 120.751 37.5C120.751 32.0543 122.535 27.5725 126.104 24.0537C129.69 20.5183 134.164 18.7501 139.525 18.75ZM265.639 18.75C270.85 18.75 275.273 20.5182 278.909 24.0537C282.545 27.5724 284.363 32.0458 284.363 37.4746C284.363 42.8868 282.554 47.3696 278.935 50.9219C275.315 54.4741 270.883 56.25 265.639 56.25C260.377 56.25 255.937 54.4991 252.317 50.9971C248.715 47.4783 246.914 42.9706 246.914 37.4746C246.914 31.9787 248.724 27.4881 252.343 24.0029C255.962 20.501 260.394 18.75 265.639 18.75ZM352.054 18.75C353.813 18.75 355.48 18.9591 357.055 19.3779C358.63 19.7968 360.071 20.3837 361.378 21.1377C362.685 21.8917 363.758 22.6713 364.596 23.4756C365.433 24.2796 365.853 24.6816 365.853 24.6816L360.348 30.6133C360.345 30.6107 360.085 30.3345 359.568 29.7842C359.049 29.2312 358.421 28.7278 357.684 28.2754C356.946 27.823 356.117 27.4634 355.195 27.1953C354.29 26.9272 353.285 26.793 352.179 26.793C349.213 26.7931 346.733 27.7817 344.739 29.7588C342.745 31.7192 341.748 34.2911 341.748 37.4746C341.748 40.6247 342.729 43.1974 344.689 45.1914C346.65 47.1851 349.13 48.1816 352.129 48.1816C353.285 48.1816 354.357 48.0397 355.346 47.7549C356.334 47.4533 357.239 47.0342 358.061 46.498C358.898 45.962 359.56 45.4008 360.046 44.8145C360.539 44.239 360.791 43.9454 360.8 43.9346L366.53 49.6143C366.527 49.6176 366.1 50.0875 365.249 51.0225C364.395 51.9607 363.28 52.8402 361.906 53.6611C360.532 54.4654 359.015 55.0935 357.356 55.5459C355.698 56.015 353.922 56.25 352.028 56.25C346.549 56.25 342.041 54.4904 338.506 50.9717C334.987 47.4362 333.229 42.9456 333.229 37.5C333.229 32.004 335.013 27.5049 338.582 24.0029C342.151 20.5011 346.642 18.75 352.054 18.75ZM381.942 18.75C384.02 18.75 385.847 19.0185 387.422 19.5547C389.014 20.0909 390.388 20.8868 391.544 21.9424C392.717 22.9811 393.58 24.0371 394.133 25.1094C394.702 26.1814 394.987 26.7178 394.987 26.7178L388.15 29.4316C388.144 29.4214 387.968 29.1364 387.623 28.5771C387.288 27.9907 386.835 27.446 386.266 26.9434C385.713 26.424 385.067 26.0384 384.33 25.7871C383.593 25.5191 382.755 25.3857 381.816 25.3857C380.426 25.3858 379.286 25.6869 378.398 26.29C377.527 26.8932 377.092 27.7143 377.092 28.7529C377.092 29.7079 377.544 30.5212 378.448 31.1914C379.37 31.8616 381.523 32.6997 384.908 33.7051C388.745 34.8277 391.51 36.3353 393.202 38.2285C394.911 40.1052 395.767 42.3845 395.767 45.0654C395.767 48.4668 394.485 51.1815 391.921 53.209C389.357 55.2364 386.039 56.25 381.968 56.25C379.605 56.25 377.527 55.923 375.734 55.2695C373.941 54.616 372.433 53.6946 371.21 52.5049C369.987 51.3152 369.065 50.0331 368.445 48.6592C367.849 47.3011 367.548 46.6141 367.541 46.5986L374.604 43.8594C374.611 43.8757 374.804 44.2942 375.182 45.1152C375.567 45.953 376.086 46.7077 376.739 47.3779C377.409 48.0481 378.206 48.5756 379.127 48.9609C380.049 49.3296 381.088 49.5137 382.244 49.5137C383.853 49.5136 385.142 49.1367 386.114 48.3828C387.086 47.6288 387.572 46.6066 387.572 45.3164C387.572 44.06 386.952 43.0547 385.713 42.3008C384.49 41.53 382.403 40.7006 379.454 39.8125C375.785 38.6898 373.112 37.2649 371.437 35.5391C369.778 33.8132 368.948 31.6767 368.948 29.1299C368.948 26.114 370.146 23.634 372.542 21.6904C374.938 19.73 378.072 18.75 381.942 18.75ZM191.828 55.4961H182.855L180.413 48.5342H167.649L165.187 55.4961H156.565L170.414 19.5049H178.005L191.828 55.4961ZM203.245 47.7803H218.577V55.4961H194.851V19.5049H203.245V47.7803ZM230.772 47.7803H246.104V55.4961H222.378V19.5049H230.772V47.7803ZM303.4 19.5049C307.271 19.505 310.387 20.6355 312.75 22.8975C315.113 25.1427 316.294 28.2257 316.294 32.1465C316.294 36.0003 315.07 39.0247 312.624 41.2197C310.194 43.398 307.103 44.4873 303.35 44.4873H297.217V55.4961H288.822V19.5049H303.4ZM328.747 55.4961H320.277V19.5049H328.747V55.4961ZM265.639 26.793C262.673 26.793 260.201 27.7979 258.224 29.8086C256.263 31.8193 255.283 34.3749 255.283 37.4746C255.283 40.5912 256.263 43.1639 258.224 45.1914C260.184 47.2021 262.648 48.207 265.613 48.207C268.596 48.207 271.068 47.1935 273.028 45.166C274.989 43.1386 275.969 40.5744 275.969 37.4746C275.969 34.3581 274.98 31.8025 273.003 29.8086C271.043 27.798 268.588 26.793 265.639 26.793ZM173.028 33.3281L169.694 42.7529H178.386L175.089 33.3535L174.109 30.1611H174.009L173.028 33.3281ZM297.217 37.5254H302.596C304.221 37.5254 305.528 37.065 306.517 36.1436C307.505 35.2052 308 33.9059 308 32.2471C308 30.5884 307.497 29.2812 306.491 28.3262C305.486 27.3713 304.179 26.8936 302.57 26.8936H297.217V37.5254Z" fill="white"/>
+      </svg>
+
+      <p style="margin:0 0 24px;font-size:13px;line-height:1.7;color:rgba(255,255,255,0.45);
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+                max-width:320px;">
+        We capture horse competitions across Sweden. Search your event, spot your photos, and purchase your favorites.
+      </p>
+
+      <!-- Support email -->
+      <p style="margin:0 0 24px;font-size:13px;color:rgba(255,255,255,0.45);
+                font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        Need help? &nbsp;<a href="mailto:support@gallopics.com"
+          style="color:#ffffff;text-decoration:none;font-weight:600;">support@gallopics.com</a>
+      </p>
+
+      <!-- Divider -->
+      <div style="height:1px;background:rgba(255,255,255,0.08);margin-bottom:20px;"></div>
+
+      <!-- Bottom row: copyright + links -->
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+        <tr>
+          <td style="vertical-align:middle;">
+            <span style="font-size:12px;color:rgba(255,255,255,0.3);
+                         font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+              &copy; 2026 Gallopics
+            </span>
+          </td>
+          <td style="text-align:right;vertical-align:middle;">
+            <a href="https://gallopics.com/terms" style="font-size:12px;color:rgba(255,255,255,0.3);
+               font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+               text-decoration:none;margin-left:20px;">Terms of service</a>
+            <a href="https://gallopics.com/privacy" style="font-size:12px;color:rgba(255,255,255,0.3);
+               font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+               text-decoration:none;margin-left:20px;">Privacy policy</a>
+            <a href="{{UNSUBSCRIBE_URL}}" style="font-size:12px;color:rgba(255,255,255,0.3);
+               font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+               text-decoration:none;margin-left:20px;">Unsubscribe</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+
+</table>
+</div>
+</body>
+</html>
